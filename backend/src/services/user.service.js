@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 const repo = () => AppDataSource.getRepository(User);
 
-export async function createUser(data) {
+export async function crearUsuario(data) {
   const hashed = await bcrypt.hash(String(data.password), 10);
   const newUser = repo().create({ email: data.email, password: hashed });
   const saved = await repo().save(newUser);
@@ -12,16 +12,16 @@ export async function createUser(data) {
   return safe;
 }
 
-export async function findUserByEmail(email) {
+export async function encontrarUsuarioPorEmail(email) {
   return await repo().findOne({ where: { email } });
 }
 
-export async function findUserById(id) {
+export async function encontrarUsuarioPorId(id) {
   return await repo().findOne({ where: { id: Number(id) } });
 }
 
-export async function updateUserById(id, changes) {
-  const user = await findUserById(id);
+export async function actualizarUsuarioPorId(id, changes) {
+  const user = await encontrarUsuarioPorId(id);
   if (!user) throw new Error("Usuario no encontrado");
   if (changes.email) user.email = changes.email;
   if (changes.password) user.password = await bcrypt.hash(String(changes.password), 10);
@@ -30,8 +30,8 @@ export async function updateUserById(id, changes) {
   return safe;
 }
 
-export async function deleteUserById(id) {
-  const user = await findUserById(id);
+export async function eliminarUsuarioPorId(id) {
+  const user = await encontrarUsuarioPorId(id);
   if (!user) throw new Error("Usuario no encontrado");
   await repo().remove(user);
   return { id: Number(id) };

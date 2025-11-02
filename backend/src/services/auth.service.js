@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByEmail } from "./user.service.js";
+import { encontrarUsuarioPorEmail } from "./user.service.js";
 
-export async function loginUser(email, password) {
-  const user = await findUserByEmail(email);
+export async function iniciarSesionUsuario(email, password) {
+  const user = await encontrarUsuarioPorEmail(email);
   if (!user) throw new Error("Credenciales incorrectas");
 
   const isMatch = await bcrypt.compare(password, user.password);

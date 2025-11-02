@@ -1,25 +1,25 @@
 "use strict";
-export const handleSuccess = (res, statusCode, message, data = null) => {
+export const manejarExito = (res, statusCode, message, data = null) => {
   res.status(statusCode).json({
     message,
     data,
-    status: "Success",
+    status: "Éxito",
   });
 };
 
-export const handleErrorClient = (res, statusCode, message, errorDetails = null) => {
+export const manejarErrorCliente = (res, statusCode, message, errorDetails = null) => {
   res.status(statusCode).json({
     message,
     errorDetails,
-    status: "Client error",
+    status: "Error del cliente",
   });
 };
 
-export const handleErrorServer = (res, statusCode, message, errorDetails = null) => {
-  console.error("Server Error:", message, errorDetails);
+export const manejarErrorServidor = (res, statusCode, message, errorDetails = null) => {
+  console.error("Error del servidor:", message, errorDetails);
   res.status(statusCode).json({
     message,
     errorDetails,
-    status: "Server error",
+    status: "Error del servidor",
   });
 };

@@ -1,15 +1,15 @@
 import jwt from "jsonwebtoken";
-import { handleErrorClient } from "../Handlers/responseHandlers.js";
+import { manejarErrorCliente } from "../Handlers/responseHandlers.js";
 
-export function authMiddleware(req, res, next) {
+export function autenticacionMiddleware(req, res, next) {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
-    return handleErrorClient(res, 401, "Acceso denegado. No se proporcionó token.");
+    return manejarErrorCliente(res, 401, "Acceso denegado. No se proporcionó token.");
   }
 
   const token = authHeader.split(" ")[1];
   if (!token) {
-    return handleErrorClient(res, 401, "Acceso denegado. Token malformado.");
+    return manejarErrorCliente(res, 401, "Acceso denegado. Token malformado.");
   }
 
   try {
@@ -17,6 +17,9 @@ export function authMiddleware(req, res, next) {
     req.user = payload; 
     next();
   } catch (error) {
-    return handleErrorClient(res, 401, "Token inválido o expirado.", error.message);
+    return manejarErrorCliente(res, 401, "Token inválido o expirado.", error.message);
   }
 }
+
+// default export (nombre en español)
+export default autenticacionMiddleware;

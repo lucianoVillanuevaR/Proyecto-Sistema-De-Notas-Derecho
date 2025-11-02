@@ -2,7 +2,7 @@
 import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
-import { AppDataSource, connectDB } from "./config/configDb.js";
+import { AppDataSource, conectarDB } from "./config/configDb.js";
 import { routerApi } from "./routes/index.routes.js";
 
 const app = express();
@@ -15,7 +15,7 @@ app.get("/", (_req, res) => {
 });
 
 // Inicializa la conexión a la base de datos
-connectDB()
+conectarDB()
   .then(() => {
     // Cargar todas las rutas
     routerApi(app);
