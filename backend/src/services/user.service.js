@@ -2,37 +2,37 @@ import { AppDataSource } from "../config/configDb.js";
 import { User } from "../entities/user.entity.js";
 import bcrypt from "bcrypt";
 
-const repo = () => AppDataSource.getRepository(User);
+const repositorio = () => AppDataSource.getRepository(User);
 
-export async function createUser(data) {
+export async function crearUsuario(data) {
   const hashed = await bcrypt.hash(String(data.password), 10);
-  const newUser = repo().create({ email: data.email, password: hashed });
-  const saved = await repo().save(newUser);
-  const { password, ...safe } = saved;
-  return safe;
+  const nuevoUsuario = repositorio().create({ email: data.email, password: hashed });
+  const guardado = await repositorio().save(nuevoUsuario);
+  const { password, ...seguro } = guardado;
+  return seguro;
 }
 
-export async function findUserByEmail(email) {
-  return await repo().findOne({ where: { email } });
+export async function encontrarUsuarioPorEmail(email) {
+  return await repositorio().findOne({ where: { email } });
 }
 
-export async function findUserById(id) {
-  return await repo().findOne({ where: { id: Number(id) } });
+export async function encontrarUsuarioPorId(id) {
+  return await repositorio().findOne({ where: { id: Number(id) } });
 }
 
-export async function updateUserById(id, changes) {
-  const user = await findUserById(id);
-  if (!user) throw new Error("Usuario no encontrado");
-  if (changes.email) user.email = changes.email;
-  if (changes.password) user.password = await bcrypt.hash(String(changes.password), 10);
-  const updated = await repo().save(user);
-  const { password, ...safe } = updated;
-  return safe;
+export async function actualizarUsuarioPorId(id, cambios) {
+  const usuario = await encontrarUsuarioPorId(id);
+  if (!usuario) throw new Error("Usuario no encontrado");
+  if (cambios.email) usuario.email = cambios.email;
+  if (cambios.password) usuario.password = await bcrypt.hash(String(cambios.password), 10);
+  const actualizado = await repositorio().save(usuario);
+  const { password, ...seguro } = actualizado;
+  return seguro;
 }
 
-export async function deleteUserById(id) {
-  const user = await findUserById(id);
-  if (!user) throw new Error("Usuario no encontrado");
-  await repo().remove(user);
+export async function eliminarUsuarioPorId(id) {
+  const usuario = await encontrarUsuarioPorId(id);
+  if (!usuario) throw new Error("Usuario no encontrado");
+  await repositorio().remove(usuario);
   return { id: Number(id) };
 }

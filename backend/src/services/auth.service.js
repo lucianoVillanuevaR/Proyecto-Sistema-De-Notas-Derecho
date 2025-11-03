@@ -1,9 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByEmail } from "./user.service.js";
+import { encontrarUsuarioPorEmail } from "./user.service.js";
+import { JWT_SECRET } from "../config/configEnv.js";
 
-export async function loginUser(email, password) {
-  const user = await findUserByEmail(email);
+export async function iniciarSesion(email, password) {
+  const user = await encontrarUsuarioPorEmail(email);
   if (!user) throw new Error("Credenciales incorrectas");
 
   const isMatch = await bcrypt.compare(password, user.password);
@@ -11,7 +12,7 @@ export async function loginUser(email, password) {
 
   // Incluimos id para usarlo en req.user.id desde el token
   const payload = { id: user.id, email: user.email };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign(payload, JWT_SECRET || process.env.JWT_SECRET, { expiresIn: "1h" });
 
   const { password: _omit, ...safeUser } = user;
   return { user: safeUser, token };
