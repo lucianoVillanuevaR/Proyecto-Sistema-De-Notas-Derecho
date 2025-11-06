@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import {
-  getPublicProfile,
-  getPrivateProfile,
-  updatePrivateProfile,
-  deletePrivateProfile,
+  perfilPublico,
+  perfilPrivado,
+  actualizarPerfilPrivado,
+  eliminarPerfilPrivado,
 } from "../controllers/profile.controller.js";
-import { validarUpdateProfile } from "../validations/usuario.validation.js"; 
+import { validarUpdateProfile } from "../validations/usuario.validation.js";
+
 const router = Router();
-router.get("/public", getPublicProfile);
-router.get("/private", authMiddleware, getPrivateProfile);
-router.patch("/private", authMiddleware, validarUpdateProfile, updatePrivateProfile);
-router.delete("/private", authMiddleware, deletePrivateProfile);
+router.get("/public", perfilPublico);
+router.get("/private", authMiddleware, perfilPrivado);
+router.patch("/private", authMiddleware, validarUpdateProfile, actualizarPerfilPrivado);
+router.delete("/private", authMiddleware, eliminarPerfilPrivado);
 export default router;

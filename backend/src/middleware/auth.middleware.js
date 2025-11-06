@@ -14,7 +14,7 @@ export function authMiddleware(req, res, next) {
   }
 
   try {
-    const payload = jwt.verify(token, JWT_SECRET || process.env.JWT_SECRET);
+  const payload = jwt.verify(token, JWT_SECRET || process.env.JWT_SECRET);
     req.user = payload; 
     next();
   } catch (error) {
