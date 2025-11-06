@@ -7,30 +7,24 @@ export const reportController = {
   async getInformeEstudiante(req, res) {
     try {
       const { studentId } = req.params;
-      const actor = req.user; // { id, email, role }
+      const actor = req.user; 
 
       if (!studentId || isNaN(studentId)) {
         return handleErrorClient(res, 400, "ID de estudiante inválido");
       }
 
       const sid = Number(studentId);
-
-      // Autorización: solo el alumno correspondiente o el profesor responsable
       if (actor.role === "estudiante") {
         if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede ver su informe");
       } else if (actor.role === "profesor") {
-        // verificar que exista al menos una nota de ese estudiante registrada por este profesor
         const notasProfesor = await obtenerNotasPorEstudiante(sid);
         const tieneNotasDelProfesor = notasProfesor.some(n => Number(n.professorId) === Number(actor.id));
         if (!tieneNotasDelProfesor) return handleErrorClient(res, 403, "Acceso denegado: no eres el profesor responsable de este estudiante");
       } else {
         return handleErrorClient(res, 403, "Acceso denegado: role no permitido");
       }
-
-      // Obtener notas del estudiante
       const notas = await obtenerNotasPorEstudiante(sid);
 
-      // Calcular promedios por evaluación y por modalidad (escrita / oral) y promedio general
       const promediosPorEvaluacion = {};
       let sumaTotal = 0;
       let countTotal = 0;
@@ -62,19 +56,16 @@ export const reportController = {
 
       const promedioGeneral = countTotal ? Number((sumaTotal / countTotal).toFixed(2)) : null;
 
-      // Preparar observaciones (array de { professorId, observation, created_at })
       const observaciones = notas
         .filter(n => n.observation)
         .map(n => ({ professorId: n.professorId, observation: n.observation, type: n.type || "escrita", created_at: n.created_at }));
 
-      // Registrar en historial la consulta
       try {
         await crearEntradaHistorial(sid, actor.id, "consulta_informe", `Usuario ${actor.email} consultó informe del estudiante ${sid}`);
       } catch (err) {
         console.warn("No se pudo crear entrada de historial:", err.message || err);
       }
 
-      // Responder con el informe
       return handleSuccess(res, 200, "Informe obtenido exitosamente", {
         studentId: sid,
         notas,
@@ -87,7 +78,6 @@ export const reportController = {
     }
   },
 
-  // Obtener historial del estudiante
   async getHistorialEstudiante(req, res) {
     try {
       const { studentId } = req.params;
@@ -98,8 +88,6 @@ export const reportController = {
       }
 
       const sid = Number(studentId);
-
-      // Autorización similar: estudiante mismo o profesor responsable puede ver historial
       if (actor.role === "estudiante") {
         if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede ver su historial");
       } else if (actor.role === "profesor") {
@@ -111,8 +99,6 @@ export const reportController = {
       }
 
       const historial = await obtenerHistorialPorEstudiante(sid);
-
-      // Registrar la consulta del historial
       try {
         await crearEntradaHistorial(sid, actor.id, "consulta_historial", `Usuario ${actor.email} consultó historial del estudiante ${sid}`);
       } catch (err) {
@@ -125,11 +111,8 @@ export const reportController = {
     }
   }
 ,
-
-  // Obtener mi propio informe (usa req.user.id)
   async getMiInforme(req, res) {
     try {
-      // Delegar estableciendo studentId en params
       req.params.studentId = String(req.user.id);
       return await this.getInformeEstudiante(req, res);
     } catch (error) {
@@ -137,7 +120,6 @@ export const reportController = {
     }
   },
 
-  // Obtener mi propio historial (usa req.user.id)
   async getMiHistorial(req, res) {
     try {
       req.params.studentId = String(req.user.id);
