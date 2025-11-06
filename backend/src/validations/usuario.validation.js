@@ -1,6 +1,5 @@
 import Joi from 'joi';
 const safeString = Joi.string().trim().min(1).max(100);
-// Usuarios 
 const crearUsuarioSchema = Joi.object({
   nombre: safeString.required().messages({
     'any.required': 'El nombre es obligatorio',
@@ -21,6 +20,11 @@ const crearUsuarioSchema = Joi.object({
     'any.required': 'La contraseña es obligatoria',
     'string.min': 'La contraseña debe tener al menos 5 caracteres',
     'string.empty': 'La contraseña no puede estar vacia'
+  })
+  ,
+  role: Joi.string().valid('estudiante', 'profesor').optional().messages({
+    'any.only': 'El role debe ser "estudiante" o "profesor"',
+    'string.base': 'El role debe ser una cadena'
   })
 }).options({ abortEarly: false, allowUnknown: false });
 const validacionMiddleware = (schema) => (req, res, next) => {

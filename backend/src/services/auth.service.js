@@ -12,7 +12,9 @@ export async function iniciarSesion(email, password) {
 
   // Incluimos id para usarlo en req.user.id desde el token
   const payload = { id: user.id, email: user.email };
-  const token = jwt.sign(payload, JWT_SECRET || process.env.JWT_SECRET, { expiresIn: "1h" });
+  // Incluir role en el payload para controlar permisos desde el token
+  const payloadWithRole = { id: user.id, email: user.email, role: user.role };
+  const token = jwt.sign(payloadWithRole, JWT_SECRET || process.env.JWT_SECRET, { expiresIn: "1h" });
 
   const { password: _omit, ...safeUser } = user;
   return { user: safeUser, token };

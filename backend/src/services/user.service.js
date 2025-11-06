@@ -6,7 +6,9 @@ const repositorio = () => AppDataSource.getRepository(User);
 
 export async function crearUsuario(data) {
   const hashed = await bcrypt.hash(String(data.password), 10);
-  const nuevoUsuario = repositorio().create({ email: data.email, password: hashed });
+  // permitir enviar role (p.ej. 'estudiante' o 'profesor'), por defecto 'estudiante'
+  const role = data.role || "estudiante";
+  const nuevoUsuario = repositorio().create({ email: data.email, password: hashed, role });
   const guardado = await repositorio().save(nuevoUsuario);
   const { password, ...seguro } = guardado;
   return seguro;
