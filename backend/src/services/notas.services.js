@@ -24,7 +24,7 @@ export async function crearNota(data) {
     evaluation: data.evaluation,
     score: Number(data.score),
     observation: data.observation || null,
-    // type: 'escrita' o 'oral'
+    //'escrita' o 'oral'
     type: data.type || "escrita",
   });
   return await repo().save(nueva);
