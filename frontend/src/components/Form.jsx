@@ -14,7 +14,7 @@ const Form = ({ title, fields, buttonText, onSubmit, onChange }) => {
   };
   return (
     <form className="space-y-6 bg-white rounded-2xl shadow-2xl p-8 md:p-12 max-w-md w-full" onSubmit={handleSubmit(handleFormSubmit)}>
-      <h1 className="text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-600 mb-8">
+      <h1 className="text-4xl font-bold text-center law-gradient-text mb-8">
         {title}
       </h1>
       {fields.map((field, index) => (
@@ -52,7 +52,7 @@ const Form = ({ title, fields, buttonText, onSubmit, onChange }) => {
       ))}
       <button 
         type="submit" 
-        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-purple-300"
+        className="w-full law-btn text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 hover:shadow-xl"
       >
         {buttonText}
       </button>
