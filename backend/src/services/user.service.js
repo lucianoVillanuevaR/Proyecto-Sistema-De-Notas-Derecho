@@ -3,10 +3,10 @@ import { User } from "../entities/user.entity.js";
 import bcrypt from "bcrypt";
 
 const repositorio = () => AppDataSource.getRepository(User);
-
 export async function crearUsuario(data) {
   const hashed = await bcrypt.hash(String(data.password), 10);
-  const nuevoUsuario = repositorio().create({ email: data.email, password: hashed });
+  const role = data.role || "estudiante";
+  const nuevoUsuario = repositorio().create({ email: data.email, password: hashed, role });
   const guardado = await repositorio().save(nuevoUsuario);
   const { password, ...seguro } = guardado;
   return seguro;
