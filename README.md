@@ -20,7 +20,7 @@ Configuración rápida
 1) Clonar el repositorio
 
 ```bash
-git clone <repo-url>
+git clone <[repo-url](https://github.com/lucianoVillanuevaR/Proyecto-Sistema-De-Notas-Derecho.git)>
 cd Proyecto-Sistema-De-Notas-Derecho
 ```
 
