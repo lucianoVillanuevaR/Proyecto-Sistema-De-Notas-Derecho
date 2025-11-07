@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    --law-primary: #0b3d91;
+    --law-secondary: #7b1e3a;
+    --law-accent: #d4af37;
+  }
+
+  html, body {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  body {
+    @apply antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .page-bg {
+    background-color: #efefef;
+    background-image: linear-gradient(#e6e6e6 1px, transparent 1px), linear-gradient(90deg, #e6e6e6 1px, transparent 1px);
+    background-size: 40px 40px, 40px 40px;
+  }
+}
+
+@layer components {
+  .login-card {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    padding: 1.5rem 2rem;
+    border-radius: 0.625rem;
+    max-width: 520px;
+    width: 100%;
+  }
+
+  .login-card .card-heading {
+    color: var(--law-primary);
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .login-card .card-divider {
+    border-top: 1px solid #e6e6e6;
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .site-icon {
+    display: block;
+    margin: 0 auto 0.5rem;
+    width: 48px;
+    height: 48px;
+    color: var(--law-primary);
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    pointer-events: none;
+  }
+
+  .input-with-icon {
+    padding-left: 2.75rem;
+  }
+
+  .login-card input,
+  .login-card textarea {
+    width: 100%;
+    padding: 0.6rem 0.75rem 0.6rem 2.75rem;
+    font-size: 1rem;
+    box-sizing: border-box;
+    height: 44px;
+  }
+
+  .submit-btn {
+    background: var(--law-primary);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    min-height: 44px;
+  }
+
+  /* Typography tweaks to make text look cleaner */
+  .login-card,
+  .login-card label,
+  .login-card input,
+  .login-card button,
+  .login-card a {
+    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    letter-spacing: 0.1px;
+    color: #0f172a;
+  }
+
+  .login-card label {
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+    color: #374151;
+    font-weight: 600;
+  }
+
+  /* Reduce vertical spacing between form rows */
+  .login-card .mb-2 {
+    margin-bottom: 0.65rem;
+  }
+
+  /* Slightly larger icons inside fields */
+  .input-icon svg { width: 20px; height: 20px; }
+
+  /* Make the forgot link align slightly lower and visually lighter */
+  .forgot-link { font-weight: 600; }
+
+  .forgot-link {
+    color: var(--law-primary);
+  }
+}

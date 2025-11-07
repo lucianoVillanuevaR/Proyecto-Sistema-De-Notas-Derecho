@@ -1,30 +1,40 @@
 import { EntitySchema } from "typeorm";
 
-export const User = new EntitySchema({
-  name: "User",
-  tableName: "users",
+export const Grade = new EntitySchema({
+  name: "Grade",
+  tableName: "grades",
   columns: {
     id: {
       primary: true,
       type: "int",
       generated: "increment",
     },
-    email: {
-      type: "varchar",
-      length: 255,
-      unique: true,
+    studentId: {
+      type: "int",
       nullable: false,
     },
-    password: {
+    professorId: {
+      type: "int",
+      nullable: false,
+    },
+    evaluation: {
       type: "varchar",
       length: 255,
       nullable: false,
     },
-    role: {
+    type: {
       type: "varchar",
       length: 50,
       nullable: false,
-      default: "estudiante",
+      default: "escrita",
+    },
+    score: {
+      type: "numeric",
+      nullable: false,
+    },
+    observation: {
+      type: "text",
+      nullable: true,
     },
     created_at: {
       type: "timestamp",

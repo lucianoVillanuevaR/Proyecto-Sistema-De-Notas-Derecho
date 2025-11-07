@@ -1,48 +1,48 @@
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { findUserById, updateUserById, deleteUserById } from "../services/user.service.js";
+import { encontrarUsuarioPorId, actualizarUsuarioPorId, eliminarUsuarioPorId } from "../services/user.service.js";
 
-export async function getPublicProfile(req, res) {
+export async function perfilPublico(req, res) {
   try {
-    // For public profile we can return a simple message or a public endpoint
-    handleSuccess(res, 200, "Public profile endpoint", null);
+    // Endpoint público de perfil (ejemplo)
+    handleSuccess(res, 200, "Endpoint de perfil público", null);
   } catch (error) {
-    handleErrorServer(res, 500, "Error fetching public profile", error.message);
+    handleErrorServer(res, 500, "Error al obtener el perfil público", error.message);
   }
 }
 
-export async function getPrivateProfile(req, res) {
+export async function perfilPrivado(req, res) {
   try {
     const userId = req.user?.id;
     if (!userId) return handleErrorClient(res, 401, "Usuario no autenticado");
-    const user = await findUserById(userId);
+    const user = await encontrarUsuarioPorId(userId);
     if (!user) return handleErrorClient(res, 404, "Usuario no encontrado");
     handleSuccess(res, 200, "Perfil privado encontrado", user);
   } catch (error) {
-    handleErrorServer(res, 500, "Error fetching private profile", error.message);
+    handleErrorServer(res, 500, "Error al obtener el perfil privado", error.message);
   }
 }
 
-export async function updatePrivateProfile(req, res) {
+export async function actualizarPerfilPrivado(req, res) {
   try {
     const userId = req.user?.id;
     if (!userId) return handleErrorClient(res, 401, "Usuario no autenticado");
-    const changes = req.body;
-    const updated = await updateUserById(userId, changes);
-    handleSuccess(res, 200, "Perfil actualizado", updated);
+    const cambios = req.body;
+    const actualizado = await actualizarUsuarioPorId(userId, cambios);
+    handleSuccess(res, 200, "Perfil actualizado", actualizado);
   } catch (error) {
-    handleErrorServer(res, 500, "Error updating profile", error.message);
+    handleErrorServer(res, 500, "Error al actualizar el perfil", error.message);
   }
 }
 
-export async function deletePrivateProfile(req, res) {
+export async function eliminarPerfilPrivado(req, res) {
   try {
     const userId = req.user?.id;
     if (!userId) return handleErrorClient(res, 401, "Usuario no autenticado");
-    const deleted = await deleteUserById(userId);
-    handleSuccess(res, 200, "Perfil eliminado", deleted);
+    const eliminado = await eliminarUsuarioPorId(userId);
+    handleSuccess(res, 200, "Perfil eliminado", eliminado);
   } catch (error) {
-    handleErrorServer(res, 500, "Error deleting profile", error.message);
+    handleErrorServer(res, 500, "Error al eliminar el perfil", error.message);
   }
 }
 
-export default { getPublicProfile, getPrivateProfile, updatePrivateProfile, deletePrivateProfile };
+export default { perfilPublico, perfilPrivado, actualizarPerfilPrivado, eliminarPerfilPrivado };
