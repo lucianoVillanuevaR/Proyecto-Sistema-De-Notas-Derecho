@@ -9,18 +9,13 @@ const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
 
-// Ruta principal de bienvenida
 app.get("/", (_req, res) => {
   res.send("¡Bienvenido a mi API REST con TypeORM!");
 });
 
-// Inicializa la conexión a la base de datos
 connectDB()
   .then(() => {
-    // Cargar todas las rutas
     routerApi(app);
-
-    // Levantar servidor
     const PORT = process.env.PORT || 3000;
     const HOST = process.env.SERVER_HOST || "0.0.0.0";
     app.listen(PORT, HOST, () => {
