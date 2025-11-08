@@ -1,7 +1,7 @@
 "use strict";
 import evaluacion from "../entities/evaluacion.entity.js";
 import { AppDataSource } from "../config/configDb.js";
-import { createvalidation, updatevalidation, notaValidation } from "../validations/evaluacion.validation.js";
+import { createvalidation, updatevalidation } from "../validations/evaluacion.validation.js";
 
 export async function getEvaluaciones(req, res){
     try {
@@ -47,7 +47,7 @@ export async function createEvaluacion(req, res){
             nombreEv,
             asignatura1,
             profesor,
-            nota
+            ponderacion
         });
         await evaluacionRepository.save(nuevaEvaluacion);
         res.status(201).json({
@@ -77,7 +77,7 @@ export async function updateEvaluacion(req, res){
         evaluacion.nombreEv = nombreEv || evaluacion.nombreEv;
         evaluacion.asignatura1 = asignatura1 || evaluacion.asignatura1;
         evaluacion.profesor = profesor || evaluacion.profesor;
-        evaluacion.nota = nota !== undefined ? nota : evaluacion.nota;
+        evaluacion.ponderacion = ponderacion || evaluacion.ponderacion;
 
         await evaluacionRepository.save(evaluacion);
         res.status(200).json({message: "Evaluacion actualizada exitosamente", data: evaluacion});
@@ -104,26 +104,3 @@ export async function deleteEvaluacion(req, res){
     }
 }
 
-export async function addNota(req, res){
-    try {
-        const evaluacionRepository = AppDataSource.getRepository(evaluacion);
-        const { id } = req.params;
-        const { error } = notaValidation.validate(req.body);
-        if(error){
-            return res.status(400).json({message: "Error al agregar la nota", error: error});
-        }
-        const { nota } = req.body;
-        const registro = await evaluacionRepository.findOne({where: { id }});
-        if(!registro){
-            return res.status(404).json({message: "Evaluacion no encontrada"});
-        }
-
-        registro.nota = nota;
-        await evaluacionRepository.save(registro);
-
-        res.status(200).json({message: "Nota agregada/actualizada exitosamente", data: registro});
-    } catch (error) {
-        console.error("Error al agregar la nota:", error);
-        res.status(500).json({message: "Error al agregar la nota", error: error.message});
-    }
-}

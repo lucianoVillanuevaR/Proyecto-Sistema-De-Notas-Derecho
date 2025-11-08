@@ -28,9 +28,9 @@ export const EvaluacionEntity = new EntitySchema({
             nullable: false,
             length: 30
         },
-        nota: {
+        ponderacion: {
             type: Number,
-            nullable: true,
+            nullable: false,
             default: null
         },
         createdAt: {

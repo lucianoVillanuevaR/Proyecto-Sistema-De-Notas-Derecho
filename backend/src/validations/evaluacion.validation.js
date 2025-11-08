@@ -79,27 +79,15 @@ export const updatevalidation = joi.object({
       "string.max": "El nombre del profesor debe tener como máximo 30 caracteres",
       "string.empty": "El nombre del profesor es un campo obligatorio",
     }),
-  nota: joi.number()
+  poderacion: joi.number()
     .min(0)
-    .max(7)
+    .max(100)
     .optional()
     .messages({
-      "number.base": "La nota debe ser un número",
-      "number.min": "La nota no puede ser menor a 0",
-      "number.max": "La nota no puede ser mayor a 7"
+      "number.base": "La ponderacion debe ser un número",
+      "number.min": "La ponderacion no puede ser menor a 0",
+      "number.max": "La ponderacion no puede ser mayor a 100"
     }),
 }).unknown(false).messages({
     "object.unknown": "No se permiten campos adicionales"
-});
-
-export const notaValidation = joi.object({
-  nota: joi.number()
-    .min(0)
-    .max(7)
-    .required()
-}).unknown(false).messages({
-  "number.base": "La nota debe ser un número",
-  "number.min": "La nota no puede ser menor a 0",
-  "number.max": "La nota no puede ser mayor a 7",
-  "any.required": "La nota es un campo obligatorio"
 });
