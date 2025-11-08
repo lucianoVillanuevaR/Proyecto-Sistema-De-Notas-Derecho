@@ -91,3 +91,15 @@ export const updatevalidation = joi.object({
 }).unknown(false).messages({
     "object.unknown": "No se permiten campos adicionales"
 });
+
+export const notaValidation = joi.object({
+  nota: joi.number()
+    .min(0)
+    .max(7)
+    .required()
+}).unknown(false).messages({
+  "number.base": "La nota debe ser un número",
+  "number.min": "La nota no puede ser menor a 0",
+  "number.max": "La nota no puede ser mayor a 7",
+  "any.required": "La nota es un campo obligatorio"
+});

@@ -1,7 +1,7 @@
 "use strict";
-import evaluacion from "../entitys/evaluacion.entity.js";
+import evaluacion from "../entities/evaluacion.entity.js";
 import { AppDataSource } from "../config/configDb.js";
-import { createvalidation, updatevalidation } from "../validations/evaluacion.validation.js";
+import { createvalidation, updatevalidation, notaValidation } from "../validations/evaluacion.validation.js";
 
 export async function getEvaluaciones(req, res){
     try {
@@ -101,5 +101,29 @@ export async function deleteEvaluacion(req, res){
     } catch (error) {
         console.error("Error al eliminar la evaluacion:", error);
         res.status(500).json({message: "Error al eliminar la evaluacion"});
+    }
+}
+
+export async function addNota(req, res){
+    try {
+        const evaluacionRepository = AppDataSource.getRepository(evaluacion);
+        const { id } = req.params;
+        const { error } = notaValidation.validate(req.body);
+        if(error){
+            return res.status(400).json({message: "Error al agregar la nota", error: error});
+        }
+        const { nota } = req.body;
+        const registro = await evaluacionRepository.findOne({where: { id }});
+        if(!registro){
+            return res.status(404).json({message: "Evaluacion no encontrada"});
+        }
+
+        registro.nota = nota;
+        await evaluacionRepository.save(registro);
+
+        res.status(200).json({message: "Nota agregada/actualizada exitosamente", data: registro});
+    } catch (error) {
+        console.error("Error al agregar la nota:", error);
+        res.status(500).json({message: "Error al agregar la nota", error: error.message});
     }
 }
