@@ -98,7 +98,6 @@
     min-height: 44px;
   }
 
-  /* Typography tweaks to make text look cleaner */
   .login-card,
   .login-card label,
   .login-card input,
@@ -116,15 +115,10 @@
     font-weight: 600;
   }
 
-  /* Reduce vertical spacing between form rows */
   .login-card .mb-2 {
     margin-bottom: 0.65rem;
   }
-
-  /* Slightly larger icons inside fields */
   .input-icon svg { width: 20px; height: 20px; }
-
-  /* Make the forgot link align slightly lower and visually lighter */
   .forgot-link { font-weight: 600; }
 
   .forgot-link {
