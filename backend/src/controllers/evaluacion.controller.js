@@ -49,7 +49,7 @@ export async function createEvaluacion(req, res){
             profesor,
             ponderacion
         });
-        // Validación simple: no permitir mismo nombre de evaluación dentro de la misma asignatura
+        
         const existeMismaAsignatura = await evaluacionRepository.findOne({where: { nombreEv, asignatura1 }});
         if (existeMismaAsignatura) {
             return res.status(400).json({ message: "Ya existe una evaluación con ese nombre en la misma asignatura." });
@@ -80,7 +80,6 @@ export async function updateEvaluacion(req, res){
             return res.status(400).json({message: "Error al actualizar la evaluacion", error: error});
         }
 
-        // Si se cambia nombreEv o asignatura1, validar que no exista otra evaluacion
         const nuevoNombre = nombreEv || evaluacion.nombreEv;
         const nuevaAsignatura = asignatura1 || evaluacion.asignatura1;
         const conflicto = await evaluacionRepository.findOne({ where: { nombreEv: nuevoNombre, asignatura1: nuevaAsignatura } });
