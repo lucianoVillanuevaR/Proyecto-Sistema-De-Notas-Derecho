@@ -12,7 +12,11 @@ export const AppDataSource = new DataSource({
   password: PASSWORD,          
   database: DATABASE,         
   entities: ["src/entities/**/*.js"],
+<<<<<<< HEAD
   synchronize: true,
+=======
+  synchronize: false,
+>>>>>>> d7e589a (add funciones y arreglo de codigo)
   logging: false,
 });
 
@@ -46,4 +50,13 @@ export async function connectDB() {
     console.error("Error al conectar con la base de datos:", error);
     process.exit(1);
   }
+<<<<<<< HEAD
 }
+=======
+}
+
+// Consulta para obtener restricciones únicas de la tabla 'evaluaciones'
+// Nota: no ejecutar consultas con AppDataSource antes de inicializar la conexión.
+// Si necesitas listar/eliminar constraints, hazlo después de llamar a connectDB()
+// o usa el script independiente `scripts/drop_evaluaciones_constraints.js`.
+>>>>>>> d7e589a (add funciones y arreglo de codigo)
