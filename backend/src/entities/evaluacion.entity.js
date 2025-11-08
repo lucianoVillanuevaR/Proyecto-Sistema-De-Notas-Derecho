@@ -10,20 +10,28 @@ export const EvaluacionEntity = new EntitySchema({
             primary: true,
             generated: true
         },
-        nombre: {
+        nombreEv: {
             type: String,
+            unique: true,
+            nullable: false,
             length: 30
         },
-        asignatura: {
+        asignatura1: {
             type: String,
+            unique: true,
+            nullable: false,
             length: 30
         },
         profesor: {
             type: String,
+            unique: true,
+            nullable: false,
             length: 30
         },
         nota: {
-            type: Number
+            type: Number,
+            nullable: true,
+            default: null
         },
         createdAt: {
             type: "timestamp",
