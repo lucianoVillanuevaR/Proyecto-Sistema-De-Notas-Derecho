@@ -20,7 +20,6 @@ export async function connectDB() {
   try {
     await AppDataSource.initialize();
     console.log("=> Conexión exitosa a la base de datos PostgreSQL!");
-    // Sembrar usuarios por defecto: un estudiante y un profesor
     try {
       const repo = AppDataSource.getRepository(User);
 
