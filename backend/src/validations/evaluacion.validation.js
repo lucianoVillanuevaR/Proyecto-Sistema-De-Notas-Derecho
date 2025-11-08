@@ -79,7 +79,7 @@ export const updatevalidation = joi.object({
       "string.max": "El nombre del profesor debe tener como máximo 30 caracteres",
       "string.empty": "El nombre del profesor es un campo obligatorio",
     }),
-  poderacion: joi.number()
+  ponderacion: joi.number()
     .min(0)
     .max(100)
     .optional()

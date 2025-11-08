@@ -42,23 +42,6 @@ export class NotasController {
       }
       
   const nuevaNota = await crearNota(data);
-<<<<<<< HEAD
-=======
-      // Log to student history if auth user is present
-      try {
-        if (req.user) {
-          await crearEntradaHistorial(
-            nuevaNota.studentId,
-            req.user.id,
-            "crear_nota",
-            `Usuario ${req.user.email} creó la nota ${nuevaNota.id}`
-          );
-        }
-      } catch (logErr) {
-        // don't block main flow if logging fails
-        console.error("Error creando entrada de historial:", logErr.message || logErr);
-      }
->>>>>>> origin/Dev
       handleSuccess(res, 201, "Nota creada exitosamente", nuevaNota);
     } catch (error) {
       handleErrorServer(res, 500, "Error al crear la nota", error.message);
@@ -79,22 +62,6 @@ export class NotasController {
       }
       
   const notaActualizada = await actualizarNota(id, changes);
-<<<<<<< HEAD
-=======
-      // Log to student history if auth user is present
-      try {
-        if (req.user) {
-          await crearEntradaHistorial(
-            notaActualizada.studentId,
-            req.user.id,
-            "actualizar_nota",
-            `Usuario ${req.user.email} actualizó la nota ${notaActualizada.id}`
-          );
-        }
-      } catch (logErr) {
-        console.error("Error creando entrada de historial:", logErr.message || logErr);
-      }
->>>>>>> origin/Dev
       handleSuccess(res, 200, "Nota actualizada exitosamente", notaActualizada);
     } catch (error) {
       handleErrorClient(res, 404, error.message);
@@ -109,26 +76,7 @@ export class NotasController {
         return handleErrorClient(res, 400, "ID de nota inválido");
       }
       
-<<<<<<< HEAD
   await eliminarNota(id);
-=======
-  // obtain nota to record studentId in history
-  const notaParaEliminar = await obtenerNotaPorId(id);
-  await eliminarNota(id);
-      // Log deletion in student history if auth user is present
-      try {
-        if (req.user) {
-          await crearEntradaHistorial(
-            notaParaEliminar.studentId,
-            req.user.id,
-            "eliminar_nota",
-            `Usuario ${req.user.email} eliminó la nota ${id}`
-          );
-        }
-      } catch (logErr) {
-        console.error("Error creando entrada de historial:", logErr.message || logErr);
-      }
->>>>>>> origin/Dev
       handleSuccess(res, 200, "Nota eliminada exitosamente", { id });
     } catch (error) {
       handleErrorClient(res, 404, error.message);
