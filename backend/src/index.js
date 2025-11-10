@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.get("/", (_req, res) => {
-  res.send("¡Bienvenido a mi API REST con TypeORM!");
+  res.send("Bienvenido a mi API REST con TypeORM!");
 });
 
 connectDB()
