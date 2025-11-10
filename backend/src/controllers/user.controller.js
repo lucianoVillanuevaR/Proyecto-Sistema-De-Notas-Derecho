@@ -1,16 +1,17 @@
 import {
-  findNotas,
-  findNotaById,
-  createNota,
-  updateNota,
-  deleteNota,
+  obtenerNotas,
+  obtenerNotaPorId,
+  crearNota,
+  actualizarNota,
+  eliminarNota,
 } from "../services/notas.services.js";
+import { crearEntradaHistorial } from "../services/history.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
 export class NotasController {
   async getAllNotas(req, res) {
     try {
-      const notas = await findNotas();
+      const notas = await obtenerNotas();
       handleSuccess(res, 200, "Notas obtenidas exitosamente", notas);
     } catch (error) {
       handleErrorServer(res, 500, "Error al obtener las notas", error.message);
@@ -25,7 +26,7 @@ export class NotasController {
         return handleErrorClient(res, 400, "ID de nota inválido");
       }
       
-      const nota = await findNotaById(id);
+  const nota = await obtenerNotaPorId(id);
       handleSuccess(res, 200, "Nota obtenida exitosamente", nota);
     } catch (error) {
       handleErrorClient(res, 404, error.message);
@@ -40,7 +41,7 @@ export class NotasController {
         return handleErrorClient(res, 400, "Datos de la nota son requeridos");
       }
       
-      const nuevaNota = await createNota(data);
+  const nuevaNota = await crearNota(data);
       handleSuccess(res, 201, "Nota creada exitosamente", nuevaNota);
     } catch (error) {
       handleErrorServer(res, 500, "Error al crear la nota", error.message);
@@ -60,7 +61,7 @@ export class NotasController {
         return handleErrorClient(res, 400, "Datos para actualizar son requeridos");
       }
       
-      const notaActualizada = await updateNota(id, changes);
+  const notaActualizada = await actualizarNota(id, changes);
       handleSuccess(res, 200, "Nota actualizada exitosamente", notaActualizada);
     } catch (error) {
       handleErrorClient(res, 404, error.message);
@@ -75,7 +76,7 @@ export class NotasController {
         return handleErrorClient(res, 400, "ID de nota inválido");
       }
       
-      await deleteNota(id);
+  await eliminarNota(id);
       handleSuccess(res, 200, "Nota eliminada exitosamente", { id });
     } catch (error) {
       handleErrorClient(res, 404, error.message);
