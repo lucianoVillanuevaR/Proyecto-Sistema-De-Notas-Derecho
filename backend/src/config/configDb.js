@@ -12,7 +12,7 @@ export const AppDataSource = new DataSource({
   password: PASSWORD,          
   database: DATABASE,         
   entities: ["src/entities/**/*.js"],
-  synchronize: false,
+  synchronize: true,
   logging: false,
 });
 
@@ -20,7 +20,6 @@ export async function connectDB() {
   try {
     await AppDataSource.initialize();
     console.log("=> Conexión exitosa a la base de datos PostgreSQL!");
-    // Sembrar usuarios por defecto: un estudiante y un profesor
     try {
       const repo = AppDataSource.getRepository(User);
 
@@ -48,7 +47,4 @@ export async function connectDB() {
   }
 }
 
-// Consulta para obtener restricciones únicas de la tabla 'evaluaciones'
-// Nota: no ejecutar consultas con AppDataSource antes de inicializar la conexión.
-// Si necesitas listar/eliminar constraints, hazlo después de llamar a connectDB()
-// o usa el script independiente `scripts/drop_evaluaciones_constraints.js`.
+
