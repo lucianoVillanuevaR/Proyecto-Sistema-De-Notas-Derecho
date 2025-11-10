@@ -45,4 +45,27 @@ export async function eliminarPerfilPrivado(req, res) {
   }
 }
 
+export async function actualizarPerfilPorIdAdmin(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id || isNaN(id)) return handleErrorClient(res, 400, "ID inválido");
+    const cambios = req.body;
+    const actualizado = await actualizarUsuarioPorId(id, cambios);
+    handleSuccess(res, 200, "Perfil actualizado (admin)", actualizado);
+  } catch (error) {
+    handleErrorServer(res, 500, "Error al actualizar el perfil (admin)", error.message);
+  }
+}
+
+export async function eliminarPerfilPorIdAdmin(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id || isNaN(id)) return handleErrorClient(res, 400, "ID inválido");
+    const eliminado = await eliminarUsuarioPorId(id);
+    handleSuccess(res, 200, "Perfil eliminado (admin)", eliminado);
+  } catch (error) {
+    handleErrorServer(res, 500, "Error al eliminar el perfil (admin)", error.message);
+  }
+}
+
 export default { perfilPublico, perfilPrivado, actualizarPerfilPrivado, eliminarPerfilPrivado };

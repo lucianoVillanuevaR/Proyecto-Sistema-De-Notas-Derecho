@@ -34,10 +34,9 @@ export async function connectDB() {
           console.log(`Usuario ya existe: ${email}`);
         }
       }
-
-      // Contraseñas iniciales (cámbialas en producción)
       await ensureUser("estudiante@ejemplo.com", "Estudiante123", "estudiante");
       await ensureUser("profesor@ejemplo.com", "Profesor123", "profesor");
+  await ensureUser("admin@ejemplo.com", "Admin123!", "admin");
     } catch (seedError) {
       console.warn("No fue posible sembrar usuarios por defecto:", seedError.message || seedError);
     }

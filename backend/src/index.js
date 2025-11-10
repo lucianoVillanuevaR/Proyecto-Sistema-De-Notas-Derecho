@@ -15,8 +15,27 @@ app.use(
   })
 );
 
-app.use(express.json());
+// Capture raw body for debugging invalid JSON payloads
+app.use(express.json({
+  verify: (req, _res, buf) => {
+    try {
+      req.rawBody = buf.toString();
+    } catch (e) {
+      req.rawBody = undefined;
+    }
+  },
+}));
 app.use(morgan("dev"));
+
+// Handle JSON parse errors from body-parser and show raw body in logs
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error('JSON parse error on request:', req.method, req.originalUrl);
+    console.error('Raw body:', req.rawBody);
+    return res.status(400).json({ message: 'Invalid JSON payload' });
+  }
+  next();
+});
 app.get("/", (_req, res) => {
   res.send("¡Bienvenido a mi API REST con TypeORM!");
 });
