@@ -25,6 +25,10 @@ export const Appeal = new EntitySchema({
             type: "text",
             nullable: false,
         },
+        comment: {
+            type: "text",
+            nullable: true,
+        },
         status: {
             type: "varchar",
             length: 50,
@@ -35,7 +39,7 @@ export const Appeal = new EntitySchema({
             type: "timestamp",
             nullable: true,
         },
-        create_at: {
+        created_at: {
             type: "timestamp",
             createDate: true,
             default: () => "CURRENT_TIMESTAMP",

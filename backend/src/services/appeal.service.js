@@ -33,6 +33,7 @@ export async function obtenerApelacionProfesor(professorId) {
 
 export async function actualizarApelacion(id, changes) {
     const apelacion = await obtenerApelacionId(id);
+    if (changes.comment) apelacion.comment = changes.comment;
     if (changes.status) apelacion.status = changes.status;
     if (changes.meetingDate) apelacion.meetingDate = changes.meetingDate;
     return await repo().save(apelacion);

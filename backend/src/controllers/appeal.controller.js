@@ -1,9 +1,14 @@
-import { crearApelacion, obtenerApelacion, obtenerApelacionId, obtenerApelacionEstudiante, actualizarApelacion, obtenerApelacionProfesor } from "../services/appeal.service";
-import { handleSuccess,handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers";
+import { crearApelacion, obtenerApelacion, obtenerApelacionId, obtenerApelacionEstudiante, actualizarApelacion, obtenerApelacionProfesor } from "../services/appeal.service.js";
+import { handleSuccess,handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
 export async function crearApelaciones(req, res) {
  try {
-    const date = req.body
+    const data = req.body;
+    const { role } = req.user;
+
+    if (role !== "estudiante" && role !== "admin") {
+      return handleErrorClient(res, 403, "No tienes permisos para crear apelaciones");
+    }
 
     if (!data.studentId || !data.gradeId) {
       return handleErrorClient(res, 400, "El ID del estudiante y la nota son requeridos");
@@ -16,13 +21,26 @@ export async function crearApelaciones(req, res) {
     const nuevaApelacion = await crearApelacion(data);
     handleSuccess(res, 201, "Apelación creada exitosamente", nuevaApelacion);
  }  catch (error) {
-    handleErrorClient(res, 500, "Error al crear apelación", error.message);
+    handleErrorServer(res, 500, "Error al crear apelación", error.message);
  } 
 }
 
 export async function obtenerApelaciones(req, res) {
    try {
-      const apelaciones = await obtenerApelacion();
+      const { role, id } = req.user;
+
+      let apelaciones;
+
+      if (role === "admin") {
+         apelaciones = await obtenerApelacion();
+      } else if (role === "estudiante") {
+         apelaciones = await obtenerApelacionEstudiante(id);
+      } else if (role === "profesor") {
+         apelaciones = await obtenerApelacionProfesor(id);
+      } else {
+         return handleErrorClient(res, 403, "No tienes permisos para ver apelaciones");
+      }
+      
       handleSuccess(res, 200, "Apelaciones obtenidas exitosamente", apelaciones);
    } catch (error) {
       handleErrorServer(res, 500, "Error al obtener las apelaciones", error.message);
@@ -44,43 +62,18 @@ export async function obtenerApelacionporId(req, res){
    }
 }
 
-export async function obtenerApelacionesPorEstudiante(req, res) {
-   try {
-      const { studentId } = req.params;
-
-      if (!studentId || isNaN(studentId)) {
-         return handleErrorClient(res, 400, "ID de estudiante inválido");
-      }
-
-      const apelaciones = await obtenerApelacionEstudiante(studentId);
-      handleSuccess(res, 200, "Apelaciones del estudiante obtenidas", apelaciones);
-   } catch (error) {
-      handleErrorServer(res, 500, "Error al obtener apelaciones del estudiante", error.message);
-   }
-}
-
-export async function obtenerApelacionesPorProfesor(req, res) {
-   try {
-      const { professorId } = req.params;
-
-      if (!professorId || isNaN(professorId)) {
-         return handleErrorClient(res, 400, "ID de profesor inválido");
-      }
-
-      const apelaciones = await obtenerApelacionProfesor(professorId);
-      handleSuccess(res, 200, "Apelaciones del profesor obtenidas", apelaciones);
-   } catch (error) {
-      handleErrorServer(res, 500, "Error al obtener apelaciones del profesor", error.message);
-   }
-}
-
 export async function actualizarApelaciones(req, res) {
    try {
     const { id } = req.params;
     const cambios = req.body;
+    const { role } = req.user;
 
     if (!id || isNaN(id)) {
       return handleErrorClient(res, 400, "ID inválido");
+    }
+
+    if (role !== "profesor" && role !== "admin") {
+      return handleErrorClient(res, 403, "No tienes permisos para actualizar apelaciones");
     }
 
     if (!cambios || Object.keys(cambios).length === 0) {
