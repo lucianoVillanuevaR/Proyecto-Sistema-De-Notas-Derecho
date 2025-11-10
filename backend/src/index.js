@@ -14,8 +14,6 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-// Capture raw body for debugging invalid JSON payloads
 app.use(express.json({
   verify: (req, _res, buf) => {
     try {
@@ -26,8 +24,6 @@ app.use(express.json({
   },
 }));
 app.use(morgan("dev"));
-
-// Handle JSON parse errors from body-parser and show raw body in logs
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
     console.error('JSON parse error on request:', req.method, req.originalUrl);
