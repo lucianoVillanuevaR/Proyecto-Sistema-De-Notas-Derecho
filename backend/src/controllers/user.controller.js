@@ -42,7 +42,6 @@ export class NotasController {
       }
       
   const nuevaNota = await crearNota(data);
-      // Log to student history if auth user is present
       try {
         if (req.user) {
           await crearEntradaHistorial(
@@ -76,7 +75,6 @@ export class NotasController {
       }
       
   const notaActualizada = await actualizarNota(id, changes);
-      // Log to student history if auth user is present
       try {
         if (req.user) {
           await crearEntradaHistorial(
@@ -102,11 +100,8 @@ export class NotasController {
       if (!id || isNaN(id)) {
         return handleErrorClient(res, 400, "ID de nota inválido");
       }
-      
-  // obtain nota to record studentId in history
   const notaParaEliminar = await obtenerNotaPorId(id);
   await eliminarNota(id);
-      // Log deletion in student history if auth user is present
       try {
         if (req.user) {
           await crearEntradaHistorial(
