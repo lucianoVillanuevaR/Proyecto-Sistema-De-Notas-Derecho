@@ -35,7 +35,6 @@ export async function connectDB() {
         }
       }
 
-      // Contraseñas iniciales (cámbialas en producción)
       await ensureUser("estudiante@ejemplo.com", "Estudiante123", "estudiante");
       await ensureUser("profesor@ejemplo.com", "Profesor123", "profesor");
     } catch (seedError) {
