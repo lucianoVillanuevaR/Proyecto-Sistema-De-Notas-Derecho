@@ -13,3 +13,5 @@ router.post("/", authMiddleware, crearApelaciones);
 router.get("/", authMiddleware, obtenerApelaciones);
 router.get("/:id", authMiddleware, obtenerApelacionporId);
 router.patch("/:id", authMiddleware, actualizarApelaciones);
+
+export default router;
