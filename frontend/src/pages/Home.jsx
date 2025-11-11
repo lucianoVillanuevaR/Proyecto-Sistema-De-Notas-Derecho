@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   const [profileData, setProfileData] = useState(null);
@@ -13,12 +14,18 @@ const Home = () => {
           Página de Inicio
         </h1>
         
-        <button 
-          onClick={handleGetProfile} 
-          className="w-full law-btn text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 hover:shadow-xl"
-        >
-          Obtener Perfil
-        </button>
+        <div className="grid gap-4">
+          <button 
+            onClick={handleGetProfile} 
+            className="w-full law-btn text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 hover:shadow-xl"
+          >
+            Obtener Perfil
+          </button>
+
+          <Link to="/request-report" className="w-full text-center law-btn-secondary py-4 px-8 rounded-xl border transition-all duration-300">
+            Solicitar reporte académico
+          </Link>
+        </div>
 
         {profileData && (
           <div className="mt-8 bg-gray-50 rounded-xl p-6 border border-gray-200">
