@@ -6,6 +6,7 @@ import {
   eliminarNota,
 } from "../services/notas.services.js";
 import { crearEntradaHistorial } from "../services/history.service.js";
+import { crearNotificacion } from "../services/notification.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
 export class NotasController {
@@ -50,6 +51,18 @@ export class NotasController {
             "crear_nota",
             `Usuario ${req.user.email} creó la nota ${nuevaNota.id}`
           );
+          // crear notificación in-app para el estudiante
+          try {
+            await crearNotificacion(
+              nuevaNota.studentId,
+              "nota_creada",
+              "Se registró una nueva nota",
+              `Se ha registrado una nueva nota (${nuevaNota.evaluation}) con puntaje ${nuevaNota.score}`,
+              { gradeId: nuevaNota.id }
+            );
+          } catch (notifErr) {
+            console.error("Error creando notificación:", notifErr.message || notifErr);
+          }
         }
       } catch (logErr) {
         // don't block main flow if logging fails
@@ -83,6 +96,18 @@ export class NotasController {
             "actualizar_nota",
             `Usuario ${req.user.email} actualizó la nota ${notaActualizada.id}`
           );
+          // crear notificación in-app para el estudiante
+          try {
+            await crearNotificacion(
+              notaActualizada.studentId,
+              "nota_actualizada",
+              "Se actualizó una nota",
+              `La nota (${notaActualizada.evaluation}) fue actualizada a ${notaActualizada.score}`,
+              { gradeId: notaActualizada.id }
+            );
+          } catch (notifErr) {
+            console.error("Error creando notificación:", notifErr.message || notifErr);
+          }
         }
       } catch (logErr) {
         console.error("Error creando entrada de historial:", logErr.message || logErr);
