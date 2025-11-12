@@ -16,24 +16,24 @@ export default function RequestReport() {
   }
 
   return (
-    <div className="container" style={{ padding: 20 }}>
-      <h1>Solicitar reporte académico</h1>
-      <p>Esta página te permite solicitar tu informe académico. Pulsa el botón para obtenerlo.</p>
+    <div className="max-w-3xl mx-auto p-6">
+      <h1 className="text-2xl font-bold">Solicitar reporte académico</h1>
+      <p className="text-slate-600 mt-2">Esta página te permite solicitar tu informe académico. Pulsa el botón para obtenerlo.</p>
 
-      <div style={{ marginTop: 12 }}>
-        <button onClick={manejarSolicitud} disabled={cargando} className="btn">
+      <div className="mt-4">
+        <button onClick={manejarSolicitud} disabled={cargando} className="px-4 py-2 rounded-md bg-law-primary text-white font-semibold btn-smooth">
           {cargando ? 'Solicitando...' : 'Solicitar informe'}
         </button>
       </div>
 
       {user && (
-        <p style={{ marginTop: 12, color: '#555' }}>Usuario: {user.email || user.id}</p>
+        <p className="mt-3 text-slate-600">Usuario: {user.email || user.id}</p>
       )}
 
       {resultado && (
-        <div style={{ marginTop: 16 }}>
-          <h3>Resultado</h3>
-          <pre style={{ whiteSpace: 'pre-wrap', background: '#f7f7f7', padding: 12 }}>{JSON.stringify(resultado, null, 2)}</pre>
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2">Resultado</h3>
+          <pre className="whitespace-pre-wrap bg-slate-50 p-4 rounded-md">{JSON.stringify(resultado, null, 2)}</pre>
         </div>
       )}
     </div>
