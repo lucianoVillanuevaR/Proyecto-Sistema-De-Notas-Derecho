@@ -8,3 +8,13 @@ export async function solicitarMiInforme() {
     return { error: error.response?.data || { message: 'Error al solicitar informe' } };
   }
 }
+
+export async function descargarMiInformePdf() {
+  try {
+    const response = await axios.get('/reports/me/report/pdf', { responseType: 'blob' });
+    return response;
+  } catch (error) {
+    // normalize
+    throw error.response?.data || error;
+  }
+}

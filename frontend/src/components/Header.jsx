@@ -37,10 +37,7 @@ export default function Header() {
           </div>
         </div>
 
-        <div className="relative w-full max-w-md">
-          <input placeholder="Buscar por alumno, asignatura o evaluación..." className="w-full border rounded-lg py-2 px-3 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-law-accent/40" />
-          <button className="absolute right-1 top-1/2 -translate-y-1/2 bg-law-primary text-white px-3 py-1.5 rounded-md text-sm">Buscar</button>
-        </div>
+        {/* search removed as requested */}
       </div>
 
       <div className="flex items-center gap-4">

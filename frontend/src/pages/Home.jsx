@@ -1,40 +1,12 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
 
-const Home = () => {
-  const [profileData, setProfileData] = useState(null);
-
-  const handleGetProfile = async () => {
-    console.log('Obtener perfil');
-  };
+export default function Home() {
   return (
-    <div className="min-h-screen law-bg flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 w-full max-w-2xl transition-all">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-8 text-center law-gradient-text">
-          Página de Inicio
-        </h1>
-        
-        <div className="grid gap-4">
-          <button 
-            onClick={handleGetProfile} 
-            className="w-full law-btn text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 hover:shadow-xl"
-          >
-            Obtener Perfil
-          </button>
-
-          <Link to="/request-report" className="w-full text-center law-btn-secondary py-4 px-8 rounded-xl border transition-all duration-300">
-            Solicitar reporte académico
-          </Link>
-        </div>
-
-        {profileData && (
-          <div className="mt-8 bg-gray-50 rounded-xl p-6 border border-gray-200">
-            <pre className="text-sm text-gray-700 overflow-auto">{JSON.stringify(profileData, null, 2)}</pre>
-          </div>
-        )}
+    <div className="min-h-screen page-bg flex items-center justify-center p-6">
+      <div className="bg-white card-elevated p-12 rounded-2xl max-w-3xl w-full text-center">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Bienvenido a la Intranet de la Facultad de Derecho</h1>
+        <p className="mt-3 text-sm text-gray-500">Accede a tu perfil, historial y notificaciones desde la barra lateral.</p>
       </div>
     </div>
   );
-};
-
-export default Home;
+}

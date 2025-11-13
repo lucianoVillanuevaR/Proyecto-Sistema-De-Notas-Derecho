@@ -4,6 +4,7 @@ import Login from './pages/Login.jsx';
 import Home from './pages/Home.jsx';
 import RequestReport from './pages/RequestReport.jsx';
 import Profile from './pages/Profile.jsx';
+import ProfileEdit from './pages/ProfileEdit.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Error404 from './pages/Error404.jsx';
 import Root from './pages/Root.jsx';
@@ -56,6 +57,15 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        )
+      }
+      ,
+      {
+        path: '/profile/edit',
+        element: (
+          <ProtectedRoute>
+            <ProfileEdit />
           </ProtectedRoute>
         )
       }
