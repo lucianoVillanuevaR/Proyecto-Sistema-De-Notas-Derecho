@@ -19,6 +19,8 @@
     @apply antialiased;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     min-height: 100vh;
+    background-color: #f3f4f6;
+    background-image: none;
   }
 }
 
@@ -162,5 +164,60 @@
   .card-elevated {
     box-shadow: 0 8px 30px rgba(2,6,23,0.06);
     border-radius: 12px;
+  }
+
+  /* Decorative black frames / marcos negros */
+  .frame {
+    border: 2px solid rgba(0,0,0,0.85);
+    border-radius: 0.75rem;
+    background-clip: padding-box;
+  }
+
+  .card-elevated {
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .login-card {
+    border: 1px solid rgba(0,0,0,0.12);
+  }
+
+  /* Sidebar styles */
+  .sidebar {
+    background: linear-gradient(180deg, var(--law-primary), #063a78);
+    color: #fff;
+  }
+
+  .sidebar .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 0.75rem;
+    color: rgba(255,255,255,0.95);
+    text-decoration: none;
+    transition: background 160ms ease, transform 120ms ease, color 160ms ease;
+    font-weight: 600;
+    border: 1px solid rgba(0,0,0,0.35);
+  }
+
+  .sidebar .nav-btn:hover {
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-1px);
+  }
+
+  .sidebar .nav-btn.active {
+    background: #ffffff;
+    color: var(--law-primary);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.12);
+    border-color: rgba(0,0,0,0.8);
+  }
+
+  .sidebar .nav-badge {
+    background: #fff;
+    color: var(--law-primary);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.75rem;
   }
 }

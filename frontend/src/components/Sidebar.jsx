@@ -71,7 +71,7 @@ export default function Sidebar() {
   return (
     <>
       <aside
-        className={`fixed left-0 top-0 bottom-0 w-[260px] max-w-[92%] bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white p-5 z-50 flex flex-col box-border shadow-2xl transform transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`sidebar fixed left-0 top-0 bottom-0 w-[260px] max-w-[92%] text-white p-5 z-50 flex flex-col box-border shadow-2xl transform transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
         aria-hidden={!open}
         role="navigation"
       >
@@ -89,21 +89,21 @@ export default function Sidebar() {
         </div>
 
         <nav className="flex flex-col gap-2">
-          <NavLink to="/home" end className={({isActive}) => `block px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'bg-law-accent text-slate-900' : 'text-slate-100 hover:bg-slate-800 hover:text-white'}`}>Inicio</NavLink>
-          <NavLink to="/request-report" className={({isActive}) => `block px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'bg-law-accent text-slate-900' : 'text-slate-100 hover:bg-slate-800 hover:text-white'}`}>Solicitar reporte académico</NavLink>
-          <NavLink to="/reports/me/report" className={({isActive}) => `block px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'bg-law-accent text-slate-900' : 'text-slate-100 hover:bg-slate-800 hover:text-white'}`}>Mi informe (JSON)</NavLink>
-          <NavLink to="/reports/me/history" className={({isActive}) => `block px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'bg-law-accent text-slate-900' : 'text-slate-100 hover:bg-slate-800 hover:text-white'}`}>Historial</NavLink>
+          <NavLink to="/home" end className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Inicio</NavLink>
+          <NavLink to="/request-report" className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Solicitar reporte académico</NavLink>
+          <NavLink to="/reports/me/report" className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Mi informe (JSON)</NavLink>
+          <NavLink to="/reports/me/history" className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Historial</NavLink>
 
           <div className="flex items-center gap-2">
-            <NavLink to="/notifications/me" className={({isActive}) => `flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'bg-teal-300 text-slate-900' : 'text-slate-100 hover:bg-slate-800 hover:text-white'}`}>
+            <NavLink to="/notifications/me" className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>
               Notificaciones
             </NavLink>
             {unread > 0 && (
-              <span className="bg-law-accent text-slate-900 px-2 py-0.5 rounded-full text-xs font-bold badge-pulse">{unread}</span>
+              <span className="nav-badge">{unread}</span>
             )}
           </div>
 
-          <NavLink to="/profile" className={({isActive}) => `block px-3 py-2 rounded-md text-sm font-medium ${isActive ? 'bg-teal-300 text-slate-900' : 'text-slate-100 hover:bg-slate-800 hover:text-white'}`}>Perfil</NavLink>
+          <NavLink to="/profile" className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Perfil</NavLink>
         </nav>
 
         <div className="mt-auto">
