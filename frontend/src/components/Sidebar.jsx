@@ -90,6 +90,9 @@ export default function Sidebar() {
 
         <nav className="flex flex-col gap-2">
           <NavLink to="/home" end className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Inicio</NavLink>
+          {(user?.role === 'profesor' || user?.role === 'admin') && (
+            <NavLink to="/students" className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Buscar informe</NavLink>
+          )}
           <NavLink to="/request-report" className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Solicitar reporte académico</NavLink>
           <NavLink to="/reports/me/report" className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Mi informe (JSON)</NavLink>
           <NavLink to="/reports/me/history" className={({isActive}) => `nav-btn ${isActive ? 'active' : ''}`}>Historial</NavLink>
