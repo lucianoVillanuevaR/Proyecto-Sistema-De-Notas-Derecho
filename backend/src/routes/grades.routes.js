@@ -1,0 +1,11 @@
+import { Router } from "express";
+import { authMiddleware } from "../middleware/auth.middleware.js";
+import { checkRole } from "../middleware/role.middleware.js";
+import { NotasController } from "../controllers/user.controller.js";
+const router = Router();
+const controller = new NotasController();
+router.get("/", authMiddleware, checkRole("profesor", "admin"), controller.getAllNotas.bind(controller));
+router.get("/:id", authMiddleware, controller.getNotaById.bind(controller));
+router.patch("/:id", authMiddleware, checkRole("profesor", "admin"), controller.updateNota.bind(controller));
+router.delete("/:id", authMiddleware, checkRole("profesor", "admin"), controller.deleteNota.bind(controller));
+export default router;

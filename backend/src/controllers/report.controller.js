@@ -1,6 +1,7 @@
 import { obtenerNotasPorEstudiante } from "../services/notas.services.js";
 import { crearEntradaHistorial, obtenerHistorialPorEstudiante } from "../services/history.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
+import PDFDocument from "pdfkit";
 
 export const reportController = {
   // Obtener informe de rendimiento académico para un estudiante
@@ -117,6 +118,141 @@ export const reportController = {
       return await this.getInformeEstudiante(req, res);
     } catch (error) {
       return handleErrorServer(res, 500, "Error al obtener mi informe", error.message);
+    }
+  },
+
+  // Generar PDF del informe (propio)
+  async getMiInformePdf(req, res) {
+    try {
+      req.params.studentId = String(req.user.id);
+      return await this.getInformePdf(req, res);
+    } catch (error) {
+      return handleErrorServer(res, 500, "Error al generar PDF de mi informe", error.message);
+    }
+  },
+
+  // Generar PDF del informe por estudiante (profesor o estudiante)
+  async getInformePdf(req, res) {
+    try {
+      const { studentId } = req.params;
+      const actor = req.user;
+
+      if (!studentId || isNaN(studentId)) {
+        return handleErrorClient(res, 400, "ID de estudiante inválido");
+      }
+
+      const sid = Number(studentId);
+      if (actor.role === "estudiante") {
+        if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede ver su informe");
+      } else if (actor.role === "profesor") {
+        const notasProfesor = await obtenerNotasPorEstudiante(sid);
+        const tieneNotasDelProfesor = notasProfesor.some(n => Number(n.professorId) === Number(actor.id));
+        if (!tieneNotasDelProfesor) return handleErrorClient(res, 403, "Acceso denegado: no eres el profesor responsable de este estudiante");
+      } else {
+        return handleErrorClient(res, 403, "Acceso denegado: role no permitido");
+      }
+
+      const notas = await obtenerNotasPorEstudiante(sid);
+
+      // calcular promedios (mismo algoritmo que getInformeEstudiante)
+      const promediosPorEvaluacion = {};
+      let sumaTotal = 0;
+      let countTotal = 0;
+
+      notas.forEach((n) => {
+        const key = n.evaluation || "sin_evaluacion";
+        const modalidad = n.type || "escrita";
+        if (!promediosPorEvaluacion[key]) promediosPorEvaluacion[key] = { totalSuma: 0, totalCount: 0, modalidades: {} };
+        if (!promediosPorEvaluacion[key].modalidades[modalidad]) promediosPorEvaluacion[key].modalidades[modalidad] = { suma: 0, count: 0 };
+        promediosPorEvaluacion[key].modalidades[modalidad].suma += Number(n.score);
+        promediosPorEvaluacion[key].modalidades[modalidad].count += 1;
+        promediosPorEvaluacion[key].totalSuma += Number(n.score);
+        promediosPorEvaluacion[key].totalCount += 1;
+        sumaTotal += Number(n.score);
+        countTotal += 1;
+      });
+
+      const promedios = {};
+      Object.keys(promediosPorEvaluacion).forEach((k) => {
+        const obj = promediosPorEvaluacion[k];
+        const modalidades = {};
+        Object.keys(obj.modalidades).forEach((m) => {
+          const mm = obj.modalidades[m];
+          modalidades[m] = Number((mm.suma / mm.count).toFixed(2));
+        });
+        const promedioEvaluacion = obj.totalCount ? Number((obj.totalSuma / obj.totalCount).toFixed(2)) : null;
+        promedios[k] = { modalidades, promedio: promedioEvaluacion };
+      });
+
+      const promedioGeneral = countTotal ? Number((sumaTotal / countTotal).toFixed(2)) : null;
+
+      const observaciones = notas
+        .filter(n => n.observation)
+        .map(n => ({ professorId: n.professorId, observation: n.observation, type: n.type || "escrita", created_at: n.created_at }));
+
+      // Registrar consulta en historial (no bloquear si falla)
+      try {
+        await crearEntradaHistorial(sid, actor.id, "descargar_informe_pdf", `Usuario ${actor.email} descargó informe PDF del estudiante ${sid}`);
+      } catch (err) {
+        console.warn("No se pudo crear entrada de historial al generar PDF:", err.message || err);
+      }
+
+      // Generar PDF
+      const doc = new PDFDocument({ margin: 50 });
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="informe-${sid}.pdf"`);
+      doc.pipe(res);
+
+      doc.fontSize(18).text(`Informe académico - Estudiante ${sid}`, { align: "center" });
+      doc.moveDown();
+
+      doc.fontSize(12).text(`Generado por: ${actor.email} (${actor.role})`);
+      doc.text(`Fecha: ${new Date().toLocaleString()}`);
+      doc.moveDown();
+
+      doc.fontSize(14).text("Notas:");
+      doc.moveDown(0.5);
+
+      if (notas.length === 0) {
+        doc.text("No hay notas registradas para este estudiante.");
+      } else {
+        notas.forEach((n, idx) => {
+          doc.fontSize(12).text(`${idx + 1}. Evaluación: ${n.evaluation} | Tipo: ${n.type || 'escrita'} | Puntaje: ${n.score} | Profesor: ${n.professorId}`);
+          if (n.observation) doc.text(`   Observación: ${n.observation}`);
+          doc.text(`   Fecha: ${n.created_at}`);
+          doc.moveDown(0.3);
+        });
+      }
+
+      doc.moveDown();
+      doc.fontSize(14).text("Promedios por evaluación:");
+      doc.moveDown(0.5);
+      Object.keys(promedios).forEach((k) => {
+        const item = promedios[k];
+        doc.fontSize(12).text(`- ${k}: promedio ${item.promedio !== null ? item.promedio : 'N/A'}`);
+        Object.keys(item.modalidades).forEach(m => {
+          doc.text(`   * ${m}: ${item.modalidades[m]}`);
+        });
+      });
+
+      doc.moveDown();
+      doc.fontSize(12).text(`Promedio general: ${promedioGeneral !== null ? promedioGeneral : 'N/A'}`);
+
+      if (observaciones.length > 0) {
+        doc.moveDown();
+        doc.fontSize(14).text("Observaciones:");
+        doc.moveDown(0.5);
+        observaciones.forEach((o, i) => {
+          doc.fontSize(12).text(`${i + 1}. Profesor ${o.professorId} (${o.type}) - ${o.created_at}`);
+          doc.text(`   ${o.observation}`);
+          doc.moveDown(0.3);
+        });
+      }
+
+      doc.end();
+      // no return necesario, el pipe finaliza la respuesta
+    } catch (error) {
+      return handleErrorServer(res, 500, "Error al generar PDF", error.message);
     }
   },
 
