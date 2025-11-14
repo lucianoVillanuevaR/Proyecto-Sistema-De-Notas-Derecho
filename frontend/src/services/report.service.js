@@ -45,3 +45,21 @@ export async function descargarInformeEstudiantePdf(studentId) {
     throw error.response?.data || error;
   }
 }
+
+export async function getMiHistorial() {
+  try {
+    const response = await axios.get('/reports/me/history');
+    return response.data;
+  } catch (error) {
+    return error.response?.data || { message: 'Error al obtener historial' };
+  }
+}
+
+export async function getHistorialEstudiante(studentId) {
+  try {
+    const response = await axios.get(`/reports/student/${studentId}/history`);
+    return response.data;
+  } catch (error) {
+    return error.response?.data || { message: 'Error al obtener historial de estudiante' };
+  }
+}

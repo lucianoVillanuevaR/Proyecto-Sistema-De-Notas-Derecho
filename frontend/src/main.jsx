@@ -7,6 +7,7 @@ import Profile from './pages/Profile.jsx';
 import ProfileEdit from './pages/ProfileEdit.jsx';
 import StudentsList from './pages/StudentsList.jsx';
 import StudentReport from './pages/StudentReport.jsx';
+import History from './pages/History.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Error404 from './pages/Error404.jsx';
 import Root from './pages/Root.jsx';
@@ -77,6 +78,15 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <StudentsList />
+          </ProtectedRoute>
+        )
+      }
+      ,
+      {
+        path: '/reports/me/history',
+        element: (
+          <ProtectedRoute>
+            <History />
           </ProtectedRoute>
         )
       }
