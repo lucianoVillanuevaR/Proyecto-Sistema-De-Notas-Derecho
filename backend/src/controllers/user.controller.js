@@ -82,7 +82,14 @@ export class NotasController {
           await crearEntradaHistorial(notaActualizada.studentId, req.user.id, "actualizar_nota", details);
           // crear notificación in-app para el estudiante con resumen antes/después
           try {
-            const message = `Tu nota (${notaActualizada.evaluation}) fue modificada de ${notaAntes.score} a ${notaActualizada.score}`;
+            const diffs = [];
+            if ((notaAntes.score ?? null) !== (notaActualizada.score ?? null)) diffs.push(`puntaje: ${notaAntes.score} → ${notaActualizada.score}`);
+            if ((notaAntes.evaluation ?? '') !== (notaActualizada.evaluation ?? '')) diffs.push(`evaluación: "${notaAntes.evaluation}" → "${notaActualizada.evaluation}"`);
+            if ((notaAntes.type ?? '') !== (notaActualizada.type ?? '')) diffs.push(`tipo: ${notaAntes.type} → ${notaActualizada.type}`);
+            if ((notaAntes.observation ?? '') !== (notaActualizada.observation ?? '')) diffs.push('observación actualizada');
+
+            const message = diffs.length > 0 ? `Se actualizaron los siguientes campos: ${diffs.join(', ')}` : `Se actualizó una nota (${notaActualizada.evaluation}).`;
+
             await crearNotificacion(
               notaActualizada.studentId,
               "nota_actualizada",
