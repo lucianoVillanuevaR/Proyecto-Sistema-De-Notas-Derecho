@@ -2,10 +2,14 @@ import axios from './root.service.js';
 
 export async function updateGrade(id, changes) {
   try {
+    console.debug('[grades.service] PATCH /grades/', id, changes);
     const res = await axios.patch(`/grades/${id}`, changes);
+    console.debug('[grades.service] response', res);
     return res.data;
   } catch (err) {
-    return err.response?.data || { message: 'Error actualizando la nota' };
+    console.error('[grades.service] error', err.response?.data || err);
+    // rethrow structured server error for caller to present
+    throw err.response?.data || err;
   }
 }
 

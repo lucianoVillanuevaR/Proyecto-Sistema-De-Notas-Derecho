@@ -135,7 +135,10 @@ export default function StudentReport() {
                               }
                             } catch (err) {
                               console.error('Error guardando nota:', err);
-                              alert(err.message || 'Error al guardar');
+                              // err may be a structured server object or an Error
+                              const serverMsg = err?.message || (err?.error || null);
+                              const details = err?.errorDetails ? `\nDetalles: ${err.errorDetails}` : '';
+                              alert((serverMsg || 'Error al guardar') + details);
                             } finally {
                               setSavingId(null);
                             }
