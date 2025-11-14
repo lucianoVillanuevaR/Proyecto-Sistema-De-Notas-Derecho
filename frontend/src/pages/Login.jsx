@@ -20,7 +20,6 @@ const Login = () => {
         setLoading(false);
 
         if (res?.status === 'Success' || res?.data) {
-            // Obtener usuario desde la respuesta (varía según shape)
             const returnedUser = res?.data?.user || res?.data?.data?.user || res?.user;
             if (returnedUser && setUser) setUser(returnedUser);
             navigate('/home');

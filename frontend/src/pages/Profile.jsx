@@ -25,7 +25,6 @@ export default function Profile() {
       setLoading(false);
     }
     fetchProfile();
-    // fetch courses for this profile
     async function fetchCourses() {
       try {
         const r = await getMyCourses();
@@ -33,7 +32,6 @@ export default function Profile() {
         if (!mounted) return;
         if (Array.isArray(list)) setCourses(list);
       } catch (e) {
-        // ignore
       }
     }
     fetchCourses();

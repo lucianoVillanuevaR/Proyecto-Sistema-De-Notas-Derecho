@@ -52,7 +52,6 @@ export default function ProfileEdit() {
         setSaving(false);
         return;
       }
-      // update auth context and sessionStorage if available
       const updated = result?.data ?? result;
       const current = JSON.parse(sessionStorage.getItem('usuario') || 'null');
       const merged = { ...(current || {}), ...(updated || {}) };

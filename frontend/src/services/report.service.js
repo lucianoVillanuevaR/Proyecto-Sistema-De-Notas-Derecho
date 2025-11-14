@@ -18,3 +18,48 @@ export async function descargarMiInformePdf() {
     throw error.response?.data || error;
   }
 }
+
+export async function listStudents(q = '') {
+  try {
+    const response = await axios.get('/reports/students', { params: { q } });
+    return response.data;
+  } catch (error) {
+    return error.response?.data || { message: 'Error al listar estudiantes' };
+  }
+}
+
+export async function getInformeEstudiante(studentId) {
+  try {
+    const response = await axios.get(`/reports/student/${studentId}/report`);
+    return response.data;
+  } catch (error) {
+    return error.response?.data || { message: 'Error al obtener informe' };
+  }
+}
+
+export async function descargarInformeEstudiantePdf(studentId) {
+  try {
+    const response = await axios.get(`/reports/student/${studentId}/report/pdf`, { responseType: 'blob' });
+    return response;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+}
+
+export async function getMiHistorial() {
+  try {
+    const response = await axios.get('/reports/me/history');
+    return response.data;
+  } catch (error) {
+    return error.response?.data || { message: 'Error al obtener historial' };
+  }
+}
+
+export async function getHistorialEstudiante(studentId) {
+  try {
+    const response = await axios.get(`/reports/student/${studentId}/history`);
+    return response.data;
+  } catch (error) {
+    return error.response?.data || { message: 'Error al obtener historial de estudiante' };
+  }
+}
