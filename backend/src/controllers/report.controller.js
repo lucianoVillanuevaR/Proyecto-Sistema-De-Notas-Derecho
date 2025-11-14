@@ -2,6 +2,9 @@ import { obtenerNotasPorEstudiante } from "../services/notas.services.js";
 import { crearEntradaHistorial, obtenerHistorialPorEstudiante } from "../services/history.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 import PDFDocument from "pdfkit";
+import { AppDataSource } from "../config/configDb.js";
+import { User } from "../entities/user.entity.js";
+import { Brackets } from "typeorm";
 
 export const reportController = {
   // Obtener informe de rendimiento académico para un estudiante
@@ -17,10 +20,8 @@ export const reportController = {
       const sid = Number(studentId);
       if (actor.role === "estudiante") {
         if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede ver su informe");
-      } else if (actor.role === "profesor") {
-        const notasProfesor = await obtenerNotasPorEstudiante(sid);
-        const tieneNotasDelProfesor = notasProfesor.some(n => Number(n.professorId) === Number(actor.id));
-        if (!tieneNotasDelProfesor) return handleErrorClient(res, 403, "Acceso denegado: no eres el profesor responsable de este estudiante");
+      } else if (actor.role === "profesor" || actor.role === "admin") {
+        // Permitir a cualquier profesor (o admin) ver el informe del estudiante.
       } else {
         return handleErrorClient(res, 403, "Acceso denegado: role no permitido");
       }
@@ -91,10 +92,8 @@ export const reportController = {
       const sid = Number(studentId);
       if (actor.role === "estudiante") {
         if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede ver su historial");
-      } else if (actor.role === "profesor") {
-        const notasProfesor = await obtenerNotasPorEstudiante(sid);
-        const tieneNotasDelProfesor = notasProfesor.some(n => Number(n.professorId) === Number(actor.id));
-        if (!tieneNotasDelProfesor) return handleErrorClient(res, 403, "Acceso denegado: no eres el profesor responsable de este estudiante");
+      } else if (actor.role === "profesor" || actor.role === "admin") {
+        // Permitir a cualquier profesor (o admin) ver el historial del estudiante.
       } else {
         return handleErrorClient(res, 403, "Acceso denegado: role no permitido");
       }
@@ -144,10 +143,8 @@ export const reportController = {
       const sid = Number(studentId);
       if (actor.role === "estudiante") {
         if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede ver su informe");
-      } else if (actor.role === "profesor") {
-        const notasProfesor = await obtenerNotasPorEstudiante(sid);
-        const tieneNotasDelProfesor = notasProfesor.some(n => Number(n.professorId) === Number(actor.id));
-        if (!tieneNotasDelProfesor) return handleErrorClient(res, 403, "Acceso denegado: no eres el profesor responsable de este estudiante");
+      } else if (actor.role === "profesor" || actor.role === "admin") {
+        // Permitir a cualquier profesor (o admin) ver y descargar el informe del estudiante.
       } else {
         return handleErrorClient(res, 403, "Acceso denegado: role no permitido");
       }
@@ -262,6 +259,47 @@ export const reportController = {
       return await this.getHistorialEstudiante(req, res);
     } catch (error) {
       return handleErrorServer(res, 500, "Error al obtener mi historial", error.message);
+    }
+  },
+
+  // Listar estudiantes (para profesores/admin) con búsqueda por email o nombre (si existe columna 'name')
+  async listStudents(req, res) {
+    try {
+      const actor = req.user;
+      if (!actor || (actor.role !== 'profesor' && actor.role !== 'admin')) {
+        return handleErrorClient(res, 403, 'Acceso denegado: permisos insuficientes');
+      }
+
+      const q = (req.query.q || '').toString().trim();
+      const userRepo = AppDataSource.getRepository(User);
+      const metadata = userRepo.metadata;
+      const hasName = metadata.columns.some(c => c.propertyName === 'name' || c.databaseName === 'name');
+
+      const qb = userRepo.createQueryBuilder('u').where('u.role = :role', { role: 'estudiante' });
+      if (q) {
+        const param = `%${q}%`;
+        qb.andWhere(new Brackets((br) => {
+          br.where('u.email ILIKE :param', { param });
+          if (hasName) br.orWhere('u.name ILIKE :param', { param });
+        }));
+      }
+
+      const students = await qb.select(['u.id', 'u.email', hasName ? 'u.name' : undefined].filter(Boolean)).limit(100).getRawMany();
+
+      // Normalize result: getRawMany returns raw column names like u_id; map to id/email/name
+      const mapped = students.map(r => {
+        const obj = {};
+        // raw keys can be like u_id, u_email, u_name
+        Object.keys(r).forEach(k => {
+          const kk = k.replace(/^u_?/, '').replace(/\./g, '_');
+          obj[kk] = r[k];
+        });
+        return obj;
+      });
+
+      return handleSuccess(res, 200, 'Estudiantes listados', mapped);
+    } catch (error) {
+      return handleErrorServer(res, 500, 'Error al listar estudiantes', error.message);
     }
   }
 };
