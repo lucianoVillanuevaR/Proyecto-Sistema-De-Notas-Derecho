@@ -24,16 +24,12 @@ export default function RequestReport() {
 
   async function downloadPdf() {
     try {
-      // Use axios-based service so request goes to configured API base URL (and not Vite)
       const resp = await descargarMiInformePdf();
-      // axios returns a response; status and headers accessible
       if (!resp || resp.status >= 400) {
         throw new Error(`Error del servidor: ${resp?.status || '??'}`);
       }
       const contentType = resp.headers['content-type'] || '';
       if (!contentType.includes('application/pdf')) {
-        // server returned HTML/JSON instead of PDF
-        // attempt to read text from blob
         try {
           const txt = await resp.data.text();
           throw new Error('Respuesta inesperada del servidor. No es un PDF. ' + txt.substring(0, 200));

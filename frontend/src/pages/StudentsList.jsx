@@ -13,7 +13,6 @@ export default function StudentsList() {
 
   useEffect(() => {
     if (!user || (user.role !== 'profesor' && user.role !== 'admin')) return;
-    // initial load
     fetchList('');
   }, [user]);
 

@@ -17,7 +17,6 @@ export default function StudentReport() {
   useEffect(() => {
     if (!id) return;
     fetchReport();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function fetchReport() {
@@ -131,7 +130,6 @@ export default function StudentReport() {
                                 console.error('Error actualizando nota:', res);
                                 alert(res.message || 'Error actualizando');
                               } else {
-                                // refresh report to reflect server values
                                 await fetchReport();
                                 window.dispatchEvent(new CustomEvent('notifications:updated'));
                               }
