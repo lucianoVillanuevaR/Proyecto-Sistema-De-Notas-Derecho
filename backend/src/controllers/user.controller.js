@@ -44,7 +44,20 @@ export class NotasController {
     }
   }
 
-  
+  async createNota(req, res) {
+    try {
+      const data = req.body;
+      
+      if (!data || Object.keys(data).length === 0) {
+        return handleErrorClient(res, 400, "Datos de la nota son requeridos");
+      }
+      
+  const nuevaNota = await crearNota(data);
+      handleSuccess(res, 201, "Nota creada exitosamente", nuevaNota);
+    } catch (error) {
+      handleErrorServer(res, 500, "Error al crear la nota", error.message);
+    }
+  }
 
   async updateNota(req, res) {
     try {
@@ -117,41 +130,8 @@ export class NotasController {
       if (!id || isNaN(id)) {
         return handleErrorClient(res, 400, "ID de nota inválido");
       }
-  const notaParaEliminar = await obtenerNotaPorId(id);
-  const actor = req.user;
-  if (!actor || (actor.role !== "profesor" && actor.role !== "admin")) {
-    return handleErrorClient(res, 403, "Acceso denegado: permisos insuficientes para eliminar notas");
-  }
-  // permisos: solo profesores o admins pueden eliminar (no se requiere ser el profesor responsable)
-  if (actor.role === "profesor" || actor.role === "admin") {
-    // ok
-  }
+      
   await eliminarNota(id);
-      try {
-        if (req.user) {
-          const details = JSON.stringify({
-            actor: { id: req.user.id, email: req.user.email },
-            action: 'eliminar_nota',
-            before: notaParaEliminar,
-            after: null,
-          });
-          await crearEntradaHistorial(notaParaEliminar.studentId, req.user.id, "eliminar_nota", details);
-          // notificar al estudiante que su nota fue eliminada
-          try {
-            await crearNotificacion(
-              notaParaEliminar.studentId,
-              "nota_eliminada",
-              "Se eliminó una nota",
-              `Se eliminó la nota (${notaParaEliminar.evaluation}) con puntaje ${notaParaEliminar.score}`,
-              { gradeId: notaParaEliminar.id, before: notaParaEliminar, url: `/reports/student/${notaParaEliminar.studentId}/report` }
-            );
-          } catch (notifErr) {
-            console.error("Error creando notificación:", notifErr.message || notifErr);
-          }
-        }
-      } catch (logErr) {
-        console.error("Error creando entrada de historial:", logErr.message || logErr);
-      }
       handleSuccess(res, 200, "Nota eliminada exitosamente", { id });
     } catch (error) {
       handleErrorClient(res, 404, error.message);
