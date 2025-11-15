@@ -123,31 +123,6 @@ export class NotasController {
   if (actor.role === "profesor" || actor.role === "admin") {
   }
   await eliminarNota(id);
-      try {
-        if (req.user) {
-          const details = JSON.stringify({
-            actor: { id: req.user.id, email: req.user.email },
-            action: 'eliminar_nota',
-            before: notaParaEliminar,
-            after: null,
-          });
-          await crearEntradaHistorial(notaParaEliminar.studentId, req.user.id, "eliminar_nota", details);
-          // notificar al estudiante que su nota fue eliminada
-          try {
-            await crearNotificacion(
-              notaParaEliminar.studentId,
-              "nota_eliminada",
-              "Se eliminó una nota",
-              `Se eliminó la nota (${notaParaEliminar.evaluation}) con puntaje ${notaParaEliminar.score}`,
-              { gradeId: notaParaEliminar.id, before: notaParaEliminar, url: `/reports/student/${notaParaEliminar.studentId}/report` }
-            );
-          } catch (notifErr) {
-            console.error("Error creando notificación:", notifErr.message || notifErr);
-          }
-        }
-      } catch (logErr) {
-        console.error("Error creando entrada de historial:", logErr.message || logErr);
-      }
       handleSuccess(res, 200, "Nota eliminada exitosamente", { id });
     } catch (error) {
       handleErrorClient(res, 404, error.message);
