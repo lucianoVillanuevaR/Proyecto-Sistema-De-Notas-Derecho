@@ -8,7 +8,6 @@ export async function updateGrade(id, changes) {
     return res.data;
   } catch (err) {
     console.error('[grades.service] error', err.response?.data || err);
-    // rethrow structured server error for caller to present
     throw err.response?.data || err;
   }
 }

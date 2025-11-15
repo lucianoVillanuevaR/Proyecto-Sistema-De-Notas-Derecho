@@ -78,9 +78,8 @@ export class NotasController {
   if (!actor || (actor.role !== "profesor" && actor.role !== "admin")) {
     return handleErrorClient(res, 403, "Acceso denegado: permisos insuficientes para actualizar notas");
   }
-  // permisos: solo profesores o admins pueden actualizar (no se requiere ser el profesor responsable)
+  // permisos: solo profesores o admins pueden actualizar 
   if (actor.role === "profesor" || actor.role === "admin") {
-    // ok
   }
 
   const notaActualizada = await actualizarNota(id, changes);
