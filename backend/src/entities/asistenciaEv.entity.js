@@ -22,11 +22,6 @@ export const asistenciaEvEntity = new EntitySchema({
             nullable: false,
             default: false,
         },
-        asistenciaAt: {
-            type: "timestamp",
-            nullable: true,
-            default: null,
-        },
         nota: {
             type: "int",
             nullable: true,
