@@ -44,6 +44,15 @@ export const createvalidation = joi.object({
       "number.min": "La ponderacion no puede ser menor a 0",
       "number.max": "La ponderacion no puede ser mayor a 100"
     })
+  ,
+  tipoEv: joi.string()
+    .valid('oral', 'escrita')
+    .required()
+    .messages({
+      'any.only': "El tipo de evaluación debe ser 'oral' o 'escrita'",
+      'string.base': 'El tipo de evaluación debe ser un texto',
+      'string.empty': 'El tipo de evaluación es obligatorio',
+    })
 });
 export const updatevalidation = joi.object({
   nombreEv: joi.string()
@@ -87,6 +96,13 @@ export const updatevalidation = joi.object({
       "number.base": "La ponderacion debe ser un número",
       "number.min": "La ponderacion no puede ser menor a 0",
       "number.max": "La ponderacion no puede ser mayor a 100"
+    }),
+  tipoEv: joi.string()
+    .valid('oral', 'escrita')
+    .optional()
+    .messages({
+      'any.only': "El tipo de evaluación debe ser 'oral' o 'escrita'",
+      'string.base': 'El tipo de evaluación debe ser un texto',
     }),
 }).unknown(false).messages({
     "object.unknown": "No se permiten campos adicionales"
