@@ -24,14 +24,7 @@ app.use(express.json({
   },
 }));
 app.use(morgan("dev"));
-app.use((err, req, res, next) => {
-  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-    console.error('JSON parse error on request:', req.method, req.originalUrl);
-    console.error('Raw body:', req.rawBody);
-    return res.status(400).json({ message: 'Invalid JSON payload' });
-  }
-  next();
-});
+
 app.get("/", (_req, res) => {
   res.send("¡Bienvenido a mi API REST con TypeORM!");
 });
