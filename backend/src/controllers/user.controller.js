@@ -44,8 +44,6 @@ export class NotasController {
     }
   }
 
-  
-
   async updateNota(req, res) {
     try {
       const { id } = req.params;
@@ -65,9 +63,8 @@ export class NotasController {
   if (!actor || (actor.role !== "profesor" && actor.role !== "admin")) {
     return handleErrorClient(res, 403, "Acceso denegado: permisos insuficientes para actualizar notas");
   }
-  // permisos: solo profesores o admins pueden actualizar (no se requiere ser el profesor responsable)
+  // permisos: solo profesores o admins pueden actualizar 
   if (actor.role === "profesor" || actor.role === "admin") {
-    // ok
   }
 
   const notaActualizada = await actualizarNota(id, changes);
@@ -80,7 +77,7 @@ export class NotasController {
             after: notaActualizada,
           });
           await crearEntradaHistorial(notaActualizada.studentId, req.user.id, "actualizar_nota", details);
-          // crear notificación in-app para el estudiante con resumen antes/después
+          // crear notificación 
           try {
             const diffs = [];
             if ((notaAntes.score ?? null) !== (notaActualizada.score ?? null)) diffs.push(`puntaje: ${notaAntes.score} → ${notaActualizada.score}`);
@@ -122,9 +119,8 @@ export class NotasController {
   if (!actor || (actor.role !== "profesor" && actor.role !== "admin")) {
     return handleErrorClient(res, 403, "Acceso denegado: permisos insuficientes para eliminar notas");
   }
-  // permisos: solo profesores o admins pueden eliminar (no se requiere ser el profesor responsable)
+  // permisos: solo profesores o admins pueden eliminar 
   if (actor.role === "profesor" || actor.role === "admin") {
-    // ok
   }
   await eliminarNota(id);
       try {

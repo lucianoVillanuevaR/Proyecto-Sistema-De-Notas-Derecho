@@ -36,7 +36,6 @@ export default function Sidebar() {
       const u = Array.isArray(list) ? list.filter(n => !n.read).length : 0;
       setUnread(u);
     } catch (e) {
-      // ignore
     }
   }, []);
 
