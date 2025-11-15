@@ -6,12 +6,15 @@ import { marcarAsistencia,
         asignarNota,
         getNotasPorEstudiante,
         editarNota,
-        eliminarNota } from "../controllers/asistenciaEv.controller.js";
+        eliminarNota,
+        getTodasNotas } from "../controllers/asistenciaEv.controller.js";
 
 const router = Router();
 
 
 router.post("/marcarAsistencia", authMiddleware, marcarAsistencia);
+
+router.get("/", authMiddleware, checkRole("profesor", "admin"), getTodasNotas);
 
 router.get("/student/:studentId", authMiddleware, getNotasPorEstudiante);
 

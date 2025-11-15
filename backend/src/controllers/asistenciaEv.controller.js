@@ -159,3 +159,20 @@ export async function eliminarNota(req, res) {
 		return res.status(500).json({ message: "Error al eliminar nota", error: error.message });
 	}
 }
+
+export async function getTodasNotas(req, res) {
+	try {
+		const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+
+		const actor = req.user;
+		if (!actor || (actor.role !== "profesor" && actor.role !== "admin")) {
+			return res.status(403).json({ message: "Acceso denegado: permisos insuficientes" });
+		}
+
+		const notas = await asistenciaRepository.find();
+		return res.status(200).json({ message: "Todas las notas obtenidas exitosamente", data: notas });
+	} catch (error) {
+		console.error("Error al obtener todas las notas:", error);
+		return res.status(500).json({ message: "Error al obtener todas las notas", error: error.message });
+	}
+}
