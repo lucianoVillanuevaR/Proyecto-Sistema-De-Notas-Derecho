@@ -1,16 +1,20 @@
 import {
   obtenerNotas,
   obtenerNotaPorId,
-  crearNota,
   actualizarNota,
   eliminarNota,
 } from "../services/notas.services.js";
 import { crearEntradaHistorial } from "../services/history.service.js";
+import { crearNotificacion } from "../services/notification.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
 export class NotasController {
   async getAllNotas(req, res) {
     try {
+      const actor = req.user;
+      if (!actor || (actor.role !== "profesor" && actor.role !== "admin")) {
+        return handleErrorClient(res, 403, "Acceso denegado: permisos insuficientes");
+      }
       const notas = await obtenerNotas();
       handleSuccess(res, 200, "Notas obtenidas exitosamente", notas);
     } catch (error) {
@@ -27,6 +31,13 @@ export class NotasController {
       }
       
   const nota = await obtenerNotaPorId(id);
+      const actor = req.user;
+      if (!actor) return handleErrorClient(res, 401, "Usuario no autenticado");
+      if (actor.role === "estudiante") {
+        if (Number(actor.id) !== Number(nota.studentId)) return handleErrorClient(res, 403, "Acceso denegado: no puedes ver esta nota");
+      } else if (actor.role === "profesor") {
+        if (Number(actor.id) !== Number(nota.professorId)) return handleErrorClient(res, 403, "Acceso denegado: no eres el profesor responsable de esta nota");
+      }
       handleSuccess(res, 200, "Nota obtenida exitosamente", nota);
     } catch (error) {
       handleErrorClient(res, 404, error.message);
@@ -61,6 +72,17 @@ export class NotasController {
         return handleErrorClient(res, 400, "Datos para actualizar son requeridos");
       }
       
+  // verificar permisos: solo profesor responsable o admin puede actualizar
+  const notaAntes = await obtenerNotaPorId(id);
+  const actor = req.user;
+  if (!actor || (actor.role !== "profesor" && actor.role !== "admin")) {
+    return handleErrorClient(res, 403, "Acceso denegado: permisos insuficientes para actualizar notas");
+  }
+  // permisos: solo profesores o admins pueden actualizar (no se requiere ser el profesor responsable)
+  if (actor.role === "profesor" || actor.role === "admin") {
+    // ok
+  }
+
   const notaActualizada = await actualizarNota(id, changes);
       handleSuccess(res, 200, "Nota actualizada exitosamente", notaActualizada);
     } catch (error) {

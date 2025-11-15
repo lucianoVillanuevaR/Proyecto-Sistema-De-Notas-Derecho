@@ -19,6 +19,8 @@
     @apply antialiased;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     min-height: 100vh;
+    background-color: #f3f4f6;
+    background-image: none;
   }
 }
 
@@ -98,7 +100,6 @@
     min-height: 44px;
   }
 
-  /* Typography tweaks to make text look cleaner */
   .login-card,
   .login-card label,
   .login-card input,
@@ -116,18 +117,107 @@
     font-weight: 600;
   }
 
-  /* Reduce vertical spacing between form rows */
   .login-card .mb-2 {
     margin-bottom: 0.65rem;
   }
-
-  /* Slightly larger icons inside fields */
   .input-icon svg { width: 20px; height: 20px; }
-
-  /* Make the forgot link align slightly lower and visually lighter */
   .forgot-link { font-weight: 600; }
 
   .forgot-link {
     color: var(--law-primary);
+  }
+
+  /* Animaciones y utilidades visuales adicionales */
+  .animate-fade-up {
+    animation: fadeUp 360ms cubic-bezier(.2,.9,.2,1) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .badge-pulse {
+    position: relative;
+  }
+  .badge-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 999px;
+    background: radial-gradient(circle at center, rgba(239,68,68,0.16), transparent 40%);
+    filter: blur(6px);
+    opacity: 0.9;
+    animation: badgePulse 1400ms infinite ease-out;
+  }
+
+  @keyframes badgePulse {
+    0% { transform: scale(0.8); opacity: 0.9 }
+    50% { transform: scale(1.08); opacity: 0.6 }
+    100% { transform: scale(0.95); opacity: 0.9 }
+  }
+
+  .btn-smooth {
+    transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  }
+
+  .card-elevated {
+    box-shadow: 0 8px 30px rgba(2,6,23,0.06);
+    border-radius: 12px;
+  }
+
+  /* Decorative black frames / marcos negros */
+  .frame {
+    border: 2px solid rgba(0,0,0,0.85);
+    border-radius: 0.75rem;
+    background-clip: padding-box;
+  }
+
+  .card-elevated {
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .login-card {
+    border: 1px solid rgba(0,0,0,0.12);
+  }
+
+  /* Sidebar styles */
+  .sidebar {
+    background: linear-gradient(180deg, var(--law-primary), #063a78);
+    color: #fff;
+  }
+
+  .sidebar .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 0.75rem;
+    color: rgba(255,255,255,0.95);
+    text-decoration: none;
+    transition: background 160ms ease, transform 120ms ease, color 160ms ease;
+    font-weight: 600;
+    border: 1px solid rgba(0,0,0,0.35);
+  }
+
+  .sidebar .nav-btn:hover {
+    background: rgba(255,255,255,0.06);
+    transform: translateY(-1px);
+  }
+
+  .sidebar .nav-btn.active {
+    background: #ffffff;
+    color: var(--law-primary);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.12);
+    border-color: rgba(0,0,0,0.8);
+  }
+
+  .sidebar .nav-badge {
+    background: #fff;
+    color: var(--law-primary);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.75rem;
   }
 }

@@ -20,7 +20,6 @@ export async function connectDB() {
   try {
     await AppDataSource.initialize();
     console.log("=> Conexión exitosa a la base de datos PostgreSQL!");
-    // Sembrar usuarios por defecto: un estudiante y un profesor
     try {
       const repo = AppDataSource.getRepository(User);
 
@@ -35,10 +34,9 @@ export async function connectDB() {
           console.log(`Usuario ya existe: ${email}`);
         }
       }
-
-      // Contraseñas iniciales (cámbialas en producción)
       await ensureUser("estudiante@ejemplo.com", "Estudiante123", "estudiante");
       await ensureUser("profesor@ejemplo.com", "Profesor123", "profesor");
+  await ensureUser("admin@ejemplo.com", "Admin123!", "admin");
     } catch (seedError) {
       console.warn("No fue posible sembrar usuarios por defecto:", seedError.message || seedError);
     }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/auth.service';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -9,6 +10,7 @@ const Login = () => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const { setUser } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,6 +20,8 @@ const Login = () => {
         setLoading(false);
 
         if (res?.status === 'Success' || res?.data) {
+            const returnedUser = res?.data?.user || res?.data?.data?.user || res?.user;
+            if (returnedUser && setUser) setUser(returnedUser);
             navigate('/home');
             return;
         }
