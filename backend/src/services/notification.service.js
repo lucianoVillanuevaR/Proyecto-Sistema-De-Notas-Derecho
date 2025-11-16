@@ -4,15 +4,26 @@ import { Notification } from "../entities/notification.entity.js";
 const repo = () => AppDataSource.getRepository(Notification);
 
 export async function crearNotificacion(userId, tipo, titulo, mensaje, data = null) {
-  const notificacion = repo().create({
-    userId: Number(userId),
-    type: tipo,
-    title: titulo,
-    message: mensaje,
-    data: data ? JSON.stringify(data) : null,
-    read: false,
-  });
-  return await repo().save(notificacion);
+  try {
+    const notificacion = repo().create({
+      userId: Number(userId),
+      type: tipo,
+      title: titulo,
+      message: mensaje,
+      data: data ? JSON.stringify(data) : null,
+      read: false,
+    });
+    const saved = await repo().save(notificacion);
+    try {
+      console.log(`Notificación creada: id=${saved.id} userId=${saved.userId} type=${saved.type}`);
+    } catch (e) {
+      // ignore logging errors
+    }
+    return saved;
+  } catch (error) {
+    console.error("Error creando notificación en DB:", error.message || error);
+    throw error;
+  }
 }
 
 export async function obtenerNotificacionesPorUsuario(userId) {
