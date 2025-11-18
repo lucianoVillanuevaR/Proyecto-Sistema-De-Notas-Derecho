@@ -1,46 +1,124 @@
 import { AppDataSource } from "../config/configDb.js";
-import { Grade } from "../entities/grade.entity.js";
+import Asistencia from "../entities/asistenciaEv.entity.js";
+import Evaluacion from "../entities/evaluacion.entity.js";
 
-const repo = () => AppDataSource.getRepository(Grade);
+const repo = () => AppDataSource.getRepository(Asistencia);
+
+function mapRawRow(r) {
+  const evaluation = r.evaluation !== null && r.evaluation !== undefined ? r.evaluation : (r.evaluacionId ? `Evaluación #${r.evaluacionId}` : null);
+  return {
+    id: r.id,
+    studentId: r.studentId,
+    professorId: r.professorId,
+    evaluation,
+    type: r.type || "escrita",
+    score: r.score !== null && r.score !== undefined ? Number(r.score) : null,
+    observation: r.observation || null,
+    created_at: r.created_at,
+  };
+}
 
 export async function obtenerNotas() {
-  return await repo().find();
+  const qb = repo().createQueryBuilder("a");
+  qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
+  qb.select([
+    "a.id AS id",
+    "a.estudianteId AS \"studentId\"",
+    "a.calificadoPor AS \"professorId\"",
+    "e.nombreEv AS evaluation",
+    "e.tipoEv AS type",
+    "a.nota AS score",
+    "a.comentarios AS observation",
+    "a.evaluacionId AS evaluacionId",
+    "a.createdAt AS created_at",
+  ]);
+  qb.orderBy("a.createdAt", "DESC");
+
+  const rows = await qb.getRawMany();
+  return rows.map(mapRawRow);
 }
 
 export async function obtenerNotaPorId(id) {
-  const nota = await repo().findOne({ where: { id: Number(id) } });
-  if (!nota) throw new Error("Nota no encontrada");
-  return nota;
+  const qb = repo().createQueryBuilder("a");
+  qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
+  qb.select([
+    "a.id AS id",
+    "a.estudianteId AS \"studentId\"",
+    "a.calificadoPor AS \"professorId\"",
+    "e.nombreEv AS evaluation",
+    "e.tipoEv AS type",
+    "a.nota AS score",
+    "a.comentarios AS observation",
+    "a.evaluacionId AS evaluacionId",
+    "a.createdAt AS created_at",
+  ]);
+  qb.where("a.id = :id", { id: Number(id) });
+  qb.limit(1);
+
+  const r = await qb.getRawOne();
+  if (!r) throw new Error("Nota no encontrada");
+  return mapRawRow(r);
 }
 
 export async function obtenerNotasPorEstudiante(studentId) {
-  return await repo().find({ where: { studentId: Number(studentId) } });
+  const qb = repo().createQueryBuilder("a");
+  qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
+  qb.select([
+    "a.id AS id",
+    "a.estudianteId AS \"studentId\"",
+    "a.calificadoPor AS \"professorId\"",
+    "e.nombreEv AS evaluation",
+    "e.tipoEv AS type",
+    "a.nota AS score",
+    "a.comentarios AS observation",
+    "a.evaluacionId AS evaluacionId",
+    "a.createdAt AS created_at",
+  ]);
+  qb.where("a.estudianteId = :studentId", { studentId: Number(studentId) });
+  qb.orderBy("a.createdAt", "DESC");
+
+  const rows = await qb.getRawMany();
+  return rows.map(mapRawRow);
 }
 
 export async function crearNota(data) {
-  const nueva = repo().create({
-    studentId: Number(data.studentId),
-    professorId: Number(data.professorId),
-    evaluation: data.evaluation,
-    score: Number(data.score),
-    observation: data.observation || null,
-    //'escrita' o 'oral'
-    type: data.type || "escrita",
+  // Crea una entrada en asistencias_evaluaciones como una entrega con nota opcional
+  const repository = repo();
+  const nueva = repository.create({
+    estudianteId: Number(data.studentId),
+    evaluacionId: data.evaluacionId ? Number(data.evaluacionId) : null,
+    asistio: data.asistio !== undefined ? Boolean(data.asistio) : true,
+    nota: data.score !== undefined ? Number(data.score) : null,
+    calificadoPor: data.professorId ? Number(data.professorId) : null,
+    comentarios: data.observation || null,
+    estado: data.score !== undefined ? "calificado" : "pendiente",
   });
-  return await repo().save(nueva);
+  const saved = await repository.save(nueva);
+  return await obtenerNotaPorId(saved.id);
 }
 
 export async function actualizarNota(id, changes) {
-  const nota = await obtenerNotaPorId(id);
-  if (changes.evaluation) nota.evaluation = changes.evaluation;
-  if (changes.score !== undefined) nota.score = Number(changes.score);
-  if (changes.observation !== undefined) nota.observation = changes.observation;
-  if (changes.type !== undefined) nota.type = changes.type;
-  return await repo().save(nota);
+  const repository = repo();
+  const registro = await repository.findOne({ where: { id: Number(id) } });
+  if (!registro) throw new Error("Nota no encontrada");
+
+  if (changes.evaluation) {
+    // cambiar el nombre de la evaluación no se realiza aquí (se requeriría actualizar la tabla evaluaciones)
+  }
+  if (changes.score !== undefined) registro.nota = Number(changes.score);
+  if (changes.observation !== undefined) registro.comentarios = changes.observation;
+  if (changes.type !== undefined) {
+    // type se toma desde la evaluación asociada; no se modifica aquí
+  }
+
+  await repository.save(registro);
+  return await obtenerNotaPorId(registro.id);
 }
 
 export async function eliminarNota(id) {
-  const nota = await obtenerNotaPorId(id);
-  await repo().remove(nota);
+  const repository = repo();
+  const registro = await repository.findOne({ where: { id: Number(id) } });
+  if (!registro) throw new Error("Nota no encontrada");
+  await repository.remove(registro);
   return { id: Number(id) };
 }
