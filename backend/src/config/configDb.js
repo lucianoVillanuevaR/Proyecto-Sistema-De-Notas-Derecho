@@ -34,9 +34,7 @@ export async function connectDB() {
           console.log(`Usuario ya existe: ${email}`);
         }
       }
-      await ensureUser("estudiante@ejemplo.com", "Estudiante123", "estudiante");
-      await ensureUser("profesor@ejemplo.com", "Profesor123", "profesor");
-  await ensureUser("admin@ejemplo.com", "Admin123!", "admin");
+        // Se omitió la creación automática de usuarios por defecto en semillas
     } catch (seedError) {
       console.warn("No fue posible sembrar usuarios por defecto:", seedError.message || seedError);
     }
