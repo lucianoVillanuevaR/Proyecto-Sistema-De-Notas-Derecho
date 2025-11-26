@@ -20,15 +20,17 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     min-height: 100vh;
     background-color: #f3f4f6;
-    background-image: none;
+    /* Decorative subtle grid background that covers the whole viewport */
+    background-image: linear-gradient(#e6e6e6 1px, transparent 1px), linear-gradient(90deg, #e6e6e6 1px, transparent 1px);
+    background-size: 40px 40px, 40px 40px;
+    background-position: 0 0, 0 0;
   }
 }
 
 @layer utilities {
   .page-bg {
-    background-color: #efefef;
-    background-image: linear-gradient(#e6e6e6 1px, transparent 1px), linear-gradient(90deg, #e6e6e6 1px, transparent 1px);
-    background-size: 40px 40px, 40px 40px;
+    /* Keep a subtle base color for content areas; grid lives on body to cover full viewport */
+    background-color: transparent;
   }
 }
 
@@ -177,6 +179,14 @@
     border: 1px solid rgba(0,0,0,0.08);
   }
 
+  /* Main content card styling */
+  .main-card {
+    border-radius: 14px;
+    border: 1px solid rgba(2,6,23,0.06);
+    box-shadow: 0 10px 40px rgba(2,6,23,0.06);
+    padding: 1.5rem;
+  }
+
   .login-card {
     border: 1px solid rgba(0,0,0,0.12);
   }
@@ -185,6 +195,20 @@
   .sidebar {
     background: linear-gradient(180deg, var(--law-primary), #063a78);
     color: #fff;
+  }
+
+  /* Left navigation improved borders and spacing */
+  .left-nav {
+    border-right: 1px solid rgba(2,6,23,0.06);
+    box-shadow: 2px 0 10px rgba(2,6,23,0.03);
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+  }
+
+  /* mobile slide-over left nav should have a subtle outline */
+  .left-nav {
+    --nav-radius: 12px;
+    border-radius: 0 12px 12px 0;
+    overflow: hidden;
   }
 
   .sidebar .nav-btn {

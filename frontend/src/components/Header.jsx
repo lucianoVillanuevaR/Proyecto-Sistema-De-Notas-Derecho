@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { getMyNotifications } from '../services/notification.service.js';
 import { useNavigate } from 'react-router-dom';
 
-export default function Header() {
+export default function Header({ onMenuToggle }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [unread, setUnread] = useState(0);
@@ -27,8 +27,15 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="w-full bg-white border-b border-slate-100 px-6 py-3 flex items-center justify-between sticky top-0 z-30">
+    <header className="w-full bg-white border-b border-slate-100 px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-30">
       <div className="flex items-center gap-4">
+        {/* mobile menu button */}
+        <button onClick={onMenuToggle} className="md:hidden p-2 rounded hover:bg-slate-100 mr-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
         <div className="hidden md:flex items-center gap-3">
           <img src="/src/assets/logo.svg" alt="logo" className="w-10 h-10" />
           <div>
@@ -36,8 +43,6 @@ export default function Header() {
             <div className="text-xs text-slate-500">Sistema de Gestión Académica</div>
           </div>
         </div>
-
-        {/* search removed as requested */}
       </div>
 
       <div className="flex items-center gap-4">
