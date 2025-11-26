@@ -166,6 +166,7 @@
   .card-elevated {
     box-shadow: 0 8px 30px rgba(2,6,23,0.06);
     border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
   }
 
   /* Decorative black frames / marcos negros */
@@ -173,10 +174,6 @@
     border: 2px solid rgba(0,0,0,0.85);
     border-radius: 0.75rem;
     background-clip: padding-box;
-  }
-
-  .card-elevated {
-    border: 1px solid rgba(0,0,0,0.08);
   }
 
   /* Main content card styling */
@@ -187,9 +184,6 @@
     padding: 1.5rem;
   }
 
-  .login-card {
-    border: 1px solid rgba(0,0,0,0.12);
-  }
 
   /* Sidebar styles */
   .sidebar {
@@ -197,19 +191,7 @@
     color: #fff;
   }
 
-  /* Left navigation improved borders and spacing */
-  .left-nav {
-    border-right: 1px solid rgba(2,6,23,0.06);
-    box-shadow: 2px 0 10px rgba(2,6,23,0.03);
-    background: linear-gradient(180deg, #ffffff, #fbfdff);
-  }
-
-  /* mobile slide-over left nav should have a subtle outline */
-  .left-nav {
-    --nav-radius: 12px;
-    border-radius: 0 12px 12px 0;
-    overflow: hidden;
-  }
+  /* Left navigation base rules are declared below (compact rail implementation). */
 
   .sidebar .nav-btn {
     display: flex;
@@ -243,5 +225,169 @@
     border-radius: 999px;
     font-weight: 700;
     font-size: 0.75rem;
+  }
+
+  /* --- Formal institutional sidebar (compact rail -> expand) --- */
+  /* Collapsed rail defaults to 60px, expands to 260px on hover or when .keep-width present */
+  .left-nav {
+    width: 60px !important;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: linear-gradient(180deg,#ffffff,#fbfdff);
+    padding-top: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+    z-index: 40;
+    transition: width 220ms ease, box-shadow 220ms ease;
+  }
+
+  .left-nav:hover,
+  .left-nav.keep-width {
+    width: 260px !important;
+  }
+
+  .left-nav .nav-list { list-style: none; padding: 0; margin: 0; }
+
+  .left-nav .nav-item {
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    padding: 12px 14px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .left-nav .nav-icon { width: 38px; display:inline-flex; align-items:center; justify-content:center; color:var(--law-primary); }
+  .left-nav .nav-label { font-size: 14px; color: #1f2937; font-weight:600; }
+
+  /* Hide labels when collapsed */
+  .left-nav:not(:hover) .nav-label { display: none; }
+  .left-nav:hover .nav-label, .left-nav.keep-width .nav-label { display: inline-block; }
+
+  /* Notification badge */
+  .left-nav .notif {
+    position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; border-radius:999px; text-align:center; line-height:30px; color:#fff; background:#343436; transition:all 0.18s ease;
+  }
+  .left-nav .notif.red { background:#e74c3c; box-shadow:0 0 10px #e74c3c; }
+  .left-nav .notif.yellow { background:#f1c40f; box-shadow:0 0 10px #f1c40f; }
+  .left-nav .notif.green { background:#27ae60; box-shadow:0 0 10px #27ae60; }
+
+  /* compact dot when collapsed */
+  .left-nav:not(:hover) .notif { width:10px; height:10px; color:transparent; right:8px; }
+
+  /* adjust main page spacing when rail present */
+  .left-nav:hover ~ .page-main, .left-nav.keep-width ~ .page-main { margin-left: 260px; }
+
+  /* small animation util */
+  @keyframes blinker { from {opacity:1;} to {opacity:0;} }
+  .blink { -webkit-animation: blinker 0.6s infinite alternate; animation: blinker 0.6s infinite alternate; }
+
+  /* --- Global page layout & components --- */
+  .page-main {
+    margin-left: 60px;
+    padding: 1.5rem 1rem 3rem 1rem;
+    min-height: calc(100vh - 72px);
+    transition: margin-left 220ms ease;
+    background-color: transparent;
+  }
+
+  /* Content container used commonly across pages */
+  .container-lg {
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .content-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .content-header .title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--law-primary);
+  }
+
+  .content-header .subtitle {
+    font-size: 0.95rem;
+    color: #475569;
+  }
+
+  /* Generic card (smaller than main-card) */
+  .card {
+    background: #fff;
+    border: 1px solid rgba(2,6,23,0.06);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 8px 24px rgba(2,6,23,0.04);
+  }
+
+  .card.sm { padding: 0.6rem; border-radius: 10px; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 1rem;
+  }
+
+  @media (min-width: 1024px) {
+    .card-grid.cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn-primary { background: var(--law-primary); color: #fff; }
+  .btn-outline { background: transparent; border-color: rgba(2,6,23,0.06); color: #0f172a; }
+  .btn-ghost { background: transparent; color: #0f172a; }
+
+  /* Forms */
+  .form-group { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.75rem; }
+  .form-group label { font-weight:600; color:#0f172a; font-size:0.95rem; }
+  .form-group input, .form-group select, .form-group textarea {
+    padding:0.55rem 0.75rem; border-radius:8px; border:1px solid #e6e6e6; background:#fff; outline:none; font-size:0.95rem;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:var(--law-primary); box-shadow:0 6px 20px rgba(11,61,145,0.06); }
+
+  /* Tables */
+  .table-responsive { overflow-x:auto; border-radius:8px; }
+  table.table { width:100%; border-collapse:collapse; min-width:600px; }
+  table.table thead th { text-align:left; padding:0.6rem 0.75rem; font-weight:700; color:#0f172a; background:rgba(2,6,23,0.02); }
+  table.table tbody td { padding:0.65rem 0.75rem; border-top:1px solid rgba(2,6,23,0.04); }
+  table.table tbody tr:hover { background: rgba(11,61,145,0.03); }
+
+  /* Small helpers */
+  .muted { color:#6b7280; }
+  .small { font-size:0.85rem; }
+
+  /* Alerts */
+  .alert { padding:0.75rem 1rem; border-radius:8px; border:1px solid rgba(0,0,0,0.06); }
+  .alert.info { background:#eef2ff; border-color: rgba(11,61,145,0.08); color:var(--law-primary); }
+  .alert.warn { background:#fffbeb; border-color: rgba(245,158,11,0.08); color:#92400e; }
+
+  /* Print styles */
+  @media print {
+    body { background: #fff; }
+    .left-nav, header, .btn, .notif { display: none !important; }
+    .page-main { margin-left: 0 !important; padding: 0.5rem !important; }
+    .card, .main-card { box-shadow: none !important; border: 1px solid #e6e6e6; }
   }
 }
