@@ -3,7 +3,8 @@ import Asistencia from "../entities/asistenciaEv.entity.js";
 import Evaluacion from "../entities/evaluacion.entity.js";
 import { Grade } from "../entities/grade.entity.js";
 
-const repo = () => AppDataSource.getRepository(Asistencia);
+const asistenciaRepo = () => AppDataSource.getRepository(Asistencia);
+const gradeRepo = () => AppDataSource.getRepository(Grade);
 
 function mapRawRow(r) {
   const evaluation = r.evaluation !== null && r.evaluation !== undefined ? r.evaluation : (r.evaluacionId ? `Evaluación #${r.evaluacionId}` : null);
@@ -49,7 +50,7 @@ export async function obtenerNotas() {
   gqb.orderBy('g.created_at', 'DESC');
   const gradeRows = await gqb.getRawMany();
 
-  const qb = repo().createQueryBuilder("a");
+  const qb = asistenciaRepo().createQueryBuilder("a");
   qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
   qb.select([
     "a.id AS id",
@@ -77,7 +78,15 @@ export async function obtenerNotas() {
 }
 
 export async function obtenerNotaPorId(id) {
-  const qb = repo().createQueryBuilder("a");
+  // Primero intentar en la tabla 'grades'
+  const gRepo = gradeRepo();
+  const g = await gRepo.findOne({ where: { id: Number(id) } });
+  if (g) {
+    return mapGradeRow(g);
+  }
+
+  // Luego intentar en 'asistencias_evaluaciones'
+  const qb = asistenciaRepo().createQueryBuilder("a");
   qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
   qb.select([
     "a.id AS id",
@@ -116,7 +125,7 @@ export async function obtenerNotasPorEstudiante(studentId) {
   gqb.orderBy('g.created_at', 'DESC');
   const gradeRows = await gqb.getRawMany();
 
-  const qb = repo().createQueryBuilder("a");
+  const qb = asistenciaRepo().createQueryBuilder("a");
   qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
   qb.select([
     "a.id AS id",
@@ -149,7 +158,7 @@ export async function obtenerNotasPorEstudiante(studentId) {
 
 export async function crearNota(data) {
   // Crea una entrada en asistencias_evaluaciones como una entrega con nota opcional
-  const repository = repo();
+  const repository = asistenciaRepo();
   const nueva = repository.create({
     estudianteId: Number(data.studentId),
     evaluacionId: data.evaluacionId ? Number(data.evaluacionId) : null,
@@ -164,27 +173,48 @@ export async function crearNota(data) {
 }
 
 export async function actualizarNota(id, changes) {
-  const repository = repo();
-  const registro = await repository.findOne({ where: { id: Number(id) } });
-  if (!registro) throw new Error("Nota no encontrada");
-
-  if (changes.evaluation) {
-    // cambiar el nombre de la evaluación no se realiza aquí (se requeriría actualizar la tabla evaluaciones)
+  // Intentar actualizar en 'asistencias_evaluaciones' primero
+  const aRepo = asistenciaRepo();
+  const registroA = await aRepo.findOne({ where: { id: Number(id) } });
+  if (registroA) {
+    if (changes.evaluation) {
+      // no se actualiza el nombre de la evaluación aquí
+    }
+    if (changes.score !== undefined) registroA.nota = Number(changes.score);
+    if (changes.observation !== undefined) registroA.comentarios = changes.observation;
+    await aRepo.save(registroA);
+    return await obtenerNotaPorId(registroA.id);
   }
-  if (changes.score !== undefined) registro.nota = Number(changes.score);
-  if (changes.observation !== undefined) registro.comentarios = changes.observation;
-  if (changes.type !== undefined) {
-    // type se toma desde la evaluación asociada; no se modifica aquí
+
+  // Si no existe en asistencias, intentar en 'grades'
+  const gRepo = gradeRepo();
+  const registroG = await gRepo.findOne({ where: { id: Number(id) } });
+  if (registroG) {
+    if (changes.evaluation !== undefined) registroG.evaluation = changes.evaluation;
+    if (changes.score !== undefined) registroG.score = Number(changes.score);
+    if (changes.observation !== undefined) registroG.observation = changes.observation;
+    if (changes.type !== undefined) registroG.type = changes.type;
+    await gRepo.save(registroG);
+    return await obtenerNotaPorId(registroG.id);
   }
 
-  await repository.save(registro);
-  return await obtenerNotaPorId(registro.id);
+  throw new Error("Nota no encontrada");
 }
 
 export async function eliminarNota(id) {
-  const repository = repo();
-  const registro = await repository.findOne({ where: { id: Number(id) } });
-  if (!registro) throw new Error("Nota no encontrada");
-  await repository.remove(registro);
-  return { id: Number(id) };
+  const aRepo = asistenciaRepo();
+  const registroA = await aRepo.findOne({ where: { id: Number(id) } });
+  if (registroA) {
+    await aRepo.remove(registroA);
+    return { id: Number(id) };
+  }
+
+  const gRepo = gradeRepo();
+  const registroG = await gRepo.findOne({ where: { id: Number(id) } });
+  if (registroG) {
+    await gRepo.remove(registroG);
+    return { id: Number(id) };
+  }
+
+  throw new Error("Nota no encontrada");
 }

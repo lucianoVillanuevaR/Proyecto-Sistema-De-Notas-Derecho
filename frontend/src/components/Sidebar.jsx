@@ -52,6 +52,8 @@ export default function Sidebar() {
     return () => { mounted = false; clearInterval(t); window.removeEventListener('notifications:updated', onUpdated); };
   }, [fetchCount]);
 
+  // Nota: eliminada detección dinámica; el fallback se muestra siempre para garantizar visibilidad.
+
   function toggle() {
     const next = !open;
     setOpen(next);
@@ -110,7 +112,7 @@ export default function Sidebar() {
         </nav>
 
         <div className="mt-auto">
-          <button onClick={logout} className="mt-4 w-full py-2 bg-red-600 text-white rounded-lg font-semibold">Cerrar sesión</button>
+          <button onClick={logout} className="mt-4 w-full py-2 bg-red-600 text-white rounded-lg font-semibold">Salir</button>
         </div>
       </aside>
 

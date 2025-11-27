@@ -1,8 +1,21 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import cookies from 'js-cookie';
 
 export default function LeftNav({ mobileOpen, onClose }) {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
+
+  function logout() {
+    try {
+      cookies.remove('jwt-auth', { path: '/' });
+    } catch (e) {
+      // ignore
+    }
+    try { sessionStorage.removeItem('usuario'); } catch (e) {}
+    try { setUser(null); } catch (e) {}
+    navigate('/auth');
+  }
 
   if (!user) return null;
   const role = String(user.role || '').toLowerCase();
@@ -109,6 +122,10 @@ export default function LeftNav({ mobileOpen, onClose }) {
             <div className="text-xs text-slate-500">Usuario</div>
             <div className="text-sm font-medium text-slate-800">{user.email || `Usuario ${user.id || ''}`}</div>
           </div>
+
+          <div className="mt-auto px-2 w-full">
+            <button onClick={logout} className="w-full py-2 bg-red-600 text-white rounded-md font-semibold">Salir</button>
+          </div>
         </div>
       </aside>
 
@@ -142,12 +159,17 @@ export default function LeftNav({ mobileOpen, onClose }) {
             <NavLink onClick={onClose} to="/profile" className={({isActive}) => `px-3 py-2 rounded-md hover:bg-slate-50 ${isActive ? 'bg-slate-100 font-semibold' : ''}`}>
               Perfil
             </NavLink>
+            <div className="px-3 py-2">
+              <button onClick={() => { onClose && onClose(); logout(); }} className="w-full py-2 bg-red-600 text-white rounded-md font-semibold">Salir</button>
+            </div>
           </nav>
         </div>
       </div>
 
       {/* overlay when mobile nav open */}
       {mobileOpen && <div onClick={onClose} className="fixed inset-0 bg-black/40 z-40 md:hidden" />}
+      {/* Fixed fallback logout button (inline styles) to ensure visibility even if CSS/utilities fail */}
+      {/* fixed fallback removed; logout is inside the sidebar */}
     </>
   );
 }
