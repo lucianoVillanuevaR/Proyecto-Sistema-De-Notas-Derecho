@@ -25,7 +25,7 @@ export default function LeftNav({ mobileOpen, onClose }) {
   return (
     <>
       {/* Desktop static nav */}
-      <aside className="left-nav hidden md:block fixed left-0 top-0 bottom-0 bg-white z-40">
+      <aside className="left-nav-rail hidden md:block fixed left-0 top-0 bottom-0 z-40">
         <div className="h-full flex flex-col py-4 px-2">
           <div className="mb-6 px-2">
             <div className="flex items-center gap-3">
@@ -131,7 +131,7 @@ export default function LeftNav({ mobileOpen, onClose }) {
       </aside>
 
       {/* Mobile slide-over nav */}
-      <div className={`left-nav ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} fixed left-0 top-0 bottom-0 w-[260px] bg-white border-r border-slate-200 z-50 transform transition-transform duration-200 md:hidden`}> 
+      <div className={`left-nav-mobile ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} fixed left-0 top-0 bottom-0 w-[260px] bg-white border-r border-slate-200 z-50 transform transition-transform duration-300 ease-in-out md:hidden will-change-transform`}> 
         <div className="h-full flex flex-col p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -168,7 +168,7 @@ export default function LeftNav({ mobileOpen, onClose }) {
       </div>
 
       {/* overlay when mobile nav open */}
-      {mobileOpen && <div onClick={onClose} className="fixed inset-0 bg-black/40 z-40 md:hidden" />}
+      {/* overlay removed to avoid covering main content; mobile close button is present inside the slide-over */}
       {/* Fixed fallback logout button (inline styles) to ensure visibility even if CSS/utilities fail */}
       {/* fixed fallback removed; logout is inside the sidebar */}
     </>
