@@ -14,6 +14,7 @@ import Root from './pages/Root.jsx';
 import './styles/styles.css';
 import React from 'react';
 const Notifications = React.lazy(() => import('./pages/Notifications.jsx'));
+const GradesManager = React.lazy(() => import('./pages/GradesManager.jsx'));
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,17 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <StudentsList />
+          </ProtectedRoute>
+        )
+      }
+      ,
+      {
+        path: '/grades/manage',
+        element: (
+          <ProtectedRoute>
+            <React.Suspense fallback={<div>Cargando...</div>}>
+              {React.createElement(GradesManager)}
+            </React.Suspense>
           </ProtectedRoute>
         )
       }

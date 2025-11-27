@@ -33,6 +33,22 @@ function mapGradeRow(r) {
 }
 
 export async function obtenerNotas() {
+  // Obtener notas desde la tabla 'grades' y también desde 'asistencias_evaluaciones'
+  const gradeRepo = AppDataSource.getRepository(Grade);
+  const gqb = gradeRepo.createQueryBuilder('g');
+  gqb.select([
+    'g.id AS id',
+    'g.studentId AS "studentId"',
+    'g.professorId AS "professorId"',
+    'g.evaluation AS evaluation',
+    'g.type AS type',
+    'g.score AS score',
+    'g.observation AS observation',
+    'g.created_at AS created_at',
+  ]);
+  gqb.orderBy('g.created_at', 'DESC');
+  const gradeRows = await gqb.getRawMany();
+
   const qb = repo().createQueryBuilder("a");
   qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
   qb.select([
@@ -47,9 +63,17 @@ export async function obtenerNotas() {
     "a.createdAt AS created_at",
   ]);
   qb.orderBy("a.createdAt", "DESC");
+  const asistenciaRows = await qb.getRawMany();
 
-  const rows = await qb.getRawMany();
-  return rows.map(mapRawRow);
+  const mappedGrades = gradeRows.map(mapGradeRow);
+  const mappedAsist = asistenciaRows.map(mapRawRow);
+  // Combinar y ordenar por fecha (desc)
+  const combined = [...mappedGrades, ...mappedAsist].sort((a, b) => {
+    const ta = new Date(a.created_at).getTime() || 0;
+    const tb = new Date(b.created_at).getTime() || 0;
+    return tb - ta;
+  });
+  return combined;
 }
 
 export async function obtenerNotaPorId(id) {

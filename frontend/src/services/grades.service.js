@@ -20,3 +20,13 @@ export async function createGrade(data) {
     return err.response?.data || { message: 'Error creando la nota' };
   }
 }
+
+export async function getAllGrades() {
+  try {
+    const res = await axios.get('/grades');
+    return res.data;
+  } catch (err) {
+    console.error('[grades.service] getAllGrades error', err.response?.data || err);
+    throw err.response?.data || err;
+  }
+}

@@ -7,12 +7,16 @@ import { useAuth } from '../context/AuthContext.jsx';
 export default function StudentReport() {
   const { id } = useParams();
   const { user } = useAuth();
+  const role = String(user?.role || '').toLowerCase();
+  const isProfOrAdmin = role.includes('prof') || role.includes('admin');
+  const isOwner = String(user?.id) === String(id);
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [editableNotas, setEditableNotas] = useState([]);
   const [savingId, setSavingId] = useState(null);
+  const [history, setHistory] = useState([]);
 
   useEffect(() => {
     if (!id) return;
@@ -27,6 +31,14 @@ export default function StudentReport() {
       const payload = res?.data ?? res;
       if (payload?.data) setReport(payload.data);
       else setReport(payload);
+      // fetch history as well (if available)
+      try {
+        const h = await (await import('../services/report.service.js')).getHistorialEstudiante(id);
+        setHistory(h?.data ?? h ?? []);
+      } catch (e) {
+        // ignore history errors for now
+        console.debug('No se pudo obtener historial:', e);
+      }
     } catch (e) {
       setError(e.message || 'Error al obtener informe');
     } finally {
@@ -55,7 +67,8 @@ export default function StudentReport() {
   }
 
   if (!user) return <div className="p-6">Necesitas iniciar sesión.</div>;
-  if (user.role !== 'profesor' && user.role !== 'admin') return <div className="p-6">Acceso denegado.</div>;
+  const isAllowed = isProfOrAdmin || isOwner;
+  if (!isAllowed) return <div className="p-6">Acceso denegado.</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -63,14 +76,16 @@ export default function StudentReport() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Informe del estudiante {id}</h1>
           <div className="flex items-center gap-2">
-            <button onClick={() => {
-              const next = !editMode;
-              setEditMode(next);
-              if (next && report?.notas) {
-                // create editable copy
-                setEditableNotas(report.notas.map(n => ({ ...n })));
-              }
-            }} className="px-3 py-2 bg-yellow-500 text-white rounded">{editMode ? 'Salir edición' : 'Editar notas'}</button>
+            {isProfOrAdmin && (
+              <button onClick={() => {
+                const next = !editMode;
+                setEditMode(next);
+                if (next && report?.notas) {
+                  // create editable copy
+                  setEditableNotas(report.notas.map(n => ({ ...n })));
+                }
+              }} className="px-3 py-2 bg-yellow-500 text-white rounded">{editMode ? 'Salir edición' : 'Editar notas'}</button>
+            )}
             <button onClick={downloadPdf} className="px-4 py-2 bg-law-primary text-white rounded">Descargar PDF</button>
           </div>
         </div>
@@ -132,6 +147,12 @@ export default function StudentReport() {
                               } else {
                                 await fetchReport();
                                 window.dispatchEvent(new CustomEvent('notifications:updated'));
+                                try {
+                                  const h = await (await import('../services/report.service.js')).getHistorialEstudiante(id);
+                                  setHistory(h?.data ?? h ?? []);
+                                } catch (e) {
+                                  console.debug('No se pudo actualizar historial:', e);
+                                }
                               }
                             } catch (err) {
                               console.error('Error guardando nota:', err);
@@ -151,6 +172,22 @@ export default function StudentReport() {
               </ul>
             </div>
           </div>
+        )}
+      </div>
+      <div className="mt-6 bg-slate-50 p-4 rounded">
+        <h4 className="font-semibold">Historial</h4>
+        {Array.isArray(history) && history.length > 0 ? (
+          <ul className="mt-2 text-sm">
+            {history.map((h, i) => (
+              <li key={i} className="border-b py-2">
+                <div className="text-xs text-slate-600">{new Date(h.created_at || h.date || h.timestamp || h.fechahora || '').toLocaleString() || '—'}</div>
+                <div>{h.action || h.message || JSON.stringify(h)}</div>
+                <div className="text-xs text-slate-500">Por: {h.userEmail || h.user || h.actor || '—'}</div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="text-sm text-slate-600">No hay historial disponible.</div>
         )}
       </div>
     </div>
