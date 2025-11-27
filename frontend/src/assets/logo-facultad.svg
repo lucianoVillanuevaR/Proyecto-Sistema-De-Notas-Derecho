@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Logo Facultad de Derecho - Balanza">
+  <defs>
+    <linearGradient id="scalesGrad" x1="0" x2="1">
+      <stop offset="0" stop-color="#0b3d91"/>
+      <stop offset="1" stop-color="#063a78"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="12" fill="url(#scalesGrad)" />
+  <g transform="translate(14,14)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+    <!-- central pillar -->
+    <line x1="46" y1="8" x2="46" y2="68" stroke-width="3" />
+    <rect x="36" y="68" width="20" height="6" rx="2" fill="#fff" fill-opacity="0.12" stroke="none" />
+
+    <!-- beam -->
+    <line x1="10" y1="28" x2="82" y2="28" stroke-width="3" />
+    <circle cx="46" cy="28" r="3" fill="#fff" />
+
+    <!-- left chain and pan -->
+    <line x1="24" y1="28" x2="24" y2="44" stroke-width="2" />
+    <line x1="20" y1="44" x2="28" y2="44" stroke-width="2" />
+    <path d="M16 48 q12 10 24 0" fill="#fff" fill-opacity="0.95" stroke="#063a78" stroke-width="0.6" />
+
+    <!-- right chain and pan -->
+    <line x1="68" y1="28" x2="68" y2="44" stroke-width="2" />
+    <line x1="64" y1="44" x2="72" y2="44" stroke-width="2" />
+    <path d="M60 48 q12 10 24 0" fill="#fff" fill-opacity="0.95" stroke="#063a78" stroke-width="0.6" />
+
+    <!-- minor decorative lines -->
+    <line x1="10" y1="28" x2="14" y2="26" stroke-width="1" opacity="0.6" />
+    <line x1="82" y1="28" x2="78" y2="26" stroke-width="1" opacity="0.6" />
+  </g>
+  <text x="60" y="108" font-family="Inter, sans-serif" font-size="9" fill="#fff" text-anchor="middle">Facultad de Derecho</text>
+</svg>

@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import cookies from 'js-cookie';
+import logo from '../assets/logo-facultad.svg';
 
 export default function LeftNav({ mobileOpen, onClose }) {
   const { user, setUser } = useAuth();
@@ -28,7 +29,7 @@ export default function LeftNav({ mobileOpen, onClose }) {
         <div className="h-full flex flex-col py-4 px-2">
           <div className="mb-6 px-2">
             <div className="flex items-center gap-3">
-              <img src="/src/assets/logo.svg" alt="logo" className="w-10 h-10" />
+              <img src={logo} alt="Logo Facultad de Derecho" className="w-10 h-10" />
               <div className="hidden lg:block">
                 <div className="text-lg font-semibold text-slate-800">Facultad de Derecho</div>
                 <div className="text-xs text-slate-500">Sistema de Gestión Académica</div>
@@ -134,7 +135,7 @@ export default function LeftNav({ mobileOpen, onClose }) {
         <div className="h-full flex flex-col p-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <img src="/src/assets/logo.svg" alt="logo" className="w-9 h-9" />
+              <img src={logo} alt="Logo Facultad de Derecho" className="w-9 h-9" />
               <div className="text-sm font-semibold">Facultad de Derecho</div>
             </div>
             <button onClick={onClose} className="p-2 rounded hover:bg-slate-100">

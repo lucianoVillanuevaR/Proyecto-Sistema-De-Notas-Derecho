@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getMyNotifications } from '../services/notification.service.js';
 import { useNavigate } from 'react-router-dom';
 import NotificationPopover from './NotificationPopover.jsx';
+import logo from '../assets/logo-facultad.svg';
 
 export default function Header({ onMenuToggle }) {
   const { user } = useAuth();
@@ -40,7 +41,7 @@ export default function Header({ onMenuToggle }) {
         </button>
 
         <div className="hidden md:flex items-center gap-3">
-          <img src="/src/assets/logo.svg" alt="logo" width="40" height="40" className="w-10 h-10" />
+          <img src={logo} alt="Logo Facultad de Derecho" width="40" height="40" className="w-10 h-10" />
           <div>
             <div className="text-lg font-bold text-law-primary">Intranet Facultad de Derecho</div>
             <div className="text-xs text-slate-500">Sistema de Gestión Académica</div>
