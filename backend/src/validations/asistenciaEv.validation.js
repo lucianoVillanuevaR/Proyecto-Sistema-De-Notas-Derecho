@@ -28,15 +28,15 @@ export const createvalidation = joi.object({
       "boolean.base": "El campo 'asistio' debe ser verdadero o falso",
     }),
   nota: joi.number()
-    .integer()
-    .min(0)
-    .max(100)
+    .min(1.0)
+    .max(7.0)
+    .precision(1)
     .optional()
     .messages({
       "number.base": "La nota debe ser un número",
-      "number.integer": "La nota debe ser un número entero",
-      "number.min": "La nota no puede ser menor a 0",
-      "number.max": "La nota no puede ser mayor a 100",
+      "number.min": "La nota mínima permitida es 1.0",
+      "number.max": "La nota máxima permitida es 7.0",
+      "number.precision": "La nota debe tener máximo 1 decimal",
     }),
   calificadoPor: joi.number()
     .integer()
@@ -89,15 +89,15 @@ export const updatevalidation = joi.object({
       "boolean.base": "El campo 'asistio' debe ser verdadero o falso",
     }),
   nota: joi.number()
-    .integer()
-    .min(0)
-    .max(100)
+    .min(1.0)
+    .max(7.0)
+    .precision(1)
     .optional()
     .messages({
       "number.base": "La nota debe ser un número",
-      "number.integer": "La nota debe ser un número entero",
-      "number.min": "La nota no puede ser menor a 0",
-      "number.max": "La nota no puede ser mayor a 100",
+      "number.min": "La nota mínima permitida es 1.0",
+      "number.max": "La nota máxima permitida es 7.0",
+      "number.precision": "La nota debe tener máximo 1 decimal",
     }),
   calificadoPor: joi.number()
     .integer()

@@ -34,7 +34,7 @@ export default function Profile() {
           const filtered = list.filter((c) => {
             if (!c) return false;
             if (typeof c === 'string') {
-              // filter out strings that look like emails
+              // Filtrar cadenas que parecen correos electrónicos
               return !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(c);
             }
             if (typeof c === 'object') {

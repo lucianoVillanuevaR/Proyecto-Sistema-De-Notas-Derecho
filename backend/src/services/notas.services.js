@@ -34,7 +34,6 @@ function mapGradeRow(r) {
 }
 
 export async function obtenerNotas() {
-  // Obtener notas desde la tabla 'grades' y también desde 'asistencias_evaluaciones'
   const gradeRepo = AppDataSource.getRepository(Grade);
   const gqb = gradeRepo.createQueryBuilder('g');
   gqb.select([
@@ -68,7 +67,7 @@ export async function obtenerNotas() {
 
   const mappedGrades = gradeRows.map(mapGradeRow);
   const mappedAsist = asistenciaRows.map(mapRawRow);
-  // Combinar y ordenar por fecha (desc)
+  
   const combined = [...mappedGrades, ...mappedAsist].sort((a, b) => {
     const ta = new Date(a.created_at).getTime() || 0;
     const tb = new Date(b.created_at).getTime() || 0;
@@ -78,7 +77,6 @@ export async function obtenerNotas() {
 }
 
 export async function obtenerNotaPorId(id) {
-  // Primero intentar en la tabla 'grades'
   const gRepo = gradeRepo();
   const g = await gRepo.findOne({ where: { id: Number(id) } });
   if (g) {
@@ -108,7 +106,6 @@ export async function obtenerNotaPorId(id) {
 }
 
 export async function obtenerNotasPorEstudiante(studentId) {
-  // Obtener notas desde la tabla 'grades' y también desde 'asistencias_evaluaciones'
   const gradeRepo = AppDataSource.getRepository(Grade);
   const gqb = gradeRepo.createQueryBuilder('g');
   gqb.select([
@@ -146,7 +143,6 @@ export async function obtenerNotasPorEstudiante(studentId) {
   const mappedGrades = gradeRows.map(mapGradeRow);
   const mappedAsist = asistenciaRows.map(mapRawRow);
 
-  // Combinar y ordenar por fecha (desc)
   const combined = [...mappedGrades, ...mappedAsist].sort((a, b) => {
     const ta = new Date(a.created_at).getTime() || 0;
     const tb = new Date(b.created_at).getTime() || 0;
@@ -157,7 +153,6 @@ export async function obtenerNotasPorEstudiante(studentId) {
 }
 
 export async function crearNota(data) {
-  // Crea una entrada en asistencias_evaluaciones como una entrega con nota opcional
   const repository = asistenciaRepo();
   const nueva = repository.create({
     estudianteId: Number(data.studentId),
@@ -178,7 +173,7 @@ export async function actualizarNota(id, changes) {
   const registroA = await aRepo.findOne({ where: { id: Number(id) } });
   if (registroA) {
     if (changes.evaluation) {
-      // no se actualiza el nombre de la evaluación aquí
+      
     }
     if (changes.score !== undefined) registroA.nota = Number(changes.score);
     if (changes.observation !== undefined) registroA.comentarios = changes.observation;
@@ -186,7 +181,6 @@ export async function actualizarNota(id, changes) {
     return await obtenerNotaPorId(registroA.id);
   }
 
-  // Si no existe en asistencias, intentar en 'grades'
   const gRepo = gradeRepo();
   const registroG = await gRepo.findOne({ where: { id: Number(id) } });
   if (registroG) {

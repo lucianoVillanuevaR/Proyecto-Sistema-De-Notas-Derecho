@@ -11,7 +11,7 @@ export default function LeftNav({ mobileOpen, onClose }) {
     try {
       cookies.remove('jwt-auth', { path: '/' });
     } catch (e) {
-      // ignore
+      
     }
     try { sessionStorage.removeItem('usuario'); } catch (e) {}
     try { setUser(null); } catch (e) {}
@@ -26,13 +26,13 @@ export default function LeftNav({ mobileOpen, onClose }) {
     <>
       {/* Desktop static nav */}
       <aside className="left-nav-rail hidden md:block fixed left-0 top-0 bottom-0 z-40">
-        <div className="h-full flex flex-col py-4 px-2">
-          <div className="mb-6 px-2">
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="Logo Facultad de Derecho" className="w-10 h-10" />
-              <div className="hidden lg:block">
-                <div className="text-lg font-semibold text-slate-800">Facultad de Derecho</div>
-                <div className="text-xs text-slate-500">Sistema de Gestión Académica</div>
+        <div className="h-full flex flex-col py-4 px-3">
+          <div className="mb-8 px-3">
+            <div className="flex flex-col items-center">
+              <img src={logo} alt="Logo Facultad de Derecho" className="w-16 h-16 mb-3 rounded-lg shadow-lg" />
+              <div className="text-center">
+                <div className="text-lg font-bold tracking-wide">Facultad de Derecho</div>
+                <div className="text-xs mt-1 opacity-90">Intranet Académica</div>
               </div>
             </div>
           </div>
@@ -40,92 +40,64 @@ export default function LeftNav({ mobileOpen, onClose }) {
           <nav className="flex-1 px-1">
             <ul className="space-y-1">
               <li>
-                <NavLink to="/home" end className={({isActive}) => `flex items-center w-full gap-3 rounded-md px-3 py-2 hover:bg-slate-50 ${isActive ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700'}`}>
-                  <span className="w-10 h-10 flex items-center justify-center text-law-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V9.5z" /></svg>
-                  </span>
-                  <span className="hidden lg:inline-block text-sm font-semibold">Inicio</span>
+                <NavLink to="/home" end className={({isActive}) => `block w-full px-4 py-3 mx-2 my-1 text-sm font-semibold tracking-wide transition-all duration-200 rounded-lg border ${isActive ? 'bg-white bg-opacity-25 border-white border-opacity-40 shadow-lg transform scale-105' : 'border-transparent hover:bg-white hover:bg-opacity-15 hover:border-white hover:border-opacity-20 hover:shadow-md'}`}>
+                  Inicio
                 </NavLink>
               </li>
 
               {isProfOrAdmin && (
                 <li>
-                  <NavLink to="/students" className={({isActive}) => `flex items-center w-full gap-3 rounded-md px-3 py-2 hover:bg-slate-50 ${isActive ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700'}`}>
-                    <span className="w-10 h-10 flex items-center justify-center text-law-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="6"></circle><path d="M21 21l-4.35-4.35" /></svg>
-                    </span>
-                    <span className="hidden lg:inline-block text-sm font-semibold">Buscar informe</span>
+                  <NavLink to="/students" className={({isActive}) => `block w-full px-4 py-3 mx-2 my-1 text-sm font-semibold tracking-wide transition-all duration-200 rounded-lg border ${isActive ? 'bg-white bg-opacity-25 border-white border-opacity-40 shadow-lg transform scale-105' : 'border-transparent hover:bg-white hover:bg-opacity-15 hover:border-white hover:border-opacity-20 hover:shadow-md'}`}>
+                    Buscar informe
                   </NavLink>
                 </li>
               )}
 
               <li>
-                <NavLink to="/request-report" className={({isActive}) => `flex items-center w-full gap-3 rounded-md px-3 py-2 hover:bg-slate-50 ${isActive ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700'}`}>
-                  <span className="w-10 h-10 flex items-center justify-center text-law-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 5 17 10" /><line x1="12" y1="5" x2="12" y2="19" /></svg>
-                  </span>
-                  <span className="hidden lg:inline-block text-sm font-semibold">Solicitar reporte</span>
+                <NavLink to="/request-report" className={({isActive}) => `block w-full px-4 py-3 mx-2 my-1 text-sm font-semibold tracking-wide transition-all duration-200 rounded-lg border ${isActive ? 'bg-white bg-opacity-25 border-white border-opacity-40 shadow-lg transform scale-105' : 'border-transparent hover:bg-white hover:bg-opacity-15 hover:border-white hover:border-opacity-20 hover:shadow-md'}`}>
+                  Solicitar reporte
                 </NavLink>
               </li>
 
               {isProfOrAdmin && (
                 <li>
-                  <NavLink to="/reports/me/history" className={({isActive}) => `flex items-center w-full gap-3 rounded-md px-3 py-2 hover:bg-slate-50 ${isActive ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700'}`}>
-                    <span className="w-10 h-10 flex items-center justify-center text-law-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 10 6 7 10 11 14 6 21 13" /></svg>
-                    </span>
-                    <span className="hidden lg:inline-block text-sm font-semibold">Historial</span>
+                  <NavLink to="/reports/me/history" className={({isActive}) => `block w-full px-4 py-3 mx-2 my-1 text-sm font-semibold tracking-wide transition-all duration-200 rounded-lg border ${isActive ? 'bg-white bg-opacity-25 border-white border-opacity-40 shadow-lg transform scale-105' : 'border-transparent hover:bg-white hover:bg-opacity-15 hover:border-white hover:border-opacity-20 hover:shadow-md'}`}>
+                    Historial
                   </NavLink>
                 </li>
               )}
 
               <li>
-                <NavLink to="/notifications/me" className={({isActive}) => `relative flex items-center w-full gap-3 rounded-md px-3 py-2 hover:bg-slate-50 ${isActive ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700'}`}>
-                  <span className="w-10 h-10 flex items-center justify-center text-law-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
-                  </span>
-                  <span className="hidden lg:inline-block text-sm font-semibold">Notificaciones</span>
-                  <span className="absolute top-3 right-3 w-6 h-6 rounded-full bg-law-accent text-slate-900 text-xs font-bold flex items-center justify-center">{/*badge*/}</span>
+                <NavLink to="/notifications/me" className={({isActive}) => `block w-full px-4 py-3 mx-2 my-1 text-sm font-semibold tracking-wide transition-all duration-200 rounded-lg border ${isActive ? 'bg-white bg-opacity-25 border-white border-opacity-40 shadow-lg transform scale-105' : 'border-transparent hover:bg-white hover:bg-opacity-15 hover:border-white hover:border-opacity-20 hover:shadow-md'}`}>
+                  Notificaciones
                 </NavLink>
               </li>
 
               <li>
-                <NavLink to="/profile" className={({isActive}) => `flex items-center w-full gap-3 rounded-md px-3 py-2 hover:bg-slate-50 ${isActive ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700'}`}>
-                  <span className="w-10 h-10 flex items-center justify-center text-law-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-3-3.87" /><path d="M4 21v-2a4 4 0 0 1 3-3.87" /><circle cx="12" cy="7" r="4" /></svg>
-                  </span>
-                  <span className="hidden lg:inline-block text-sm font-semibold">Perfil</span>
+                <NavLink to="/profile" className={({isActive}) => `block w-full px-4 py-3 mx-2 my-1 text-sm font-semibold tracking-wide transition-all duration-200 rounded-lg border ${isActive ? 'bg-white bg-opacity-25 border-white border-opacity-40 shadow-lg transform scale-105' : 'border-transparent hover:bg-white hover:bg-opacity-15 hover:border-white hover:border-opacity-20 hover:shadow-md'}`}>
+                  Perfil
                 </NavLink>
               </li>
 
               <li>
-                <NavLink to="/profile/edit" className={({isActive}) => `flex items-center w-full gap-3 rounded-md px-3 py-2 hover:bg-slate-50 ${isActive ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700'}`}>
-                  <span className="w-10 h-10 flex items-center justify-center text-law-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4h9" /><path d="M21 4v6" /><path d="M10 20H5a2 2 0 0 1-2-2v-5" /><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                  </span>
-                  <span className="hidden lg:inline-block text-sm font-semibold">Editar perfil</span>
+                <NavLink to="/profile/edit" className={({isActive}) => `block w-full px-4 py-3 mx-2 my-1 text-sm font-semibold tracking-wide transition-all duration-200 rounded-lg border ${isActive ? 'bg-white bg-opacity-25 border-white border-opacity-40 shadow-lg transform scale-105' : 'border-transparent hover:bg-white hover:bg-opacity-15 hover:border-white hover:border-opacity-20 hover:shadow-md'}`}>
+                  Editar perfil
                 </NavLink>
               </li>
               {isProfOrAdmin && (
                 <li>
-                  <NavLink to="/grades/manage" className={({isActive}) => `flex items-center w-full gap-3 rounded-md px-3 py-2 hover:bg-slate-50 ${isActive ? 'bg-slate-100 font-semibold text-slate-900' : 'text-slate-700'}`}>
-                    <span className="w-10 h-10 flex items-center justify-center text-law-primary">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18" /></svg>
-                    </span>
-                    <span className="hidden lg:inline-block text-sm font-semibold">Gestionar notas</span>
+                  <NavLink to="/grades/manage" className={({isActive}) => `block w-full px-4 py-3 mx-2 my-1 text-sm font-semibold tracking-wide transition-all duration-200 rounded-lg border ${isActive ? 'bg-white bg-opacity-25 border-white border-opacity-40 shadow-lg transform scale-105' : 'border-transparent hover:bg-white hover:bg-opacity-15 hover:border-white hover:border-opacity-20 hover:shadow-md'}`}>
+                    Gestionar notas
                   </NavLink>
                 </li>
               )}
             </ul>
           </nav>
 
-          <div className="mt-6">
-            <div className="text-xs text-slate-500">Usuario</div>
-            <div className="text-sm font-medium text-slate-800">{user.email || `Usuario ${user.id || ''}`}</div>
-          </div>
-
-          <div className="mt-auto px-2 w-full">
-            <button onClick={logout} className="w-full py-2 bg-red-600 text-white rounded-md font-semibold">Salir</button>
+          <div className="mt-auto px-3 w-full">
+            <div className="text-xs opacity-75 mb-2">Usuario</div>
+            <div className="text-sm font-semibold mb-4">{user.email || `Usuario ${user.id || ''}`}</div>
+            <button onClick={logout} className="w-full py-3 bg-white bg-opacity-20 hover:bg-opacity-30 hover:shadow-lg text-white font-semibold tracking-wide transition-all duration-200 border border-white border-opacity-30 rounded-lg hover:scale-105">Cerrar sesión</button>
           </div>
         </div>
       </aside>
@@ -133,12 +105,12 @@ export default function LeftNav({ mobileOpen, onClose }) {
       {/* Mobile slide-over nav */}
       <div className={`left-nav-mobile ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} fixed left-0 top-0 bottom-0 w-[260px] bg-white border-r border-slate-200 z-50 transform transition-transform duration-300 ease-in-out md:hidden will-change-transform`}> 
         <div className="h-full flex flex-col p-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="Logo Facultad de Derecho" className="w-9 h-9" />
-              <div className="text-sm font-semibold">Facultad de Derecho</div>
+              <img src={logo} alt="Logo Facultad de Derecho" className="w-10 h-10 rounded-md shadow-md" />
+              <div className="text-base font-bold tracking-wide">Facultad de Derecho</div>
             </div>
-            <button onClick={onClose} className="p-2 rounded hover:bg-slate-100">
+            <button onClick={onClose} className="text-2xl leading-none px-2 py-1 rounded hover:bg-slate-100">
               ×
             </button>
           </div>
@@ -161,7 +133,7 @@ export default function LeftNav({ mobileOpen, onClose }) {
               Perfil
             </NavLink>
             <div className="px-3 py-2">
-              <button onClick={() => { onClose && onClose(); logout(); }} className="w-full py-2 bg-red-600 text-white rounded-md font-semibold">Salir</button>
+              <button onClick={() => { onClose && onClose(); logout(); }} className="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-semibold tracking-wide transition-colors">Cerrar sesión</button>
             </div>
           </nav>
         </div>

@@ -10,7 +10,7 @@ function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Sidebar width in px (kept in a variable so it's easy to change)
-  const SIDEBAR_WIDTH = 260;
+  const SIDEBAR_WIDTH = 240;
 
   // Track whether viewport is desktop (md breakpoint ~768px)
   const [isDesktop, setIsDesktop] = useState(() => window.matchMedia && window.matchMedia('(min-width: 768px)').matches);
@@ -30,7 +30,7 @@ function AppLayout() {
     else if (mobileOpen) marginLeft = SIDEBAR_WIDTH; // mobile: push only when menu open
   }
 
-  const mainClass = `page-bg flex-1 min-h-screen p-5 transition-all duration-200 ${user ? 'md:ml-[260px]' : ''}`;
+  const mainClass = `page-bg flex-1 min-h-screen p-5 transition-all duration-200 ${user ? 'md:ml-[240px]' : ''}`;
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>

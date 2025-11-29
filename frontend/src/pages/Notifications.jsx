@@ -19,7 +19,7 @@ export default function Notifications() {
       setLoading(false);
     }
     fetch();
-    // refresh cada 30s
+    // Refrescar cada 30 segundos
     const t = setInterval(fetch, 30000);
     return () => { mounted = false; clearInterval(t); };
   }, []);
@@ -28,7 +28,7 @@ export default function Notifications() {
     const res = await markNotificationRead(id);
     if (res?.data) {
       setNotifications((prev) => prev.map(n => n.id === id ? { ...n, read: true } : n));
-      // notificar al sidebar/layout que se actualizó
+      // Notificar al sidebar que se actualizó
       window.dispatchEvent(new CustomEvent('notifications:updated'));
     }
   }

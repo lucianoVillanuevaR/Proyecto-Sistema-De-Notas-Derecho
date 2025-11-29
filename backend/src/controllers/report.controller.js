@@ -7,7 +7,6 @@ import { User } from "../entities/user.entity.js";
 import { Brackets } from "typeorm";
 
 export const reportController = {
-  // Obtener informe de rendimiento académico para un estudiante
   async getInformeEstudiante(req, res) {
     try {
       const { studentId } = req.params;
@@ -21,7 +20,7 @@ export const reportController = {
       if (actor.role === "estudiante") {
         if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede ver su informe");
       } else if (actor.role === "profesor" || actor.role === "admin") {
-        // Permitir a cualquier profesor (o admin) ver el informe del estudiante.
+        
       } else {
         return handleErrorClient(res, 403, "Acceso denegado: role no permitido");
       }
@@ -33,7 +32,7 @@ export const reportController = {
 
       notas.forEach((n) => {
         const key = n.evaluation || "sin_evaluacion";
-        const modalidad = n.type || "escrita"; // 'escrita' o 'oral'
+        const modalidad = n.type || "escrita";
         if (!promediosPorEvaluacion[key]) promediosPorEvaluacion[key] = { totalSuma: 0, totalCount: 0, modalidades: {} };
         if (!promediosPorEvaluacion[key].modalidades[modalidad]) promediosPorEvaluacion[key].modalidades[modalidad] = { suma: 0, count: 0 };
         promediosPorEvaluacion[key].modalidades[modalidad].suma += Number(n.score);
@@ -93,7 +92,7 @@ export const reportController = {
       if (actor.role === "estudiante") {
         if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede ver su historial");
       } else if (actor.role === "profesor" || actor.role === "admin") {
-        // Permitir a cualquier profesor (o admin) ver el historial del estudiante.
+        
       } else {
         return handleErrorClient(res, 403, "Acceso denegado: role no permitido");
       }
@@ -142,9 +141,9 @@ export const reportController = {
 
       const sid = Number(studentId);
       if (actor.role === "estudiante") {
-        if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede ver su informe");
+        if (actor.id !== sid) return handleErrorClient(res, 403, "Acceso denegado: solo el estudiante puede descargar su informe");
       } else if (actor.role === "profesor" || actor.role === "admin") {
-        // Permitir a cualquier profesor (o admin) ver y descargar el informe del estudiante.
+        
       } else {
         return handleErrorClient(res, 403, "Acceso denegado: role no permitido");
       }
@@ -247,7 +246,7 @@ export const reportController = {
       }
 
       doc.end();
-      // no return necesario, el pipe finaliza la respuesta
+      
     } catch (error) {
       return handleErrorServer(res, 500, "Error al generar PDF", error.message);
     }

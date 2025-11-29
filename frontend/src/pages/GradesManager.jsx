@@ -26,7 +26,7 @@ export default function GradesManager() {
       const payload = res?.data ?? res;
       const all = Array.isArray(payload) ? payload : (payload?.data ?? []);
       setGrades(all);
-      // build unique students list
+      // Construir lista única de estudiantes
       const map = new Map();
       all.forEach(g => {
         const id = g.studentId ?? g.student_id ?? g.student?.id ?? (g.studentEmail ? g.studentEmail : null);
@@ -57,6 +57,18 @@ export default function GradesManager() {
     const list = gradesForStudent(studentId);
     const toSave = list.filter(g => editable[g.id]);
     if (toSave.length === 0) return alert('No hay cambios para guardar.');
+    
+    // Validar todas las notas antes de guardar
+    for (const g of toSave) {
+      const row = editable[g.id] ?? {};
+      if (row.score !== undefined) {
+        const score = Number(row.score);
+        if (isNaN(score) || score < 1.0 || score > 7.0) {
+          return alert(`Error: La nota debe estar entre 1.0 y 7.0. Nota inválida: ${row.score}`);
+        }
+      }
+    }
+    
     try {
       setLoading(true);
       for (const g of toSave) {
@@ -68,7 +80,7 @@ export default function GradesManager() {
         await updateGrade(g.id, changes);
       }
       await fetchAll();
-      alert('Cambios guardados.');
+      alert('Cambios guardados exitosamente.');
       window.dispatchEvent(new CustomEvent('notifications:updated'));
     } catch (err) {
       console.error('Error guardando:', err);
@@ -83,9 +95,20 @@ export default function GradesManager() {
       setSavingId(g.id);
       const row = editable[g.id] ?? {};
       const changes = {};
-      if (row.score !== undefined) changes.score = Number(row.score);
+      
+      // Validar la nota antes de guardar
+      if (row.score !== undefined) {
+        const score = Number(row.score);
+        if (isNaN(score) || score < 1.0 || score > 7.0) {
+          alert('Error: La nota debe estar entre 1.0 y 7.0');
+          setSavingId(null);
+          return;
+        }
+        changes.score = score;
+      }
+      
       if (row.observation !== undefined) changes.observation = row.observation;
-      // if source exists on the item, forward it so backend knows which table to update
+      // Si existe source, enviarlo para que el backend sepa qué tabla actualizar
       if (g.source) changes.source = g.source;
 
       await updateGrade(g.id, changes);
@@ -155,7 +178,16 @@ export default function GradesManager() {
                       <td className="p-2">{g.evaluation}</td>
                       <td className="p-2">{g.type}</td>
                       <td className="p-2">
-                        <input type="number" step="0.1" defaultValue={g.score ?? ''} className="w-24 px-2 py-1 border rounded" onChange={e => setEditable(prev => ({ ...prev, [g.id]: { ...(prev[g.id]||{}), score: e.target.value } }))} />
+                        <input 
+                          type="number" 
+                          step="0.1" 
+                          min="1.0" 
+                          max="7.0"
+                          defaultValue={g.score ?? ''} 
+                          className="w-24 px-2 py-1 border rounded" 
+                          placeholder="1.0 - 7.0"
+                          onChange={e => setEditable(prev => ({ ...prev, [g.id]: { ...(prev[g.id]||{}), score: e.target.value } }))} 
+                        />
                       </td>
                       <td className="p-2">
                         <input type="text" defaultValue={g.observation ?? ''} className="w-full px-2 py-1 border rounded" onChange={e => setEditable(prev => ({ ...prev, [g.id]: { ...(prev[g.id]||{}), observation: e.target.value } }))} />
