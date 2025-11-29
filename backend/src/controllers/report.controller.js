@@ -193,56 +193,139 @@ export const reportController = {
         console.warn("No se pudo crear entrada de historial al generar PDF:", err.message || err);
       }
 
-      // Generar PDF
-      const doc = new PDFDocument({ margin: 50 });
+      // Obtener información del estudiante
+      const userRepo = AppDataSource.getRepository(User);
+      const student = await userRepo.findOne({ where: { id: sid } });
+      const studentEmail = student ? student.email : `estudiante ID ${sid}`;
+
+      // Generar PDF con formato profesional
+      const doc = new PDFDocument({ 
+        margin: 50,
+        size: 'A4',
+        bufferPages: true
+      });
+      
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", `attachment; filename="informe-${sid}.pdf"`);
       doc.pipe(res);
 
-      doc.fontSize(18).text(`Informe académico - Estudiante ${sid}`, { align: "center" });
-      doc.moveDown();
-
-      doc.fontSize(12).text(`Generado por: ${actor.email} (${actor.role})`);
-      doc.text(`Fecha: ${new Date().toLocaleString()}`);
-      doc.moveDown();
-
-      doc.fontSize(14).text("Notas:");
+      // Encabezado principal
+      doc.fontSize(20).font('Helvetica-Bold').text('Informe académico - Estudiante ' + sid, { 
+        align: "center" 
+      });
       doc.moveDown(0.5);
 
+      // Información de generación
+      doc.fontSize(10).font('Helvetica').text(`Generado por: ${actor.email} (${actor.role})`, { align: 'left' });
+      const fechaFormateada = new Date().toLocaleString('es-CL', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true
+      });
+      doc.text(`Fecha: ${fechaFormateada}`, { align: 'left' });
+      doc.moveDown(1.5);
+
+      // Sección de Notas
+      doc.fontSize(14).font('Helvetica-Bold').text("Notas:", { underline: true });
+      doc.moveDown(0.8);
+
       if (notas.length === 0) {
-        doc.text("No hay notas registradas para este estudiante.");
+        doc.fontSize(11).font('Helvetica').text("No hay notas registradas para este estudiante.");
       } else {
         notas.forEach((n, idx) => {
-          doc.fontSize(12).text(`${idx + 1}. Evaluación: ${n.evaluation} | Tipo: ${n.type || 'escrita'} | Puntaje: ${n.score} | Profesor: ${n.professorId}`);
-          if (n.observation) doc.text(`   Observación: ${n.observation}`);
-          doc.text(`   Fecha: ${n.created_at}`);
+          doc.fontSize(11).font('Helvetica-Bold').text(
+            `${idx + 1}. Evaluación: ${n.evaluation} | Tipo: ${n.type || 'escrita'} | Puntaje: ${n.score} | Profesor: ${n.professorId}`
+          );
+          if (n.observation) {
+            doc.fontSize(10).font('Helvetica').text(`   Observación: ${n.observation}`, { 
+              indent: 15 
+            });
+          }
+          const fechaNota = new Date(n.created_at).toLocaleString('es-CL', {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'GMT'
+          });
+          doc.fontSize(10).font('Helvetica-Oblique').text(`   Fecha: ${fechaNota}`, { 
+            indent: 15 
+          });
+          doc.moveDown(0.5);
+        });
+      }
+
+      doc.moveDown(1);
+
+      // Sección de Promedios por evaluación
+      doc.fontSize(14).font('Helvetica-Bold').text("Promedios por evaluación:", { underline: true });
+      doc.moveDown(0.8);
+      
+      if (Object.keys(promedios).length === 0) {
+        doc.fontSize(11).font('Helvetica').text("No hay promedios calculados.");
+      } else {
+        Object.keys(promedios).forEach((k) => {
+          const item = promedios[k];
+          doc.fontSize(11).font('Helvetica-Bold').text(
+            `- ${k}: promedio ${item.promedio !== null ? item.promedio : 'N/A'}`
+          );
+          Object.keys(item.modalidades).forEach(m => {
+            doc.fontSize(10).font('Helvetica').text(
+              `  * ${m}: ${item.modalidades[m]}`,
+              { indent: 20 }
+            );
+          });
           doc.moveDown(0.3);
         });
       }
 
-      doc.moveDown();
-      doc.fontSize(14).text("Promedios por evaluación:");
-      doc.moveDown(0.5);
-      Object.keys(promedios).forEach((k) => {
-        const item = promedios[k];
-        doc.fontSize(12).text(`- ${k}: promedio ${item.promedio !== null ? item.promedio : 'N/A'}`);
-        Object.keys(item.modalidades).forEach(m => {
-          doc.text(`   * ${m}: ${item.modalidades[m]}`);
-        });
-      });
+      doc.moveDown(1);
 
-      doc.moveDown();
-      doc.fontSize(12).text(`Promedio general: ${promedioGeneral !== null ? promedioGeneral : 'N/A'}`);
+      // Promedio General destacado
+      doc.fontSize(12).font('Helvetica-Bold').text(
+        `Promedio general: ${promedioGeneral !== null ? promedioGeneral : 'N/A'}`,
+        { align: 'left' }
+      );
 
+      // Sección de Observaciones
       if (observaciones.length > 0) {
-        doc.moveDown();
-        doc.fontSize(14).text("Observaciones:");
-        doc.moveDown(0.5);
+        doc.moveDown(1.5);
+        doc.fontSize(14).font('Helvetica-Bold').text("Observaciones:", { underline: true });
+        doc.moveDown(0.8);
+        
         observaciones.forEach((o, i) => {
-          doc.fontSize(12).text(`${i + 1}. Profesor ${o.professorId} (${o.type}) - ${o.created_at}`);
-          doc.text(`   ${o.observation}`);
-          doc.moveDown(0.3);
+          const fechaObs = new Date(o.created_at).toLocaleString('es-CL', {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'GMT'
+          });
+          doc.fontSize(11).font('Helvetica-Bold').text(
+            `${i + 1}. Profesor ${o.professorId} (${o.type}) - ${fechaObs}`
+          );
+          doc.fontSize(10).font('Helvetica').text(`   ${o.observation}`, { 
+            indent: 15 
+          });
+          doc.moveDown(0.5);
         });
+      }
+
+      // Pie de página con número de páginas
+      const pages = doc.bufferedPageRange();
+      for (let i = 0; i < pages.count; i++) {
+        doc.switchToPage(i);
+        doc.fontSize(9).font('Helvetica').text(
+          `Página ${i + 1} de ${pages.count}`,
+          50,
+          doc.page.height - 50,
+          { align: 'center' }
+        );
       }
 
       doc.end();
