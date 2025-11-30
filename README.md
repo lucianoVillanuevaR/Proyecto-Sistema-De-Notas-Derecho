@@ -40,7 +40,7 @@ Sistema web completo para la gestión académica de estudiantes de la Facultad d
 - **Tailwind CSS** - Framework de estilos
 - **Axios** - Cliente HTTP
 
-## 📋 Requisitos Previos
+##  Requisitos Previos
 
 - Node.js v18 o superior
 - PostgreSQL v14 o superior
@@ -96,7 +96,7 @@ Iniciar servidor de desarrollo:
 npm run dev
 ```
 
-## 🗄️ Estructura de la Base de Datos
+##  Estructura de la Base de Datos
 
 ### Tablas Principales
 
