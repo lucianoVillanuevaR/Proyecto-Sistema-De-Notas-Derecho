@@ -18,7 +18,16 @@ const Evaluaciones = () => {
     try {
       setLoading(true);
       const data = await getEvaluaciones();
-      setEvaluaciones(data || []);
+      
+      // Cargar el estado de "ya presente" del localStorage
+      const presentesGuardados = JSON.parse(localStorage.getItem('presentesRegistrados')) || {};
+      
+      const evaluacionesConEstado = data.map(evaluacion => ({
+        ...evaluacion,
+        yaPresente: presentesGuardados[evaluacion.id] || false
+      }));
+      
+      setEvaluaciones(evaluacionesConEstado || []);
     } catch (error) {
       console.error("Error cargando evaluaciones:", error);
       Swal.fire("Error", "No se pudieron cargar las evaluaciones", "error");
@@ -110,6 +119,12 @@ const Evaluaciones = () => {
 
         if (response.data) {
           Swal.fire("¡Registrado!", "Tu asistencia ha sido registrada correctamente.", "success");
+          
+          // Guardar en localStorage que ya marcó presente
+          const presentesGuardados = JSON.parse(localStorage.getItem('presentesRegistrados')) || {};
+          presentesGuardados[evaluacionId] = true;
+          localStorage.setItem('presentesRegistrados', JSON.stringify(presentesGuardados));
+          
           // Marcar la evaluación como presente en el estado local
           setEvaluaciones(evaluaciones.map(e => 
             e.id === evaluacionId ? { ...e, yaPresente: true } : e
@@ -184,9 +199,11 @@ const Evaluaciones = () => {
       <div className="evaluaciones-wrapper">
         <div className="evaluaciones-header">
           <h1>Lista de Evaluaciones</h1>
-          <button className="btn-crear" onClick={handleCrearNueva}>
-            + Crear Nueva Evaluación
-          </button>
+          {user?.role !== 'estudiante' && (
+            <button className="btn-crear" onClick={handleCrearNueva}>
+              + Crear Nueva Evaluación
+            </button>
+          )}
         </div>
 
         <div className="evaluaciones-table">

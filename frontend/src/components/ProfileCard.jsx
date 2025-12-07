@@ -1,5 +1,5 @@
 import "@styles/profile.css";
-import profilePic from "@assets/profilePic.jpg";
+import profilePic from "@assets/profilePic.png";
 
 const ProfileCard = ({ user }) => {
   return (
