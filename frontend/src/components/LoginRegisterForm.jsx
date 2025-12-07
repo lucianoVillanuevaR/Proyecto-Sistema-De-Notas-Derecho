@@ -110,17 +110,13 @@ const LoginRegisterForm = ({ mode = "login", onSubmit, loginError}) => {
         </button>
       </form>
 
-      <div style={{ marginTop: "1rem" }}>
-        {mode === "login" ? (
-          <p>
-            ¿No tienes cuenta? <a href="/register">Regístrate</a>
-          </p>
-        ) : (
+      {mode === "register" && (
+        <div style={{ marginTop: "1rem" }}>
           <p>
             ¿Ya tienes cuenta? <a href="/login">Inicia sesión</a>
           </p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
