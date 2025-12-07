@@ -1,120 +1,69 @@
-import ReactDOM from 'react-dom/client';
+"use strict";
+import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Login from './pages/Login.jsx';
-import Home from './pages/Home.jsx';
-import RequestReport from './pages/RequestReport.jsx';
-import Profile from './pages/Profile.jsx';
-import ProfileEdit from './pages/ProfileEdit.jsx';
-import StudentsList from './pages/StudentsList.jsx';
-import StudentReport from './pages/StudentReport.jsx';
-import History from './pages/History.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
-import Error404 from './pages/Error404.jsx';
-import Root from './pages/Root.jsx';
-import './styles/styles.css';
-import React from 'react';
-const Notifications = React.lazy(() => import('./pages/Notifications.jsx'));
-const GradesManager = React.lazy(() => import('./pages/GradesManager.jsx'));
+import Root from '@pages/Root'
+import Home from '@pages/Home'
+import Login from '@pages/Login'
+import Register from '@pages/Register'
+import Error404 from '@pages/Error404'
+import Users from '@pages/Users'
+import Profile from '@pages/Profile'
+import Evaluaciones from '@pages/Evaluaciones'
+import GradesManager from '@pages/GradesManager'
+import RequestReport from '@pages/RequestReport'
+import Notificaciones from '@pages/Notificaciones'
+import ProtectedRoute from '@components/ProtectedRoute'
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <Root />,
     errorElement: <Error404 />,
     children: [
       {
-        path: '/',
-        element: <Login />
+        path: "/home",
+        element: <Home />,
       },
       {
-        path: '/auth',
-        element: <Login />
+        path: "/users",
+        element: (
+          <ProtectedRoute allowedRoles={["administrador"]}>
+            <Users />
+          </ProtectedRoute>
+        ),
       },
       {
-        path: '/home',
-        element: <Home />
-      }
-      ,
+        path: "/evaluaciones",
+        element: <Evaluaciones />,
+      },
       {
-        path: '/request-report',
-        element: (
-          <ProtectedRoute>
-            <RequestReport />
-          </ProtectedRoute>
-        )
-      }
-      ,
+        path: "/calificaciones",
+        element: <GradesManager />,
+      },
       {
-        path: '/notifications/me',
-        element: (
-          <ProtectedRoute>
-            {/* lazy page will be Notifications */}
-            <React.Suspense fallback={<div>Cargando...</div>}>
-              <Notifications />
-            </React.Suspense>
-          </ProtectedRoute>
-        )
-      }
-      ,
+        path: "/reportes",
+        element: <RequestReport />,
+      },
       {
-        path: '/profile',
-        element: (
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        )
-      }
-      ,
+        path: "/notificaciones",
+        element: <Notificaciones />,
+      },
       {
-        path: '/profile/edit',
-        element: (
-          <ProtectedRoute>
-            <ProfileEdit />
-          </ProtectedRoute>
-        )
+        path: "/profile",
+        element: <Profile />,
       }
-      ,
-      {
-        path: '/students',
-        element: (
-          <ProtectedRoute>
-            <StudentsList />
-          </ProtectedRoute>
-        )
-      }
-      ,
-      {
-        path: '/grades/manage',
-        element: (
-          <ProtectedRoute>
-            <React.Suspense fallback={<div>Cargando...</div>}>
-              {React.createElement(GradesManager)}
-            </React.Suspense>
-          </ProtectedRoute>
-        )
-      }
-      ,
-      {
-        path: '/reports/me/history',
-        element: (
-          <ProtectedRoute>
-            <History />
-          </ProtectedRoute>
-        )
-      }
-      ,
-      {
-        path: '/students/:id/report',
-        element: (
-          <ProtectedRoute>
-            <StudentReport />
-          </ProtectedRoute>
-        )
-      }
-    ]
-  }
+    ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <RouterProvider router={router} />
 );

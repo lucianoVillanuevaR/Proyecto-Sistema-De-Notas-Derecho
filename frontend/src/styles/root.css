@@ -1,0 +1,16 @@
+body{
+    background-color: #fff0dd;
+}
+
+
+.page-root {
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+}
+
+.page-content{
+    flex: 1;
+    padding: 20px;
+    margin-left: 250px; /* Ajustado para la Sidebar*/
+    overflow-x: auto;
+}

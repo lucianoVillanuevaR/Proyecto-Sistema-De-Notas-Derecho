@@ -1,44 +1,25 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import cookies from 'js-cookie';
+import { createContext, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuth = () => useContext(AuthContext);
 
-  useEffect(() => {
-    const token = cookies.get('jwt-auth');
-    const storedUser = sessionStorage.getItem('usuario');
-    
-    if (token && storedUser) {
-      try {
-        const decoded = jwtDecode(token);
-        if (decoded.exp * 1000 > Date.now()) {
-          setUser(JSON.parse(storedUser));
-        } else {
-          cookies.remove('jwt-auth');
-          sessionStorage.removeItem('usuario');
+export function AuthProvider({ children }) {
+    const navigate = useNavigate();
+    const user = JSON.parse(sessionStorage.getItem('usuario')) || '';
+    const isAuthenticated = user ? true : false;
+
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login');
         }
-      } catch (error) {
-        console.error('Error al decodificar token:', error);
-        cookies.remove('jwt-auth');
-        sessionStorage.removeItem('usuario');
-      }
-    }
-  }, []);
+    }, [isAuthenticated, navigate])
 
-  return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
-  }
-  return context;
-};
+    return (
+        <AuthContext.Provider value={{ isAuthenticated, user }}>
+            { children }
+        </AuthContext.Provider>
+    )
+}

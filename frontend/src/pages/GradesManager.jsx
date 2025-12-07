@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getAllGrades, updateGrade } from '../services/grades.service.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import '@styles/gradesManager.css';
+
 export default function GradesManager() {
   const { user } = useAuth();
   const [grades, setGrades] = useState([]);
@@ -123,77 +125,75 @@ export default function GradesManager() {
   }
 
   const role = String(user?.role || '').toLowerCase();
-  if (!user) return <div className="p-6">Necesitas iniciar sesión.</div>;
-  if (!role.includes('prof') && !role.includes('admin')) return <div className="p-6">Acceso denegado.</div>;
+  if (!user) return <div className="needs-login">Necesitas iniciar sesión.</div>;
+  if (!role.includes('prof') && !role.includes('admin')) return <div className="access-denied">Acceso denegado.</div>;
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="bg-white card-elevated p-6 rounded-2xl">
-        <div className="flex items-start gap-6">
-          <div className="w-1/3">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold">Estudiantes</h2>
-              <button onClick={fetchAll} className="px-2 py-1 text-sm bg-law-primary text-white rounded">Refrescar</button>
+    <div className="grades-manager-container">
+      <div className="grades-card">
+        <div className="grades-layout">
+          <div className="students-panel">
+            <div className="panel-header">
+              <h2 className="panel-title">Estudiantes</h2>
+              <button onClick={fetchAll} className="btn-refresh">Refrescar</button>
             </div>
-            <input value={q} onChange={e => setQ(e.target.value)} placeholder="Buscar estudiante" className="px-3 py-2 border rounded w-full mb-3" />
-            <div className="overflow-auto max-h-[60vh]">
-              <ul className="divide-y">
+            <input value={q} onChange={e => setQ(e.target.value)} placeholder="Buscar estudiante" className="search-input" />
+            <div className="students-list">
+              <ul>
                 {students.filter(s => !q || (s.name || '').toLowerCase().includes(q.toLowerCase()) || (s.email||'').toLowerCase().includes(q.toLowerCase())).map(s => (
-                  <li key={s.id} className={`p-3 cursor-pointer ${String(selectedStudent) === String(s.id) ? 'bg-slate-100' : 'hover:bg-slate-50'}`} onClick={() => setSelectedStudent(s.id)}>
-                    <div className="font-medium">{s.name}</div>
-                    <div className="text-xs text-slate-500">{s.email}</div>
+                  <li key={s.id} className={`student-item ${String(selectedStudent) === String(s.id) ? 'selected' : ''}`} onClick={() => setSelectedStudent(s.id)}>
+                    <div className="student-name">{s.name}</div>
+                    <div className="student-email">{s.email}</div>
                   </li>
                 ))}
               </ul>
             </div>
           </div>
 
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-2xl font-bold">Notas del estudiante {selectedStudent ?? ''}</h1>
-              <div className="flex items-center gap-2">
-                <button disabled={!selectedStudent} onClick={() => saveAllForStudent(selectedStudent)} className="px-3 py-2 bg-green-600 text-white rounded">Guardar todo</button>
-              </div>
+          <div className="grades-panel">
+            <div className="grades-header">
+              <h1 className="grades-title">Notas del estudiante {selectedStudent ? `#${selectedStudent}` : ''}</h1>
+              <button disabled={!selectedStudent} onClick={() => saveAllForStudent(selectedStudent)} className="btn-save-all">Guardar todo</button>
             </div>
 
-            {loading && <div>Cargando notas...</div>}
-            {error && <div className="text-red-600">{error}</div>}
+            {loading && <div className="loading-message">Cargando notas...</div>}
+            {error && <div className="error-message">{error}</div>}
 
-            <div className="overflow-auto">
-              <table className="w-full table-auto">
+            <div className="grades-table-container">
+              <table className="grades-table">
                 <thead>
-                  <tr className="text-left border-b">
-                    <th className="p-2">ID</th>
-                    <th className="p-2">Evaluación</th>
-                    <th className="p-2">Tipo</th>
-                    <th className="p-2">Puntaje</th>
-                    <th className="p-2">Observación</th>
-                    <th className="p-2">Acción</th>
+                  <tr>
+                    <th>ID</th>
+                    <th>Evaluación</th>
+                    <th>Tipo</th>
+                    <th>Puntaje</th>
+                    <th>Observación</th>
+                    <th>Acción</th>
                   </tr>
                 </thead>
                 <tbody>
                   {gradesForStudent(selectedStudent).map((g, idx) => (
-                    <tr key={g.id} className="border-b hover:bg-gray-50">
-                      <td className="p-2">{g.id}</td>
-                      <td className="p-2">{g.evaluation}</td>
-                      <td className="p-2">{g.type}</td>
-                      <td className="p-2">
+                    <tr key={g.id}>
+                      <td>{g.id}</td>
+                      <td>{g.evaluation}</td>
+                      <td>{g.type}</td>
+                      <td>
                         <input 
                           type="number" 
                           step="0.1" 
                           min="1.0" 
                           max="7.0"
                           defaultValue={g.score ?? ''} 
-                          className="w-24 px-2 py-1 border rounded" 
+                          className="input-score" 
                           placeholder="1.0 - 7.0"
                           onChange={e => setEditable(prev => ({ ...prev, [g.id]: { ...(prev[g.id]||{}), score: e.target.value } }))} 
                         />
                       </td>
-                      <td className="p-2">
-                        <input type="text" defaultValue={g.observation ?? ''} className="w-full px-2 py-1 border rounded" onChange={e => setEditable(prev => ({ ...prev, [g.id]: { ...(prev[g.id]||{}), observation: e.target.value } }))} />
+                      <td>
+                        <input type="text" defaultValue={g.observation ?? ''} className="input-observation" onChange={e => setEditable(prev => ({ ...prev, [g.id]: { ...(prev[g.id]||{}), observation: e.target.value } }))} />
                       </td>
-                      <td className="p-2">
-                        <button disabled={savingId === g.id} onClick={() => saveRow(g, idx)} className="px-3 py-1 bg-green-600 text-white rounded">{savingId === g.id ? 'Guardando...' : 'Guardar'}</button>
+                      <td>
+                        <button disabled={savingId === g.id} onClick={() => saveRow(g, idx)} className="btn-save-row">{savingId === g.id ? 'Guardando...' : 'Guardar'}</button>
                       </td>
                     </tr>
                   ))}
