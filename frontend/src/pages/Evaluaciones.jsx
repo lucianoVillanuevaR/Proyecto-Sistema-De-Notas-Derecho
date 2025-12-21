@@ -9,6 +9,8 @@ const Evaluaciones = () => {
   const { user } = useAuth();
   const [evaluaciones, setEvaluaciones] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     cargarEvaluaciones();
@@ -19,8 +21,9 @@ const Evaluaciones = () => {
       setLoading(true);
       const data = await getEvaluaciones();
       
-      // Cargar el estado de "ya presente" del localStorage
-      const presentesGuardados = JSON.parse(localStorage.getItem('presentesRegistrados')) || {};
+      // Cargar el estado de "ya presente" del localStorage incluyendo el ID del usuario
+      const userKey = user?.id ? `presentesRegistrados_user_${user.id}` : 'presentesRegistrados';
+      const presentesGuardados = JSON.parse(localStorage.getItem(userKey)) || {};
       
       const evaluacionesConEstado = data.map(evaluacion => ({
         ...evaluacion,
@@ -28,6 +31,7 @@ const Evaluaciones = () => {
       }));
       
       setEvaluaciones(evaluacionesConEstado || []);
+      setCurrentPage(1);
     } catch (error) {
       console.error("Error cargando evaluaciones:", error);
       Swal.fire("Error", "No se pudieron cargar las evaluaciones", "error");
@@ -120,10 +124,11 @@ const Evaluaciones = () => {
         if (response.data) {
           Swal.fire("¡Registrado!", "Tu asistencia ha sido registrada correctamente.", "success");
           
-          // Guardar en localStorage que ya marcó presente
-          const presentesGuardados = JSON.parse(localStorage.getItem('presentesRegistrados')) || {};
+          // Guardar en localStorage que ya marcó presente (con ID del usuario)
+          const userKey = user?.id ? `presentesRegistrados_user_${user.id}` : 'presentesRegistrados';
+          const presentesGuardados = JSON.parse(localStorage.getItem(userKey)) || {};
           presentesGuardados[evaluacionId] = true;
-          localStorage.setItem('presentesRegistrados', JSON.stringify(presentesGuardados));
+          localStorage.setItem(userKey, JSON.stringify(presentesGuardados));
           
           // Marcar la evaluación como presente en el estado local
           setEvaluaciones(evaluaciones.map(e => 
@@ -194,6 +199,12 @@ const Evaluaciones = () => {
     });
   };
 
+  // Paginación
+  const totalPages = Math.ceil(evaluaciones.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const evaluacionesPaginadas = evaluaciones.slice(startIndex, endIndex);
+
   return (
     <div className="evaluaciones-container">
       <div className="evaluaciones-wrapper">
@@ -228,7 +239,7 @@ const Evaluaciones = () => {
             </tr>
           </thead>
           <tbody>
-            {evaluaciones.map((evaluacion) => (
+            {evaluacionesPaginadas.map((evaluacion) => (
               <tr key={evaluacion.id}>
                 <td>{evaluacion.nombreEv || evaluacion.nombre}</td>
                 <td>{evaluacion.asignatura1 || evaluacion.asignatura}</td>
@@ -269,6 +280,24 @@ const Evaluaciones = () => {
         </table>
                 )}
       </div>
+      
+      {!loading && evaluaciones.length > 0 && (
+        <div className="pagination">
+          <button 
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Anterior
+          </button>
+          <span>Página {currentPage} de {totalPages}</span>
+          <button 
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
       </div>
     </div>
   );
