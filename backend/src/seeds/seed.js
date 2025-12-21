@@ -3,6 +3,7 @@ import { AppDataSource } from "../config/configDb.js";
 import bcrypt from "bcrypt";
 import { User } from "../entities/user.entity.js";
 import { Grade } from "../entities/grade.entity.js";
+import { EvaluacionEntity } from "../entities/evaluacion.entity.js";
 
 async function run() {
   try {
@@ -11,6 +12,7 @@ async function run() {
 
     const userRepo = AppDataSource.getRepository(User);
     const gradeRepo = AppDataSource.getRepository(Grade);
+    const evaluacionRepo = AppDataSource.getRepository(EvaluacionEntity);
 
     // Asignaturas de Derecho
     const subjects = [
@@ -81,6 +83,62 @@ async function run() {
         });
         await gradeRepo.save(nota);
         console.log(`Nota creada: alumno=${alumno.id} profesor=${profesor.id} eval='${evaluation}' score=${score}`);
+      }
+    }
+
+    // Crear 5 evaluaciones
+    const evaluacionesData = [
+      {
+        tipoEv: "escrita",
+        nombreEv: "Parcial 5",
+        asignatura1: "Derecho Civil",
+        profesor: "juan.perez",
+        ponderacion: 30,
+      },
+      {
+        tipoEv: "oral",
+        nombreEv: "Exposición",
+        asignatura1: "Derecho Penal",
+        profesor: "maria.gonzalez",
+        ponderacion: 20,
+      },
+      {
+        tipoEv: "escrita",
+        nombreEv: "Examen Final",
+        asignatura1: "Derecho Constitucional",
+        profesor: "juan.perez",
+        ponderacion: 40,
+      },
+      {
+        tipoEv: "escrita",
+        nombreEv: "Prueba Solemne",
+        asignatura1: "Derecho Laboral",
+        profesor: "maria.gonzalez",
+        ponderacion: 35,
+      },
+      {
+        tipoEv: "oral",
+        nombreEv: "Defensa Tesis",
+        asignatura1: "Derecho Administrativo",
+        profesor: "juan.perez",
+        ponderacion: 25,
+      },
+    ];
+
+    for (const evalData of evaluacionesData) {
+      const existing = await evaluacionRepo.findOne({ 
+        where: { 
+          nombreEv: evalData.nombreEv, 
+          asignatura1: evalData.asignatura1 
+        } 
+      });
+      
+      if (!existing) {
+        const evaluacion = evaluacionRepo.create(evalData);
+        await evaluacionRepo.save(evaluacion);
+        console.log(`Evaluación creada: ${evalData.nombreEv} - ${evalData.asignatura1}`);
+      } else {
+        console.log(`Evaluación ya existe: ${evalData.nombreEv} - ${evalData.asignatura1}`);
       }
     }
 
