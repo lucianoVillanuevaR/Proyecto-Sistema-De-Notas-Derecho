@@ -86,7 +86,6 @@ async function run() {
       }
     }
 
-    // Crear 5 evaluaciones
     const evaluacionesData = [
       {
         tipoEv: "escrita",
