@@ -1,0 +1,256 @@
+.grades-manager-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.grades-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.grades-layout {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.students-panel {
+  width: 33%;
+  min-width: 280px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.panel-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.btn-refresh {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  background-color: #673ab7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-refresh:hover {
+  background-color: #5e35b1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #673ab7;
+}
+
+.students-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+.student-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.student-item:last-child {
+  border-bottom: none;
+}
+
+.student-item:hover {
+  background-color: #f5f5f5;
+}
+
+.student-item.selected {
+  background-color: #ede7f6;
+  border-left: 4px solid #673ab7;
+}
+
+.student-name {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.student-email {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.grades-panel {
+  flex: 1;
+}
+
+.grades-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.grades-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.btn-save-all {
+  padding: 0.75rem 1.5rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-save-all:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.btn-save-all:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.loading-message,
+.error-message {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 6px;
+}
+
+.loading-message {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.grades-table-container {
+  overflow-x: auto;
+}
+
+.grades-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.grades-table thead tr {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.grades-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.grades-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.grades-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.input-score {
+  width: 100px;
+  padding: 0.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.9375rem;
+  box-sizing: border-box;
+}
+
+.input-score:focus {
+  outline: none;
+  border-color: #673ab7;
+}
+
+.input-observation {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.9375rem;
+  box-sizing: border-box;
+}
+
+.input-observation:focus {
+  outline: none;
+  border-color: #673ab7;
+}
+
+.btn-save-row {
+  padding: 0.5rem 1rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.btn-save-row:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.btn-save-row:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.access-denied,
+.needs-login {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+}
