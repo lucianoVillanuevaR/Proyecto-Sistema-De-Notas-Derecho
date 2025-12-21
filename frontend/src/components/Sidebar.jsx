@@ -22,61 +22,63 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <h2>Gestión de Evaluaciones de Derecho</h2>
+      <h2>Sistema de Gestión de Evaluaciones</h2>
       <nav>
         <ul>
           <li>
             <NavLink to="/home">
-              <FaHome className="icon"/> Inicio
+              <FaHome className="icon"/>
+              <span>Inicio</span>
             </NavLink>
           </li>
           {isAdmin && (
             <li>
               <NavLink to="/users">
-                <FaUsers className="icon"/> Usuarios
+                <FaUsers className="icon"/>
+                <span>Usuarios</span>
               </NavLink>
             </li>
           )}
           <li>
             <NavLink to="/evaluaciones">
-              <FaClipboardList className="icon"/> Gestionar Evaluaciones
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/reportes">
-              <FaFileAlt className="icon"/> Solicitar Reporte
+              <FaClipboardList className="icon"/>
+              <span>Evaluaciones</span>
             </NavLink>
           </li>
           <li>
             <NavLink to="/calificaciones">
-              <FaGraduationCap className="icon"/> Gestionar Notas
+              <FaGraduationCap className="icon"/>
+              <span>Calificaciones</span>
             </NavLink>
           </li>
           <li>
-            <NavLink to="/notificaciones">
-              <FaBell className="icon"/> Notificaciones
+            <NavLink to="/reportes">
+              <FaFileAlt className="icon"/>
+              <span>Reportes</span>
             </NavLink>
           </li>
           {isAdmin && (
             <li>
               <NavLink to="/register">
-                <FaUserPlus className="icon"/> Crear Cuenta
+                <FaUserPlus className="icon"/>
+                <span>Crear Usuario</span>
               </NavLink>
             </li>
           )}
           <li>
             <NavLink to="/profile">
-              <CgProfile className="icon"/> Perfil
-            </NavLink>
-          </li>
-          <li style={{ height: "70%" }}/>
-          <li className="logout">
-            <NavLink to="/login" onClick={logoutSubmit}>
-              <FaSignOutAlt className="icon"/> Cerrar Sesión
+              <CgProfile className="icon"/>
+              <span>Perfil</span>
             </NavLink>
           </li>
         </ul>
       </nav>
+      <div className="logout">
+        <NavLink to="/login" onClick={logoutSubmit}>
+          <FaSignOutAlt className="icon"/>
+          <span>Cerrar Sesión</span>
+        </NavLink>
+      </div>
     </div>
   );
 };

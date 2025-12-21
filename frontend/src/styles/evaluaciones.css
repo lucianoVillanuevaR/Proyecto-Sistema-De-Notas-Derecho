@@ -1,10 +1,9 @@
 .evaluaciones-container {
-  padding: 1.5rem 0.5rem;
-  background-color: #f5e6d3;
-  min-height: calc(100vh - 40px);
   width: 100%;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background-color: #f5f7fa;
   box-sizing: border-box;
-  padding-top: 8rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,11 +11,12 @@
 
 .evaluaciones-wrapper {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1400px;
   background-color: white;
-  border-radius: 24px;
-  padding: 1.5rem;
+  border-radius: 16px;
+  padding: 2rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
 }
 
 .evaluaciones-header {
