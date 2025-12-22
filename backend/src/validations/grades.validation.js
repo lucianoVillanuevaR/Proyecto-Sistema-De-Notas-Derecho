@@ -1,18 +1,18 @@
 "use strict";
 import joi from "joi";
 
-// Validación para actualizar notas (sistema chileno de 1.0 a 7.0)
+// Validación para actualizar notas (sistema de 10 a 70)
 export const updateGradeValidation = joi.object({
   score: joi.number()
-    .min(1.0)
-    .max(7.0)
-    .precision(1)
+    .min(10)
+    .max(70)
+    .integer()
     .optional()
     .messages({
       "number.base": "La nota debe ser un número",
-      "number.min": "La nota mínima permitida es 1.0",
-      "number.max": "La nota máxima permitida es 7.0",
-      "number.precision": "La nota debe tener máximo 1 decimal",
+      "number.min": "La nota mínima permitida es 10",
+      "number.max": "La nota máxima permitida es 70",
+      "number.integer": "La nota debe ser un número entero",
     }),
   observation: joi.string()
     .max(500)
@@ -47,14 +47,14 @@ export const updateGradeValidation = joi.object({
   "object.unknown": "No se permiten campos adicionales en la actualización de notas"
 });
 
-// Validación para el promedio (también de 1.0 a 7.0)
+// Validación para el promedio (también de 10 a 70)
 export const averageValidation = joi.number()
-  .min(1.0)
-  .max(7.0)
+  .min(10)
+  .max(70)
   .precision(2)
   .messages({
     "number.base": "El promedio debe ser un número",
-    "number.min": "El promedio mínimo permitido es 1.0",
-    "number.max": "El promedio máximo permitido es 7.0",
+    "number.min": "El promedio mínimo permitido es 10",
+    "number.max": "El promedio máximo permitido es 70",
     "number.precision": "El promedio debe tener máximo 2 decimales",
   });

@@ -10,6 +10,8 @@ const Sidebar = () => {
   const user = JSON.parse(sessionStorage.getItem("usuario")) || "";
   const userRole = user?.rol || user?.role;
   const isAdmin = userRole === "administrador" || userRole === "admin";
+  const isProfesor = userRole === "profesor" || userRole === "prof";
+  const canViewGrades = isAdmin || isProfesor;
 
   const logoutSubmit = () => {
     try {
@@ -45,12 +47,14 @@ const Sidebar = () => {
               <span>Evaluaciones</span>
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/calificaciones">
-              <FaGraduationCap className="icon"/>
-              <span>Calificaciones</span>
-            </NavLink>
-          </li>
+          {canViewGrades && (
+            <li>
+              <NavLink to="/calificaciones">
+                <FaGraduationCap className="icon"/>
+                <span>Calificaciones</span>
+              </NavLink>
+            </li>
+          )}
           <li>
             <NavLink to="/reportes">
               <FaFileAlt className="icon"/>

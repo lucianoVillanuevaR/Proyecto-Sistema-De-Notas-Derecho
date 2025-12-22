@@ -40,21 +40,21 @@
 
 .btn-refresh {
   padding: 0.75rem 1.5rem;
-  background: #673ab7;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
   color: white;
   border: none;
   border-radius: 8px;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(103, 58, 183, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
 .btn-refresh:hover:not(:disabled) {
-  background: #5e35b1;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(103, 58, 183, 0.3);
+  background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
 }
 
 .btn-refresh:disabled {
@@ -85,14 +85,14 @@
 }
 
 .filter-tab:hover {
-  color: #673ab7;
-  background: rgba(103, 58, 183, 0.05);
+  color: #3498db;
+  background: rgba(52, 152, 219, 0.05);
 }
 
 .filter-tab.active {
-  color: #673ab7;
-  border-bottom-color: #673ab7;
-  background: rgba(103, 58, 183, 0.08);
+  color: #3498db;
+  border-bottom-color: #3498db;
+  background: rgba(52, 152, 219, 0.08);
 }
 
 /* ===== Lista de Notificaciones ===== */

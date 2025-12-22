@@ -43,16 +43,19 @@
 .btn-refresh {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  background-color: #673ab7;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
 }
 
 .btn-refresh:hover {
-  background-color: #5e35b1;
+  background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
 }
 
 .search-input {
@@ -68,7 +71,8 @@
 
 .search-input:focus {
   outline: none;
-  border-color: #673ab7;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 .students-list {
@@ -94,8 +98,8 @@
 }
 
 .student-item.selected {
-  background-color: #ede7f6;
-  border-left: 4px solid #673ab7;
+  background-color: rgba(52, 152, 219, 0.1);
+  border-left: 4px solid #3498db;
 }
 
 .student-name {
@@ -118,6 +122,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .grades-title {
@@ -127,19 +133,57 @@
   margin: 0;
 }
 
+.grades-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn-export-pdf {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn-export-pdf:hover:not(:disabled) {
+  background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+}
+
+.btn-export-pdf:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .btn-save-all {
   padding: 0.75rem 1.5rem;
   background-color: #4caf50;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
 .btn-save-all:hover:not(:disabled) {
   background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.5);
 }
 
 .btn-save-all:disabled {

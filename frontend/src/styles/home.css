@@ -10,8 +10,18 @@
 
 .home-header {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     padding: 1rem 0;
+    gap: 1.5rem;
+}
+
+.ubb-logo {
+    width: 120px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
 }
 
 .home-content {
@@ -250,5 +260,117 @@
         width: 100%;
         max-width: 320px;
         padding: 1rem;
+    }
+}
+
+/* Malla Curricular Section */
+.malla-section {
+    width: 100%;
+    max-width: 1400px;
+    margin: 2rem auto 0;
+    padding: 0 2rem;
+}
+
+.malla-container {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.malla-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.malla-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+}
+
+.year-column {
+    background: #f8f9fa;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.year-header {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.semester-block {
+    padding: 1rem;
+}
+
+.semester-header {
+    color: #3498db;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 0.8rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.subjects-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.subject-item {
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.subject-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 2px 6px rgba(52, 152, 219, 0.2);
+    border-left: 3px solid #3498db;
+}
+
+@media (max-width: 1200px) {
+    .malla-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .malla-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .malla-section {
+        padding: 0 1rem;
     }
 }

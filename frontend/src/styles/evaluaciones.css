@@ -41,23 +41,23 @@
 }
 
 .btn-crear {
-  background-color: #2196f3;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
   color: white;
   padding: 10px 20px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
 .btn-crear:hover {
-  background-color: #1976d2;
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.5);
+  transform: translateY(-3px);
 }
 
 .evaluaciones-table {
@@ -128,17 +128,17 @@
 }
 
 .btn-editar {
-  background-color: #2196f3;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
   color: white;
   border-radius: 6px;
   font-weight: 500;
-  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 2px 6px rgba(52, 152, 219, 0.2);
   transition: all 0.2s ease;
 }
 
 .btn-editar:hover {
-  background-color: #1976d2;
-  box-shadow: 0 3px 10px rgba(33, 150, 243, 0.3);
+  background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+  box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
   transform: translateY(-1px);
 }
 
@@ -158,17 +158,17 @@
 }
 
 .btn-presente {
-  background-color: #2196f3;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
   color: white;
   border-radius: 6px;
   font-weight: 500;
-  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.2);
+  box-shadow: 0 2px 6px rgba(52, 152, 219, 0.2);
   transition: all 0.2s ease;
 }
 
 .btn-presente:hover {
-  background-color: #1976d2;
-  box-shadow: 0 3px 10px rgba(33, 150, 243, 0.3);
+  background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
+  box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
   transform: translateY(-1px);
 }
 

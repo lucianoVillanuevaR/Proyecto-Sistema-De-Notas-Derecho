@@ -34,8 +34,16 @@ const Users = () => {
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>
-                  <button className="edit" onClick={() => handleEditUser(user.id, user)}>Editar</button>
-                  <button className="delete" onClick={() => handleDeleteUser(user.id)}>Eliminar</button>
+                  <button className="edit" onClick={() => {
+                    if (confirm(`¿Deseas editar el usuario "${user.username}"?`)) {
+                      handleEditUser(user.id, user);
+                    }
+                  }}>Editar</button>
+                  <button className="delete" onClick={() => {
+                    if (confirm(`⚠️ ¿Estás seguro de eliminar al usuario "${user.username}"?\n\nEsta acción no se puede deshacer.`)) {
+                      handleDeleteUser(user.id);
+                    }
+                  }}>Eliminar</button>
                 </td>
               </tr>
             ))
