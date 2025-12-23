@@ -1,25 +1,27 @@
 .page-root {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 70vh;
-    margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 24px;
+  padding: 32px 16px;
+  margin: 0;
+  background-color: #f5f7fa;
 }
 
 .justice-image {
-  width: 70vh;
-  height: 70vh;
+  width: 220px;
+  max-width: 260px;
+  height: auto;
   object-fit: contain;
-  position: absolute;
-  bottom: 0vh;
-  left: -2vh; 
-  z-index: -1;
 }
 
-
 .login-register-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 520px;
 }

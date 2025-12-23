@@ -23,26 +23,26 @@ export default function RequestReport() {
     }
   }
 
-  // Función para calcular el promedio de las notas (validando rango 1.0-7.0)
+  // Función para calcular el promedio de las notas (validando rango 10-70)
   function calcularPromedio(notas) {
     if (!notas || notas.length === 0) return '0.00';
     const notasValidas = notas.filter(nota => {
       const score = parseFloat(nota.score);
-      return !isNaN(score) && score >= 1.0 && score <= 7.0;
+      return !isNaN(score) && score >= 10 && score <= 70;
     });
     if (notasValidas.length === 0) return '0.00';
     const sum = notasValidas.reduce((acc, nota) => acc + parseFloat(nota.score), 0);
     const promedio = sum / notasValidas.length;
     // Asegurar que el promedio también esté en el rango válido
-    return Math.min(Math.max(promedio, 1.0), 7.0).toFixed(2);
+    return Math.min(Math.max(promedio, 10), 70).toFixed(2);
   }
 
   // Función para obtener color según la nota
   function getScoreClass(score) {
     const nota = parseFloat(score);
-    if (nota >= 6.0) return 'excellent';
-    if (nota >= 4.0) return 'good';
-    return 'poor';
+    if (nota >= 55) return 'excellent';  // 55-70
+    if (nota >= 40) return 'good';       // 40-54
+    return 'poor';                       // 10-39
   }
 
   async function downloadPdf() {
