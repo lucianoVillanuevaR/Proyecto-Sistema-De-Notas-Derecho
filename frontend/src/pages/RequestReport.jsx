@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { solicitarMiInforme, descargarMiInformePdf } from '../services/report.service.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import '@styles/requestReport.css';
 
 export default function RequestReport() {
   const { user } = useAuth();
@@ -37,11 +38,11 @@ export default function RequestReport() {
   }
 
   // Función para obtener color según la nota
-  function getScoreColor(score) {
+  function getScoreClass(score) {
     const nota = parseFloat(score);
-    if (nota >= 6.0) return 'text-green-700 bg-green-50 border-green-200';
-    if (nota >= 4.0) return 'text-blue-700 bg-blue-50 border-blue-200';
-    return 'text-red-700 bg-red-50 border-red-200';
+    if (nota >= 6.0) return 'excellent';
+    if (nota >= 4.0) return 'good';
+    return 'poor';
   }
 
   async function downloadPdf() {
@@ -80,20 +81,18 @@ export default function RequestReport() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="bg-white card-elevated p-8 rounded-2xl animate-fade-up">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2" style={{ fontFamily: 'Merriweather, Georgia, serif' }}>
-            Informe Académico
-          </h1>
-          <p className="text-slate-600">Solicita y visualiza tu informe académico completo.</p>
+    <div className="request-report-container">
+      <div className="report-card">
+        <div className="report-header">
+          <h1 className="report-title">Informe Académico</h1>
+          <p className="report-subtitle">Solicita y visualiza tu informe académico completo.</p>
         </div>
 
-        <div className="flex gap-4 flex-wrap mb-6">
+        <div className="report-actions">
           <button 
             onClick={handleRequest} 
             disabled={loading} 
-            className="px-6 py-3 bg-law-primary text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary"
           >
             {loading ? 'Cargando...' : 'Consultar Notas'}
           </button>
@@ -101,95 +100,87 @@ export default function RequestReport() {
           <button 
             onClick={downloadPdf} 
             disabled={loading} 
-            className="px-6 py-3 border-2 border-law-primary text-law-primary font-semibold rounded-lg hover:bg-law-primary hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-outline"
           >
             Descargar PDF
           </button>
         </div>
 
         {user && (
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg mb-6">
-            <div className="text-sm text-slate-600">
-              <span className="font-semibold text-slate-900">Estudiante:</span> {user.email || user.name || user.id}
-            </div>
+          <div className="user-info-box">
+            <span className="user-info-label">Estudiante:</span>
+            <span className="user-info-value">{user.email || user.name || user.id}</span>
           </div>
         )}
 
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg mb-6 animate-fade-up">
+          <div className="error-box">
             <strong>Error:</strong> {error.message}
           </div>
         )}
 
         {result && (
-          <div className="mt-6 space-y-6 animate-fade-up">
-            {/* Información del estudiante */}
+          <div className="report-section">
             {result.data && (
-              <div className="border-t border-slate-200 pt-6">
-                <h2 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Merriweather, Georgia, serif' }}>
-                  Registro Académico
-                </h2>
+              <>
+                <h2 className="section-title">Registro Académico</h2>
                 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <div className="text-sm text-blue-600 font-semibold mb-1">ID Estudiante</div>
-                    <div className="text-2xl font-bold text-blue-900">#{result.data.studentId || 'N/A'}</div>
+                <div className="stats-grid">
+                  <div className="stat-card blue">
+                    <div className="stat-label">ID Estudiante</div>
+                    <div className="stat-value">#{result.data.studentId || 'N/A'}</div>
                   </div>
                   
-                  <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                    <div className="text-sm text-purple-600 font-semibold mb-1">Total de Evaluaciones</div>
-                    <div className="text-2xl font-bold text-purple-900">
+                  <div className="stat-card purple">
+                    <div className="stat-label">Total de Evaluaciones</div>
+                    <div className="stat-value">
                       {result.data.notas ? result.data.notas.length : 0}
                     </div>
                   </div>
                   
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="text-sm text-green-600 font-semibold mb-1">Promedio General</div>
-                    <div className="text-2xl font-bold text-green-900">
+                  <div className="stat-card green">
+                    <div className="stat-label">Promedio General</div>
+                    <div className="stat-value">
                       {result.data.notas ? calcularPromedio(result.data.notas) : '0.00'}
                     </div>
                   </div>
                 </div>
 
-                {/* Tabla de notas */}
                 {result.data.notas && result.data.notas.length > 0 ? (
-                  <div className="overflow-hidden border border-slate-200 rounded-lg">
-                    <table className="w-full">
+                  <div className="grades-table-wrapper">
+                    <table className="grades-table">
                       <thead>
-                        <tr className="bg-slate-50 border-b-2 border-slate-300">
-                          <th className="text-left p-4 font-bold text-slate-900">Evaluación</th>
-                          <th className="text-left p-4 font-bold text-slate-900">Tipo</th>
-                          <th className="text-center p-4 font-bold text-slate-900">Calificación</th>
-                          <th className="text-left p-4 font-bold text-slate-900">Observaciones</th>
-                          <th className="text-left p-4 font-bold text-slate-900">Fecha</th>
+                        <tr>
+                          <th>Evaluación</th>
+                          <th>Tipo</th>
+                          <th className="center">Calificación</th>
+                          <th>Observaciones</th>
+                          <th>Fecha</th>
                         </tr>
                       </thead>
                       <tbody>
                         {result.data.notas.map((nota, idx) => (
-                          <tr 
-                            key={nota.id || idx} 
-                            className="border-b border-slate-200 hover:bg-slate-50 transition-colors duration-150"
-                          >
-                            <td className="p-4">
-                              <div className="font-semibold text-slate-900">
+                          <tr key={nota.id || idx}>
+                            <td>
+                              <div className="evaluation-name">
                                 {nota.evaluation || 'Sin nombre'}
                               </div>
-                              <div className="text-xs text-slate-500">ID: {nota.id}</div>
+                              <div className="evaluation-id">ID: {nota.id}</div>
                             </td>
-                            <td className="p-4">
-                              <span className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm font-medium">
+                            <td>
+                              <span className="type-badge">
                                 {nota.type || 'N/A'}
                               </span>
                             </td>
-                            <td className="p-4 text-center">
-                              <span className={`px-4 py-2 rounded-lg font-bold text-lg border ${getScoreColor(nota.score)}`}>
+                            <td className="center">
+                              <span className={`score-badge ${getScoreClass(nota.score)}`}>
                                 {nota.score !== null && nota.score !== undefined ? nota.score : 'N/A'}
                               </span>
                             </td>
-                            <td className="p-4 text-slate-600">
+                            <td className="observation-text">
                               {nota.observation || 'Sin observaciones'}
                             </td>
-                            <td className="p-4 text-slate-600 text-sm">
+                            <td className="date-text">
                               {nota.created_at ? new Date(nota.created_at).toLocaleDateString('es-ES', {
                                 year: 'numeric',
                                 month: 'long',
@@ -202,16 +193,15 @@ export default function RequestReport() {
                     </table>
                   </div>
                 ) : (
-                  <div className="p-8 text-center bg-slate-50 border border-slate-200 rounded-lg">
-                    <p className="text-slate-600 text-lg">No hay calificaciones registradas.</p>
+                  <div className="empty-state">
+                    <p className="empty-state-text">No hay calificaciones registradas.</p>
                   </div>
                 )}
-              </div>
+              </>
             )}
 
-            {/* Mensaje de éxito */}
             {result.message && (
-              <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+              <div className="success-box">
                 <strong>✓</strong> {result.message}
               </div>
             )}

@@ -2,6 +2,8 @@
 import Asistencia from "../entities/asistenciaEv.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import { createvalidation, updatevalidation } from "../validations/asistenciaEv.validation.js";
+import { crearNotificacion } from "../services/notification.service.js";
+import { User } from "../entities/user.entity.js";
 
 export async function marcarAsistencia(req, res) {
 	try {
@@ -39,6 +41,32 @@ export async function marcarAsistencia(req, res) {
 
 		const nuevaAsistencia = asistenciaRepository.create(datosAsistencia);
 		await asistenciaRepository.save(nuevaAsistencia);
+		
+		// Notificar al estudiante sobre la asistencia registrada
+		try {
+			await crearNotificacion(
+				estudianteId,
+				"asistencia_registrada",
+				"Asistencia Registrada",
+				"Tu asistencia ha sido registrada correctamente"
+			);
+			
+			// Notificar a todos los profesores
+			const usuarioRepository = AppDataSource.getRepository(User);
+			const profesores = await usuarioRepository.find({ where: { role: "profesor" } });
+			
+			for (const profesor of profesores) {
+				await crearNotificacion(
+					profesor.id,
+					"estudiante_asistencia",
+					"Asistencia de Estudiante Registrada",
+					`Un estudiante ha marcado su asistencia en la evaluación ID: ${nuevaAsistencia.evaluacionId}`
+				);
+			}
+		} catch (notifError) {
+			console.error("Error al crear notificación de asistencia:", notifError);
+		}
+		
 		return res.status(201).json({ message: "Asistencia registrada exitosamente", data: nuevaAsistencia });
 	} catch (error) {
 		console.error("Error al registrar asistencia:", error);
@@ -73,6 +101,18 @@ export async function asignarNota(req, res) {
 		registro.estado = "calificado";
 
 		await asistenciaRepository.save(registro);
+		
+		try {
+			await crearNotificacion(
+				registro.estudianteId,
+				"nota_asignada",
+				"Calificación Registrada",
+				`Tu evaluación ha sido calificada con nota: ${registro.nota}` + (comentarios ? ` - ${comentarios}` : "")
+			);
+		} catch (notifError) {
+			console.error("Error al crear notificación de calificación:", notifError);
+		}
+		
 		return res.status(200).json({ message: "Entrega calificada exitosamente", data: registro });
 	} catch (error) {
 		console.error("Error al asignar nota:", error);

@@ -1,0 +1,103 @@
+.notification-button {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  border: none;
+  box-shadow: 0 4px 20px rgba(52, 152, 219, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 999;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.notification-button:hover {
+  background: linear-gradient(135deg, #2980b9 0%, #21618c 100%);
+  transform: scale(1.1) translateY(-5px);
+  box-shadow: 0 8px 30px rgba(52, 152, 219, 0.6);
+}
+
+.notification-button:active {
+  transform: scale(0.95);
+}
+
+.notification-icon {
+  font-size: 1.5rem;
+  color: white;
+  animation: ring 2s ease-in-out infinite;
+}
+
+@keyframes ring {
+  0%, 90%, 100% {
+    transform: rotate(0deg);
+  }
+  92%, 96% {
+    transform: rotate(15deg);
+  }
+  94%, 98% {
+    transform: rotate(-15deg);
+  }
+}
+
+.notification-button:hover .notification-icon {
+  animation: none;
+  transform: scale(1.2);
+}
+
+/* Badge opcional para contador de notificaciones */
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #e74c3c;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .notification-button {
+    width: 50px;
+    height: 50px;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .notification-icon {
+    font-size: 1.3rem;
+  }
+}

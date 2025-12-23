@@ -1,14 +1,6 @@
 import Joi from 'joi';
 const safeString = Joi.string().trim().min(1).max(100);
 const crearUsuarioSchema = Joi.object({
-  nombre: safeString.required().messages({
-    'any.required': 'El nombre es obligatorio',
-    'string.empty': 'El nombre no puede estar vacio'
-  }),
-  apellido: safeString.required().messages({
-    'any.required': 'El apellido es obligatorio',
-    'string.empty': 'El apellido no puede estar vacio'
-  }),
   email: Joi.string().trim().lowercase().email({ tlds: { allow: false } })
     .required()
     .messages({
@@ -20,10 +12,9 @@ const crearUsuarioSchema = Joi.object({
     'any.required': 'La contraseña es obligatoria',
     'string.min': 'La contraseña debe tener al menos 5 caracteres',
     'string.empty': 'La contraseña no puede estar vacia'
-  })
-  ,
-  role: Joi.string().valid('estudiante', 'profesor').optional().messages({
-    'any.only': 'El role debe ser "estudiante" o "profesor"',
+  }),
+  role: Joi.string().valid('estudiante', 'profesor', 'administrador').optional().messages({
+    'any.only': 'El role debe ser "estudiante", "profesor" o "administrador"',
     'string.base': 'El role debe ser una cadena'
   })
 }).options({ abortEarly: false, allowUnknown: false });
@@ -42,9 +33,6 @@ const validacionMiddleware = (schema) => (req, res, next) => {
   next();
 };
 const actualizarPerfilSchema = crearUsuarioSchema
-  .fork(['nombre', 'apellido'], () =>
-    Joi.forbidden().messages({ 'any.unknown': 'No se permite modificar este campo' })
-  )
   .fork(['email', 'password'], (s) => s.optional())
   .or('email', 'password')
   .messages({ 'object.missing': 'Debes enviar al menos "email" o "password"' });

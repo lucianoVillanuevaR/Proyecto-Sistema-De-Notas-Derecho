@@ -1,13 +1,22 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/luckyCat.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Intranet de Notas - Facultad de Derecho</title>
-  <meta name="description" content="Intranet para gestión de notas y reportes - Facultad de Derecho" />
+    <title>Gestión Evaluaciones</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          document.title = "Vuelve";
+        } else {
+          document.title = "Gestión Evaluaciones";
+        }
+      });
+    </script>
   </body>
 </html>

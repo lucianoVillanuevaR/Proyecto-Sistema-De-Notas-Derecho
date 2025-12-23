@@ -2,6 +2,8 @@
 import Evaluacion from "../entities/evaluacion.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import { createvalidation, updatevalidation } from "../validations/evaluacion.validation.js";
+import { crearNotificacion } from "../services/notification.service.js";
+import { User } from "../entities/user.entity.js";
 
 export async function getEvaluaciones(req, res){
     try {
@@ -57,6 +59,33 @@ export async function createEvaluacion(req, res){
         }
 
         await evaluacionRepository.save(nuevaEvaluacion);
+        
+        try {
+            const usuarioRepository = AppDataSource.getRepository(User);
+            const estudiantes = await usuarioRepository.find({ where: { role: "estudiante" } });
+            const profesores = await usuarioRepository.find({ where: { role: "profesor" } });
+            
+            for (const estudiante of estudiantes) {
+                await crearNotificacion(
+                    estudiante.id,
+                    "evaluacion_creada",
+                    "Nueva Evaluación",
+                    `Se ha creado una nueva evaluación: ${nuevaEvaluacion.nombreEv} en ${nuevaEvaluacion.asignatura1}`
+                );
+            }
+            
+            for (const profesor of profesores) {
+                await crearNotificacion(
+                    profesor.id,
+                    "evaluacion_creada",
+                    "Nueva Evaluación Creada",
+                    `Se ha creado una nueva evaluación: ${nuevaEvaluacion.nombreEv} en ${nuevaEvaluacion.asignatura1}`
+                );
+            }
+        } catch (notifError) {
+            console.error("Error al crear notificaciones:", notifError);
+        }
+        
         res.status(201).json({
             message: "Evaluacion creada exitosamente",
             data: nuevaEvaluacion
@@ -95,6 +124,32 @@ export async function updateEvaluacion(req, res){
     evaluacion.tipoEv = tipoEv || evaluacion.tipoEv;
 
     await evaluacionRepository.save(evaluacion);
+    try {
+        const usuarioRepository = AppDataSource.getRepository(User);
+        const estudiantes = await usuarioRepository.find({ where: { role: "estudiante" } });
+        const profesores = await usuarioRepository.find({ where: { role: "profesor" } });
+
+        for (const estudiante of estudiantes) {
+            await crearNotificacion(
+                estudiante.id,
+                "evaluacion_actualizada",
+                "Evaluación Actualizada",
+                `Se ha actualizado la evaluación: ${evaluacion.nombreEv}`
+            );
+        }
+        
+        for (const profesor of profesores) {
+            await crearNotificacion(
+                profesor.id,
+                "evaluacion_actualizada",
+                "Evaluación Actualizada",
+                `Se ha actualizado la evaluación: ${evaluacion.nombreEv}`
+            );
+        }
+    } catch (notifError) {
+        console.error("Error al crear notificaciones:", notifError);
+    }
+    
     res.status(200).json({message: "Evaluacion actualizada exitosamente", data: evaluacion});
     } catch (error) {
         console.error("Error al actualizar la evaluacion:", error);
