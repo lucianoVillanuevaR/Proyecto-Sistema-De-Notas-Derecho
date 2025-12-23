@@ -196,135 +196,216 @@ export const reportController = {
       // Obtener información del estudiante
       const userRepo = AppDataSource.getRepository(User);
       const student = await userRepo.findOne({ where: { id: sid } });
-      const studentEmail = student ? student.email : `estudiante ID ${sid}`;
+      const studentEmail = student ? student.email : 'N/A';
 
-      // Generar PDF con formato profesional
+      // Generar PDF con formato profesional estilo Universidad del Bío-Bío
       const doc = new PDFDocument({ 
-        margin: 50,
+        margin: 60,
         size: 'A4',
         bufferPages: true
       });
       
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `attachment; filename="informe-${sid}.pdf"`);
+      res.setHeader("Content-Disposition", `attachment; filename="reporte-calificaciones-${sid}.pdf"`);
       doc.pipe(res);
 
-      // Encabezado principal
-      doc.fontSize(20).font('Helvetica-Bold').text('Informe académico - Estudiante ' + sid, { 
-        align: "center" 
-      });
-      doc.moveDown(0.5);
+      // ==================== ENCABEZADO INSTITUCIONAL ====================
+      const pageWidth = doc.page.width;
+      const leftMargin = 60;
+      const rightMargin = 60;
+      const topMargin = 50;
 
-      // Información de generación
-      doc.fontSize(10).font('Helvetica').text(`Generado por: ${actor.email} (${actor.role})`, { align: 'left' });
-      const fechaFormateada = new Date().toLocaleString('es-CL', { 
-        year: 'numeric', 
-        month: '2-digit', 
-        day: '2-digit', 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true
-      });
-      doc.text(`Fecha: ${fechaFormateada}`, { align: 'left' });
+      // Logo/Escudo simulado (texto azul pequeño arriba)
+      doc.fontSize(8).font('Helvetica')
+         .fillColor('#0066CC')
+         .text('UNIVERSIDAD DEL BÍO-BÍO', leftMargin, topMargin, { 
+           align: 'center',
+           width: pageWidth - leftMargin - rightMargin
+         });
+      
+      doc.moveDown(1);
+      
+      // Título principal
+      doc.fontSize(20).font('Helvetica-Bold')
+         .fillColor('#000000')
+         .text('Universidad del Bío-Bío', { 
+           align: 'center',
+           width: pageWidth - leftMargin - rightMargin
+         });
+      
+      doc.moveDown(0.7);
+      
+      // Subtítulo
+      doc.fontSize(16).font('Helvetica-Bold')
+         .fillColor('#000000')
+         .text('Reporte de Calificaciones', { 
+           align: 'center',
+           width: pageWidth - leftMargin - rightMargin
+         });
+      
+      doc.moveDown(0.5);
+      
+      // Facultad (color naranja/dorado)
+      doc.fontSize(11).font('Helvetica')
+         .fillColor('#FF8C00')
+         .text('Facultad de Ciencias Jurídicas y Sociales', { 
+           align: 'center',
+           width: pageWidth - leftMargin - rightMargin
+         });
+      
+      doc.moveDown(1.2);
+      
+      // Línea horizontal decorativa azul
+      const lineY = doc.y;
+      doc.moveTo(leftMargin, lineY)
+         .lineTo(pageWidth - rightMargin, lineY)
+         .strokeColor('#0066CC')
+         .lineWidth(3)
+         .stroke();
+      
       doc.moveDown(1.5);
 
-      // Sección de Notas
-      doc.fontSize(14).font('Helvetica-Bold').text("Notas:", { underline: true });
-      doc.moveDown(0.8);
-
-      if (notas.length === 0) {
-        doc.fontSize(11).font('Helvetica').text("No hay notas registradas para este estudiante.");
-      } else {
-        notas.forEach((n, idx) => {
-          doc.fontSize(11).font('Helvetica-Bold').text(
-            `${idx + 1}. Evaluación: ${n.evaluation} | Tipo: ${n.type || 'escrita'} | Puntaje: ${n.score} | Profesor: ${n.professorId}`
-          );
-          if (n.observation) {
-            doc.fontSize(10).font('Helvetica').text(`   Observación: ${n.observation}`, { 
-              indent: 15 
-            });
-          }
-          const fechaNota = new Date(n.created_at).toLocaleString('es-CL', {
-            year: 'numeric',
-            month: 'short',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            timeZone: 'GMT'
-          });
-          doc.fontSize(10).font('Helvetica-Oblique').text(`   Fecha: ${fechaNota}`, { 
-            indent: 15 
-          });
-          doc.moveDown(0.5);
-        });
-      }
-
-      doc.moveDown(1);
-
-      // Sección de Promedios por evaluación
-      doc.fontSize(14).font('Helvetica-Bold').text("Promedios por evaluación:", { underline: true });
-      doc.moveDown(0.8);
+      // ==================== INFORMACIÓN DEL ESTUDIANTE ====================
+      const infoStartY = doc.y;
       
-      if (Object.keys(promedios).length === 0) {
-        doc.fontSize(11).font('Helvetica').text("No hay promedios calculados.");
-      } else {
-        Object.keys(promedios).forEach((k) => {
-          const item = promedios[k];
-          doc.fontSize(11).font('Helvetica-Bold').text(
-            `- ${k}: promedio ${item.promedio !== null ? item.promedio : 'N/A'}`
-          );
-          Object.keys(item.modalidades).forEach(m => {
-            doc.fontSize(10).font('Helvetica').text(
-              `  * ${m}: ${item.modalidades[m]}`,
-              { indent: 20 }
-            );
-          });
-          doc.moveDown(0.3);
-        });
-      }
-
+      doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000')
+         .text('Estudiante:', leftMargin, infoStartY);
+      doc.font('Helvetica')
+         .text(`#${sid}`, leftMargin + 80, infoStartY);
+      
+      doc.font('Helvetica-Bold')
+         .text('Email:', leftMargin, infoStartY + 15);
+      doc.font('Helvetica')
+         .text(studentEmail, leftMargin + 80, infoStartY + 15);
+      
+      doc.font('Helvetica-Bold')
+         .text('ID:', leftMargin, infoStartY + 30);
+      doc.font('Helvetica')
+         .text(String(sid), leftMargin + 80, infoStartY + 30);
+      
+      // Fecha de generación
+      const ahora = new Date();
+      const fechaFormateada = `${ahora.getDate()} de ${['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][ahora.getMonth()]} de ${ahora.getFullYear()}`;
+      doc.font('Helvetica-Bold')
+         .text('Fecha:', leftMargin, infoStartY + 45);
+      doc.font('Helvetica')
+         .fillColor('#0066CC')
+         .text(fechaFormateada, leftMargin + 80, infoStartY + 45);
+      
+      doc.y = infoStartY + 70;
       doc.moveDown(1);
 
-      // Promedio General destacado
-      doc.fontSize(12).font('Helvetica-Bold').text(
-        `Promedio general: ${promedioGeneral !== null ? promedioGeneral : 'N/A'}`,
-        { align: 'left' }
-      );
+      // ==================== TABLA DE EVALUACIONES ====================
+      const tableTop = doc.y;
+      const tableHeaders = ['Evaluación', 'Tipo', 'Nota', 'Observación'];
+      const tableWidth = pageWidth - leftMargin - rightMargin;
+      const colWidths = [240, 80, 60, 130];
+      const colX = [
+        leftMargin, 
+        leftMargin + 240, 
+        leftMargin + 320, 
+        leftMargin + 380
+      ];
+      
+      // Encabezado de tabla con texto gris claro
+      doc.fontSize(10).font('Helvetica').fillColor('#999999');
+      tableHeaders.forEach((header, i) => {
+        doc.text(header, colX[i] + 5, tableTop, { 
+          width: colWidths[i] - 10, 
+          align: 'left'
+        });
+      });
+      
+      let currentY = tableTop + 20;
 
-      // Sección de Observaciones
-      if (observaciones.length > 0) {
-        doc.moveDown(1.5);
-        doc.fontSize(14).font('Helvetica-Bold').text("Observaciones:", { underline: true });
-        doc.moveDown(0.8);
-        
-        observaciones.forEach((o, i) => {
-          const fechaObs = new Date(o.created_at).toLocaleString('es-CL', {
-            year: 'numeric',
-            month: 'short',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            timeZone: 'GMT'
+      // Filas de datos
+      if (notas.length === 0) {
+        doc.fontSize(10).font('Helvetica-Oblique').fillColor('#666666');
+        doc.text('No hay calificaciones registradas', leftMargin, currentY + 10, {
+          align: 'center',
+          width: tableWidth
+        });
+        currentY += 40;
+      } else {
+        notas.forEach((nota, idx) => {
+          const rowHeight = 25;
+          
+          doc.fontSize(10).font('Helvetica').fillColor('#000000');
+          
+          // Evaluación
+          doc.text(nota.evaluation || 'N/A', colX[0] + 5, currentY, { 
+            width: colWidths[0] - 10,
+            ellipsis: true
           });
-          doc.fontSize(11).font('Helvetica-Bold').text(
-            `${i + 1}. Profesor ${o.professorId} (${o.type}) - ${fechaObs}`
-          );
-          doc.fontSize(10).font('Helvetica').text(`   ${o.observation}`, { 
-            indent: 15 
+          
+          // Tipo
+          doc.text(nota.type || 'escrita', colX[1] + 5, currentY, { 
+            width: colWidths[1] - 10
           });
-          doc.moveDown(0.5);
+          
+          // Nota con color rojo
+          const notaValor = Number(nota.score);
+          doc.fillColor('#E74C3C').font('Helvetica-Bold')
+             .text(notaValor, colX[2] + 5, currentY, { 
+               width: colWidths[2] - 10,
+               align: 'left'
+             });
+          
+          // Observación
+          doc.fillColor('#000000').font('Helvetica');
+          doc.text(nota.observation || '', colX[3] + 5, currentY, { 
+            width: colWidths[3] - 10,
+            ellipsis: true
+          });
+          
+          currentY += rowHeight;
         });
       }
 
-      // Pie de página con número de páginas
+      doc.moveDown(2);
+      currentY = doc.y + 20;
+
+      // ==================== PROMEDIO GENERAL DESTACADO ====================
+      const promedioTexto = promedioGeneral !== null ? promedioGeneral.toFixed(2) : 'N/A';
+      
+      doc.fontSize(13).font('Helvetica-Bold')
+         .fillColor('#0066CC')
+         .text(`Promedio General: ${promedioTexto}`, leftMargin, currentY, {
+           align: 'center',
+           width: pageWidth - leftMargin - rightMargin
+         });
+
+      doc.moveDown(3);
+
+      // ==================== PIE DE PÁGINA ====================
       const pages = doc.bufferedPageRange();
       for (let i = 0; i < pages.count; i++) {
         doc.switchToPage(i);
-        doc.fontSize(9).font('Helvetica').text(
-          `Página ${i + 1} de ${pages.count}`,
-          50,
-          doc.page.height - 50,
-          { align: 'center' }
+        
+        const footerY = doc.page.height - 70;
+        
+        // Texto del pie de página centrado
+        doc.fontSize(9).font('Helvetica').fillColor('#0066CC');
+        doc.text(
+          'Sistema de Gestión de Evaluaciones - Universidad del Bío-Bío',
+          leftMargin,
+          footerY,
+          { align: 'center', width: pageWidth - leftMargin - rightMargin }
+        );
+        
+        doc.fontSize(8).fillColor('#999999');
+        doc.text(
+          `Documento generado el ${ahora.toLocaleString('es-CL', { 
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+          })}`,
+          leftMargin,
+          footerY + 15,
+          { align: 'center', width: pageWidth - leftMargin - rightMargin }
         );
       }
 
