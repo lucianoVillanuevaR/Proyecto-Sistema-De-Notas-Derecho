@@ -1,12 +1,28 @@
-// index.js
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
 import morgan from "morgan";
 import { AppDataSource, connectDB } from "./config/configDb.js";
 import { routerApi } from "./routes/index.routes.js";
 
 const app = express();
-app.use(express.json());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.use(express.json({
+  verify: (req, _res, buf) => {
+    try {
+      req.rawBody = buf.toString();
+    } catch (e) {
+      req.rawBody = undefined;
+    }
+  },
+}));
 app.use(morgan("dev"));
 
 app.get("/", (_req, res) => {

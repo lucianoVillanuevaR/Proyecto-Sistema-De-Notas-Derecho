@@ -30,9 +30,8 @@ export const Appeal = new EntitySchema({
             nullable: true,
         },
         status: {
-            type: "varchar",
-            length: 50,
-            nullable: false,
+            type: "enum",
+            enum: ["pendiente", "aceptada", "rechazada"],
             default: "pendiente",
         },
         meetingDate: {
@@ -48,6 +47,13 @@ export const Appeal = new EntitySchema({
             type: "timestamp",
             updateDate: true,
             default: () => "CURRENT_TIMESTAMP",
+        },
+    },
+    relations: {
+        grade: {
+            type: "many-to-one",
+            target: "Grade",
+            joinColumn: { name: "gradeId" },
         },
     },
 });

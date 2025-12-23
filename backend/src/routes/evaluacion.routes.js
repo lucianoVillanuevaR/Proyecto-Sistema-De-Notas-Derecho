@@ -1,6 +1,7 @@
 "use strict"
 import { Router } from "express";
 import {authMiddleware} from "../middleware/auth.middleware.js";
+import {checkRole} from "../middleware/role.middleware.js";
 import {
     createEvaluacion,
     deleteEvaluacion,
@@ -13,9 +14,9 @@ const router = Router();
 router.get("/", getEvaluaciones);
 router.get("/:id", getEvaluacionById);
 
-router.post("/", authMiddleware, createEvaluacion);
-router.put("/:id", authMiddleware, updateEvaluacion);
-router.delete("/:id", authMiddleware, deleteEvaluacion);
+router.post("/", authMiddleware, checkRole("profesor", "admin"), createEvaluacion);
+router.put("/:id", authMiddleware, checkRole("profesor", "admin"), updateEvaluacion);
+router.delete("/:id", authMiddleware, checkRole("profesor", "admin"), deleteEvaluacion);
 
 
 export default router;

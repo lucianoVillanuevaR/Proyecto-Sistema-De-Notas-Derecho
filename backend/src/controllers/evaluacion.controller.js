@@ -37,7 +37,7 @@ export async function getEvaluacionById(req, res){
 export async function createEvaluacion(req, res){
     try {
     const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
-        const { nombreEv, asignatura1, profesor, ponderacion } = req.body;
+        const { nombreEv, asignatura1, profesor, ponderacion, tipoEv } = req.body;
         const { error } = createvalidation.validate(req.body);
         if(error){
             return res.status(400).json({message: "Error al crear la evaluacion", error: error});
@@ -47,7 +47,8 @@ export async function createEvaluacion(req, res){
             nombreEv,
             asignatura1,
             profesor,
-            ponderacion
+            ponderacion,
+            tipoEv
         });
         
         const existeMismaAsignatura = await evaluacionRepository.findOne({where: { nombreEv, asignatura1 }});
@@ -69,7 +70,7 @@ export async function updateEvaluacion(req, res){
     try {
     const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
         const { id } = req.params;
-        const { nombreEv, asignatura1, profesor, ponderacion } = req.body;
+        const { nombreEv, asignatura1, profesor, ponderacion, tipoEv } = req.body;
 
         const evaluacion = await evaluacionRepository.findOne({where: { id }});
         if(!evaluacion){
@@ -91,6 +92,7 @@ export async function updateEvaluacion(req, res){
     evaluacion.asignatura1 = asignatura1 || evaluacion.asignatura1;
     evaluacion.profesor = profesor || evaluacion.profesor;
     evaluacion.ponderacion = ponderacion || evaluacion.ponderacion;
+    evaluacion.tipoEv = tipoEv || evaluacion.tipoEv;
 
     await evaluacionRepository.save(evaluacion);
     res.status(200).json({message: "Evaluacion actualizada exitosamente", data: evaluacion});

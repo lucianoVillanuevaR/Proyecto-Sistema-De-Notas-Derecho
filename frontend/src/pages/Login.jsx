@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/auth.service';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -9,6 +10,7 @@ const Login = () => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const { setUser } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -18,6 +20,8 @@ const Login = () => {
         setLoading(false);
 
         if (res?.status === 'Success' || res?.data) {
+            const returnedUser = res?.data?.user || res?.data?.data?.user || res?.user;
+            if (returnedUser && setUser) setUser(returnedUser);
             navigate('/home');
             return;
         }
@@ -92,16 +96,8 @@ const Login = () => {
 
                             <div className="flex items-center justify-between">
                                 <a className="text-sm forgot-link hover:underline" href="#"></a>
-                                <button type="submit" className="submit-btn" disabled={loading}>
-                                    {loading ? 'Cargando...' : (
-                                        <>
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                                <path d="M21 2l-6 6" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                                <path d="M7 13a5 5 0 1 1 7.07 7.07L21 13" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                            </svg>
-                                            Ingresar
-                                        </>
-                                    )}
+                                <button type="submit" className="submit-btn text-white" disabled={loading}>
+                                    {loading ? 'Cargando...' : 'Ingresar'}
                                 </button>
                             </div>
                         </form>

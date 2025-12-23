@@ -1,24 +1,49 @@
-import { crearApelacion, obtenerApelacion, obtenerApelacionId, obtenerApelacionEstudiante, actualizarApelacion, obtenerApelacionProfesor } from "../services/appeal.service.js";
+import { crearApelacion, obtenerApelacion, obtenerApelacionId, obtenerApelacionEstudiante, actualizarApelacion, obtenerApelacionProfesor, obtenerNotasApelables } from "../services/appeal.service.js";
+import { crearNotificacion } from "../services/notification.service.js";
+import { createAppealValidation, updateAppealValidation } from "../validations/appeal.validation.js";
 import { handleSuccess,handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
 export async function crearApelaciones(req, res) {
  try {
-    const data = req.body;
-    const { role } = req.user;
+    const { error } = createAppealValidation.validate(req.body);
+
+    if (error) {
+      return handleErrorClient(
+        res,
+        400,
+        error.details[0].message
+      );
+    }
+    
+    const { id, role, email } = req.user;
 
     if (role !== "estudiante" && role !== "admin") {
       return handleErrorClient(res, 403, "No tienes permisos para crear apelaciones");
     }
 
-    if (!data.studentId || !data.gradeId) {
-      return handleErrorClient(res, 400, "El ID del estudiante y la nota son requeridos");
+    const nuevaApelacion = await crearApelacion({
+      ...req.body,
+      studentId: id,
+      role,
+   });
+
+   try {
+      await crearNotificacion(
+        nuevaApelacion.professorId,
+        "nueva_apelacion",
+        "Nueva apelación recibida",
+        `El estudiante ${email} ha enviado una apelación.`,
+        {
+          appealId: nuevaApelacion.id,
+          gradeId: nuevaApelacion.gradeId,
+          studentId: nuevaApelacion.studentId,
+          url: `/appeals/${nuevaApelacion.id}`
+        }
+      );
+    } catch (err) {
+      console.error("Error creando notificación:", err.message);
     }
 
-    if (!data.reason || data.reason.trim() === "") {
-      return handleErrorClient(res, 400, "La razón de apelación es requerida");
-    }
-
-    const nuevaApelacion = await crearApelacion(data);
     handleSuccess(res, 201, "Apelación creada exitosamente", nuevaApelacion);
  }  catch (error) {
     handleErrorServer(res, 500, "Error al crear apelación", error.message);
@@ -50,37 +75,94 @@ export async function obtenerApelaciones(req, res) {
 export async function obtenerApelacionporId(req, res){
    try {
       const { id } = req.params;
+      const { role, id: userId } = req.user;
 
       if (!id || isNaN(id)) {
          return handleErrorClient(res, 400, "ID inválido");
       }
 
       const apelacion = await obtenerApelacionId(id);
+
+      if (!apelacion) return handleErrorClient(res, 404, "Apelación no encontrada");
+
+      if ((role === "estudiante" && apelacion.studentId !== userId) || (role === "profesor" && apelacion.professorId !== userId)) {
+         return handleErrorClient(res, 403, "No tienes permisos para ver esta apelación");
+      }
+
       handleSuccess(res, 200, "Apelación encontrada", apelacion);
    } catch (error) {
-      handleErrorClient(res, 404, "Apelación no encontrada", error.message);
+      handleErrorServer(res, 500, "Error al obtener las apelaciones", error.message);
    }
+}
+
+export async function obtenerNotasParaApelar(req, res) {
+    try {
+      const { id, role } = req.user;
+
+      if (role !== "estudiante" && role !== "admin") {
+        return handleErrorClient(res, 403, "No tienes permisos");
+      }
+
+      const notas = await obtenerNotasApelables(id, role);
+
+      handleSuccess(res, 200, "Notas obtenidas", notas);
+    } catch (error) {
+      handleErrorServer(res, 500, "Error al obtener notas", error.message);
+    }
 }
 
 export async function actualizarApelaciones(req, res) {
    try {
     const { id } = req.params;
-    const cambios = req.body;
-    const { role } = req.user;
+    const { role, id: userId } = req.user;
 
     if (!id || isNaN(id)) {
       return handleErrorClient(res, 400, "ID inválido");
     }
 
-    if (role !== "profesor" && role !== "admin") {
-      return handleErrorClient(res, 403, "No tienes permisos para actualizar apelaciones");
+    const { error } = updateAppealValidation.validate(req.body);
+
+    if (error) {
+      return handleErrorClient(
+        res,
+        400,
+        error.details[0].message
+      );
     }
 
-    if (!cambios || Object.keys(cambios).length === 0) {
-      return handleErrorClient(res, 400, "Datos de actualización requeridos");
+    const apelacion = await obtenerApelacionId(id);
+
+    if (!apelacion) {
+      return handleErrorClient(res, 404, "Apelación no encontrada");
     }
 
-    const apelacionActualizada = await actualizarApelacion(id, cambios);
+    if (role === "estudiante") {
+      return handleErrorClient(res, 403, "Los estudiantes no pueden actualizar apelaciones");
+    }
+
+    if (role === "profesor" && apelacion.professorId != userId) {
+      return handleErrorClient(res, 403, "No tienes permisos para actualizar la apelación");
+    }
+
+    const apelacionActualizada = await actualizarApelacion(id, req.body);
+
+    try {
+      await crearNotificacion(
+        apelacionActualizada.studentId,
+        "apelacion_actualizada",
+        "Tu apelación fue actualizada",
+        `Estado actual: ${apelacionActualizada.status}`,
+        {
+          appealId: apelacionActualizada.id,
+          status: apelacionActualizada.status,
+          comment: apelacionActualizada.comment || null,
+          url: `/appeals/${apelacionActualizada.id}`
+        }
+      );
+    } catch (err) {
+      console.error("Error creando notificación:", err.message);
+    }
+
     handleSuccess(res, 200, "Apelación actualizada exitosamente", apelacionActualizada);
   } catch (error) {
     handleErrorServer(res, 500, "Error al actualizar la apelación", error.message);

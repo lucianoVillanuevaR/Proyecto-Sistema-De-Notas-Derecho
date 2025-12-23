@@ -9,6 +9,11 @@ export const EvaluacionEntity = new EntitySchema({
             primary: true,
             generated: "increment",
         },
+        tipoEv: {
+            type: "enum",
+            enum: ["oral", "escrita"],
+            nullable: false,
+        },
         nombreEv: {
             type: "varchar",
             unique: false,
