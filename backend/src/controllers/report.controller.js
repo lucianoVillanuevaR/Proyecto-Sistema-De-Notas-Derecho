@@ -150,7 +150,6 @@ export const reportController = {
 
       const notas = await obtenerNotasPorEstudiante(sid);
 
-      // calcular promedios (mismo algoritmo que getInformeEstudiante)
       const promediosPorEvaluacion = {};
       let sumaTotal = 0;
       let countTotal = 0;
@@ -186,19 +185,16 @@ export const reportController = {
         .filter(n => n.observation)
         .map(n => ({ professorId: n.professorId, observation: n.observation, type: n.type || "escrita", created_at: n.created_at }));
 
-      // Registrar consulta en historial (no bloquear si falla)
       try {
         await crearEntradaHistorial(sid, actor.id, "descargar_informe_pdf", `Usuario ${actor.email} descargó informe PDF del estudiante ${sid}`);
       } catch (err) {
         console.warn("No se pudo crear entrada de historial al generar PDF:", err.message || err);
       }
 
-      // Obtener información del estudiante
+  
       const userRepo = AppDataSource.getRepository(User);
       const student = await userRepo.findOne({ where: { id: sid } });
       const studentEmail = student ? student.email : 'N/A';
-
-      // Generar PDF con formato profesional estilo Universidad del Bío-Bío
       const doc = new PDFDocument({ 
         margin: 60,
         size: 'A4',
@@ -208,14 +204,11 @@ export const reportController = {
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", `attachment; filename="reporte-calificaciones-${sid}.pdf"`);
       doc.pipe(res);
-
-      // ==================== ENCABEZADO INSTITUCIONAL ====================
       const pageWidth = doc.page.width;
       const leftMargin = 60;
       const rightMargin = 60;
       const topMargin = 50;
 
-      // Logo/Escudo simulado (texto azul pequeño arriba)
       doc.fontSize(8).font('Helvetica')
          .fillColor('#0066CC')
          .text('UNIVERSIDAD DEL BÍO-BÍO', leftMargin, topMargin, { 
@@ -225,7 +218,6 @@ export const reportController = {
       
       doc.moveDown(1);
       
-      // Título principal
       doc.fontSize(20).font('Helvetica-Bold')
          .fillColor('#000000')
          .text('Universidad del Bío-Bío', { 
@@ -235,7 +227,6 @@ export const reportController = {
       
       doc.moveDown(0.7);
       
-      // Subtítulo
       doc.fontSize(16).font('Helvetica-Bold')
          .fillColor('#000000')
          .text('Reporte de Calificaciones', { 
@@ -245,7 +236,6 @@ export const reportController = {
       
       doc.moveDown(0.5);
       
-      // Facultad (color naranja/dorado)
       doc.fontSize(11).font('Helvetica')
          .fillColor('#FF8C00')
          .text('Facultad de Ciencias Jurídicas y Sociales', { 
@@ -255,7 +245,6 @@ export const reportController = {
       
       doc.moveDown(1.2);
       
-      // Línea horizontal decorativa azul
       const lineY = doc.y;
       doc.moveTo(leftMargin, lineY)
          .lineTo(pageWidth - rightMargin, lineY)
@@ -265,7 +254,6 @@ export const reportController = {
       
       doc.moveDown(1.5);
 
-      // ==================== INFORMACIÓN DEL ESTUDIANTE ====================
       const infoStartY = doc.y;
       
       doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000')
@@ -283,7 +271,7 @@ export const reportController = {
       doc.font('Helvetica')
          .text(String(sid), leftMargin + 80, infoStartY + 30);
       
-      // Fecha de generación
+
       const ahora = new Date();
       const fechaFormateada = `${ahora.getDate()} de ${['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][ahora.getMonth()]} de ${ahora.getFullYear()}`;
       doc.font('Helvetica-Bold')
@@ -295,7 +283,6 @@ export const reportController = {
       doc.y = infoStartY + 70;
       doc.moveDown(1);
 
-      // ==================== TABLA DE EVALUACIONES ====================
       const tableTop = doc.y;
       const tableHeaders = ['Evaluación', 'Tipo', 'Nota', 'Observación'];
       const tableWidth = pageWidth - leftMargin - rightMargin;
@@ -307,7 +294,6 @@ export const reportController = {
         leftMargin + 380
       ];
       
-      // Encabezado de tabla con texto gris claro
       doc.fontSize(10).font('Helvetica').fillColor('#999999');
       tableHeaders.forEach((header, i) => {
         doc.text(header, colX[i] + 5, tableTop, { 
@@ -318,7 +304,6 @@ export const reportController = {
       
       let currentY = tableTop + 20;
 
-      // Filas de datos
       if (notas.length === 0) {
         doc.fontSize(10).font('Helvetica-Oblique').fillColor('#666666');
         doc.text('No hay calificaciones registradas', leftMargin, currentY + 10, {
@@ -332,18 +317,17 @@ export const reportController = {
           
           doc.fontSize(10).font('Helvetica').fillColor('#000000');
           
-          // Evaluación
+
           doc.text(nota.evaluation || 'N/A', colX[0] + 5, currentY, { 
             width: colWidths[0] - 10,
             ellipsis: true
           });
-          
-          // Tipo
+
           doc.text(nota.type || 'escrita', colX[1] + 5, currentY, { 
             width: colWidths[1] - 10
           });
           
-          // Nota con color rojo
+      
           const notaValor = Number(nota.score);
           doc.fillColor('#E74C3C').font('Helvetica-Bold')
              .text(notaValor, colX[2] + 5, currentY, { 
@@ -351,7 +335,7 @@ export const reportController = {
                align: 'left'
              });
           
-          // Observación
+   
           doc.fillColor('#000000').font('Helvetica');
           doc.text(nota.observation || '', colX[3] + 5, currentY, { 
             width: colWidths[3] - 10,
@@ -365,7 +349,6 @@ export const reportController = {
       doc.moveDown(2);
       currentY = doc.y + 20;
 
-      // ==================== PROMEDIO GENERAL DESTACADO ====================
       const promedioTexto = promedioGeneral !== null ? promedioGeneral.toFixed(2) : 'N/A';
       
       doc.fontSize(13).font('Helvetica-Bold')
@@ -377,14 +360,12 @@ export const reportController = {
 
       doc.moveDown(3);
 
-      // ==================== PIE DE PÁGINA ====================
       const pages = doc.bufferedPageRange();
       for (let i = 0; i < pages.count; i++) {
         doc.switchToPage(i);
         
         const footerY = doc.page.height - 70;
         
-        // Texto del pie de página centrado
         doc.fontSize(9).font('Helvetica').fillColor('#0066CC');
         doc.text(
           'Sistema de Gestión de Evaluaciones - Universidad del Bío-Bío',
@@ -449,10 +430,9 @@ export const reportController = {
 
       const students = await qb.select(['u.id', 'u.email', hasName ? 'u.name' : undefined].filter(Boolean)).limit(100).getRawMany();
 
-      // Normalize result: getRawMany returns raw column names like u_id; map to id/email/name
+      // mapiar = id/email/name
       const mapped = students.map(r => {
         const obj = {};
-        // raw keys can be like u_id, u_email, u_name
         Object.keys(r).forEach(k => {
           const kk = k.replace(/^u_?/, '').replace(/\./g, '_');
           obj[kk] = r[k];
