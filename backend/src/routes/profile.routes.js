@@ -16,7 +16,6 @@ router.get("/public", perfilPublico);
 router.get("/private", authMiddleware, perfilPrivado);
 router.patch("/private", authMiddleware, validarUpdateProfile, actualizarPerfilPrivado);
 router.delete("/private", authMiddleware, eliminarPerfilPrivado);
-// Admin routes to manage other users
 router.patch("/:id", authMiddleware, checkRole("admin"), validarUpdateProfile, actualizarPerfilPorIdAdmin);
 router.delete("/:id", authMiddleware, checkRole("admin"), eliminarPerfilPorIdAdmin);
 export default router;
