@@ -7,7 +7,7 @@ export default function Notificaciones() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all'); // 'all', 'unread', 'read'
+  const [filter, setFilter] = useState('all'); 
 
   useEffect(() => {
     loadNotifications();
