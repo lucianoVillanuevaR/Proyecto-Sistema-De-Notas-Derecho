@@ -13,6 +13,8 @@ import GradesManager from '@pages/GradesManager'
 import RequestReport from '@pages/RequestReport'
 import Notificaciones from '@pages/Notificaciones'
 import ProtectedRoute from '@components/ProtectedRoute'
+import Appeals from '@pages/Appeals';
+
 
 const router = createBrowserRouter([
   {
@@ -51,7 +53,15 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
-      }
+      },
+      {
+        path: "apelaciones",
+        element: (
+          <ProtectedRoute>
+            <Appeals />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {

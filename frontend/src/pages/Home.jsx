@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FaHome, FaCalendarAlt, FaEnvelope, FaUniversity, FaGlobe, FaBook, FaBuilding, FaGraduationCap } from "react-icons/fa";
+import { getAppeals } from "@services/appeal.service.js";
 import ubbLogo from "@assets/Escudo_Universidad_del_Bío-Bío.png";
 import "@styles/home.css";
 
@@ -11,6 +12,49 @@ const Home = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showMalla, setShowMalla] = useState(false);
   const mallaRef = useRef(null);
+
+  const [meetingsMap, setMeetingsMap] = useState({});
+
+  useEffect(() => {
+    // Cargar apelaciones y mapear por fecha (YYYY-MM-DD)
+    const loadMeetings = async () => {
+      try {
+        const data = await getAppeals();
+        if (!Array.isArray(data)) return;
+        const map = {};
+        data.forEach(ap => {
+          if (!ap.meetingDate) return;
+          // Ignorar citas en apelaciones rechazadas
+          if (ap.status === 'rechazada') return;
+          const d = new Date(ap.meetingDate);
+          if (isNaN(d.getTime())) return;
+          const key = d.toISOString().slice(0,10); // YYYY-MM-DD
+          if (!map[key]) map[key] = [];
+          // Intentar extraer información de estudiante y nota de forma robusta
+          const studentId = ap.studentId || ap.student?.id || ap.student?.studentId || '';
+          const studentName = ap.student?.name || ap.student?.nombre || '';
+          const gradeId = ap.gradeId || ap.grade?.id || ap.gradeId || '';
+          const gradeLabel = ap.grade?.evaluation || ap.grade?.name || (ap.grade?.score ? `Nota ${ap.grade.score}` : '') || '';
+
+          map[key].push({
+            id: ap.id,
+            time: d.toISOString().slice(11,16),
+            reason: ap.reason || '',
+            status: ap.status,
+            studentId,
+            studentName,
+            gradeId,
+            gradeLabel
+          });
+        });
+        setMeetingsMap(map);
+      } catch (err) {
+        console.error('Error al cargar citas de apelaciones', err);
+      }
+    };
+
+    loadMeetings();
+  }, []);
 
   const mallaCurricular = {
     "Año 1": {
@@ -145,13 +189,18 @@ const Home = () => {
         currentDate.getMonth() === new Date().getMonth() &&
         currentDate.getFullYear() === new Date().getFullYear();
 
+      const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const meetingsForDay = meetingsMap[dateKey] || [];
       days.push(
         <div
           key={day}
           className={`calendar-day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}`}
           onClick={() => setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))}
         >
-          {day}
+          <div className="calendar-day-number">{day}</div>
+          {meetingsForDay.length > 0 && (
+            <div className="meeting-dot" title={`${meetingsForDay.length} cita(s)`}></div>
+          )}
         </div>
       );
     }
@@ -221,6 +270,30 @@ const Home = () => {
                 <div key={day} className="calendar-day-name">{day}</div>
               ))}
               {renderCalendar()}
+            </div>
+
+            {/* Detalle de citas para la fecha seleccionada */}
+            <div className="meetings-list">
+              <h4>Citas para {selectedDate.toLocaleDateString()}</h4>
+              {(() => {
+                const key = selectedDate.toISOString().slice(0,10);
+                const items = meetingsMap[key] || [];
+                if (items.length === 0) return <p>No hay citas para esta fecha.</p>;
+                return (
+                  <ul>
+                    {items.map(m => (
+                      <li key={m.id} className="meeting-item">
+                        <div className="meeting-top"><span className="meeting-time-label">Hora:</span> <span className="meeting-value">{m.time}</span></div>
+                        <div className="meeting-bottom">
+                          <div>Alumno ID: <span className="meeting-value">{m.studentId || 'N/A'}</span> {m.studentName ? <span className="muted">({m.studentName})</span> : null}</div>
+                          <div>Calificación ID: <span className="meeting-value">{m.gradeId || 'N/A'}</span> {m.gradeLabel ? <span className="muted">({m.gradeLabel})</span> : null}</div>
+                          <div>Motivo: {m.reason || 'Sin motivo'}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                );
+              })()}
             </div>
           </div>
         </div>
