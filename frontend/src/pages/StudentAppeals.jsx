@@ -107,7 +107,7 @@ export default function StudentAppeals() {
                   <tr>
                     <td class="note-info-label">Profesor</td>
                     <td class="note-info-value">${professor}</td>
-                  </tr> 
+                  </tr>
                 </tbody>
               </table>
             `;
@@ -150,7 +150,6 @@ export default function StudentAppeals() {
     }
   };
 
-  // Paginación
   const totalPages = Math.max(1, Math.ceil(appeals.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -180,16 +179,20 @@ export default function StudentAppeals() {
               <thead>
                 <tr>
                   <th>ID</th>
+                  <th className="col-professor">Profesor ID</th>
+                  <th className="col-grade">Calificación ID</th>
                   <th>Estado</th>
-                  <th>Motivo</th>
-                  <th>Comentario</th>
-                  <th>Fecha cita</th>
+                  <th className="col-motivo">Motivo del estudiante</th>
+                  <th className="col-comment">Comentario del profesor</th>
+                  <th className="col-date">Fecha de reunión</th>
                 </tr>
               </thead>
               <tbody>
                 {appealsPaginadas.map((a) => (
                   <tr key={a.id}>
                     <td>{a.id}</td>
+                    <td className="col-professor">{a.professorId || a.professor?.id || '-'}</td>
+                    <td className="col-grade">{a.gradeId || a.grade?.id || '-'}</td>
                     <td>
                       <span className={`status-badge ${
                         a.status === 'pendiente' ? 'status-pendiente' :
@@ -199,9 +202,9 @@ export default function StudentAppeals() {
                         {a.status === 'pendiente' ? 'Pendiente' : a.status === 'aceptada' ? 'Aceptada' : 'Rechazada'}
                       </span>
                     </td>
-                    <td>{a.reason}</td>
-                    <td>{a.comment || '-'}</td>
-                    <td>{a.meetingDate ? new Date(a.meetingDate).toLocaleString() : '—'}</td> 
+                    <td className="col-motivo">{a.reason}</td>
+                    <td className="col-comment">{a.comment || '-'}</td>
+                    <td className="col-date">{a.meetingDate ? new Date(a.meetingDate).toLocaleString() : '—'}</td> 
                   </tr>
                 ))}
               </tbody>

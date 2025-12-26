@@ -64,6 +64,35 @@
   text-transform: uppercase;
 }
 
+.appeals-table th.col-professor,
+.appeals-table td.col-professor {
+  width: 90px;
+  text-align: left;
+}
+
+.appeals-table th.col-grade,
+.appeals-table td.col-grade {
+  width: 140px;
+  text-align: left;
+}
+
+.appeals-table th.col-date,
+.appeals-table td.col-date{
+  width: 200px;
+}
+
+.appeals-table td.col-motivo,
+.appeals-table th.col-motivo,
+.appeals-table td.col-comment,
+.appeals-table th.col-comment{
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.appeals-table td.col-professor,
+.appeals-table td.col-grade{font-variant-numeric: tabular-nums;}
+
+
 .appeals-table td {
   padding: 10px 8px;
   border-bottom: 1px solid #dee2e6;
@@ -90,7 +119,6 @@
   font-weight: 600;
 }
 
-/* New badge styles (text-only) */
 .status-badge {
   font-weight: 600;
   font-size: 0.9rem;
@@ -116,7 +144,7 @@
   font-size: 0.9rem;
   padding: 0;
   background: transparent;
-  color: #2563eb; /* more visible blue */
+  color: #2563eb;
   border: none;
   box-shadow: none;
 }
@@ -159,8 +187,8 @@
 .note-info-label {
   color: #6b7280;
   font-weight: 600;
-  width: max-content; /* fit to content so labels align closely */
-  padding-right: 8px; /* tighten separation */
+  width: max-content;
+  padding-right: 8px;
   text-align: left;
 }
 

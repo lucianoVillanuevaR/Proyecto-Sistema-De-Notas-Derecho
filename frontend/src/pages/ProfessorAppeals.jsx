@@ -27,12 +27,17 @@ export default function ProfessorAppeals() {
   };
 
   const handleResolver = (appeal) => {
-    // Prepare initial values
+    
     const meetingInitial = appeal.meetingDate ? new Date(appeal.meetingDate).toISOString().slice(0,16) : '';
 
     Swal.fire({
       title: `Resolver apelación #${appeal.id}`,
       html: `
+        <div style="margin-bottom:8px;color:#374151;font-size:0.95rem;">
+          <div><strong>Alumno ID:</strong> ${appeal.studentId || appeal.student?.id || '-'}</div>
+          <div><strong>Calificación ID:</strong> ${appeal.gradeId || appeal.grade?.id || '-'}</div>
+        </div>
+
         <p><strong>Motivo:</strong></p>
         <p>${appeal.reason}</p>
 
@@ -64,7 +69,7 @@ export default function ProfessorAppeals() {
             meetingEl.disabled = false;
             meetingEl.style.opacity = '1';
           } else {
-            // pendiente or empty
+            
             meetingEl.disabled = true;
             meetingEl.style.opacity = '0.6';
           }
@@ -79,7 +84,6 @@ export default function ProfessorAppeals() {
         const meetingDateEl = document.getElementById("meetingDate");
         const meetingDate = meetingDateEl ? meetingDateEl.value : '';
 
-        // Client-side validation — return false to keep modal open and keep buttons responsive
         if (!comment || !status) {
           Swal.showValidationMessage("Completa todos los campos");
           return false;
@@ -116,7 +120,6 @@ export default function ProfessorAppeals() {
     });
   };
 
-  // Paginación
   const totalPages = Math.max(1, Math.ceil(appeals.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -126,7 +129,7 @@ export default function ProfessorAppeals() {
     <div className="appeals-container">
       <div className="appeals-wrapper">
         <div className="appeals-header">
-          <h1>Apelaciones Pendientes</h1>
+          <h1>Mis Apelaciones</h1>
         </div>
 
         <div className="appeals-table">
@@ -143,9 +146,12 @@ export default function ProfessorAppeals() {
               <thead>
                 <tr>
                   <th>ID</th>
+                  <th className="col-professor">Alumno ID</th>
+                  <th className="col-grade">Calificación ID</th>
                   <th>Estado</th>
-                  <th>Motivo</th>
-                  <th>Fecha cita</th>
+                  <th className="col-motivo">Motivo del estudiante</th>
+                  <th className="col-comment">Comentario del profesor</th>
+                  <th className="col-date">Fecha de reunión</th>
                   <th>Acción</th>
                 </tr>
               </thead>
@@ -153,6 +159,8 @@ export default function ProfessorAppeals() {
                 {appealsPaginadas.map((a) => (
                   <tr key={a.id}>
                     <td>{a.id}</td>
+                    <td className="col-professor">{a.studentId || a.student?.id || '-'}</td>
+                    <td className="col-grade">{a.gradeId || a.grade?.id || '-'}</td>
                     <td>
                       <span className={`status-badge ${
                         a.status === 'pendiente' ? 'status-pendiente' :
@@ -162,8 +170,9 @@ export default function ProfessorAppeals() {
                         {a.status === 'pendiente' ? 'Pendiente' : a.status === 'aceptada' ? 'Aceptada' : 'Rechazada'}
                       </span>
                     </td>
-                    <td>{a.reason}</td>
-                    <td>{a.meetingDate ? new Date(a.meetingDate).toLocaleString() : '—'}</td>
+                    <td className="col-motivo">{a.reason}</td>
+                    <td className="col-comment">{a.comment || '-'}</td>
+                    <td className="col-date">{a.meetingDate ? new Date(a.meetingDate).toLocaleString() : '—'}</td>
                     <td>
                       {a.status === 'pendiente' ? (
                         <button className="btn-gestionar" onClick={() => handleResolver(a)}>
