@@ -17,7 +17,6 @@ export async function crearNotificacion(userId, tipo, titulo, mensaje, data = nu
     try {
       console.log(`Notificación creada: id=${saved.id} userId=${saved.userId} type=${saved.type}`);
     } catch (e) {
-      // ignore logging errors
     }
     return saved;
   } catch (error) {

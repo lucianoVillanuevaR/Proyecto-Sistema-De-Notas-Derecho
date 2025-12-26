@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { getMyNotifications, markNotificationRead } from '../services/notification.service.js';
+import { updateGlobalUnreadCount } from '../hooks/useNotifications.js';
 import '@styles/notificaciones.css';
 
 export default function Notificaciones() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState('all'); // 'all', 'unread', 'read'
+  const [filter, setFilter] = useState('all'); 
 
   useEffect(() => {
     loadNotifications();
@@ -19,6 +20,9 @@ export default function Notificaciones() {
       const res = await getMyNotifications();
       if (res.data && Array.isArray(res.data)) {
         setNotifications(res.data);
+        // Actualizar contador global
+        const unread = res.data.filter(n => !n.read).length;
+        updateGlobalUnreadCount(unread);
       } else {
         setNotifications([]);
       }
@@ -33,11 +37,15 @@ export default function Notificaciones() {
   async function handleMarkAsRead(id) {
     try {
       await markNotificationRead(id);
-      setNotifications(prevNotifs =>
-        prevNotifs.map(notif =>
+      setNotifications(prevNotifs => {
+        const updated = prevNotifs.map(notif =>
           notif.id === id ? { ...notif, read: true } : notif
-        )
-      );
+        );
+        // Actualizar contador global
+        const unread = updated.filter(n => !n.read).length;
+        updateGlobalUnreadCount(unread);
+        return updated;
+      });
     } catch (err) {
       setError('Error al marcar como leída');
     }
@@ -46,6 +54,8 @@ export default function Notificaciones() {
   function getNotificationIcon(type) {
     switch (type) {
       case 'grade': return '📝';
+      case 'nota_actualizada': return '📊';
+      case 'nota_eliminada': return '🗑️';
       case 'evaluation': return '📋';
       case 'warning': return '⚠️';
       case 'success': return '✓';
@@ -57,6 +67,8 @@ export default function Notificaciones() {
   function getNotificationTypeClass(type) {
     switch (type) {
       case 'grade': return 'grade';
+      case 'nota_actualizada': return 'grade-updated';
+      case 'nota_eliminada': return 'grade-deleted';
       case 'evaluation': return 'evaluation';
       case 'warning': return 'warning';
       case 'success': return 'success';

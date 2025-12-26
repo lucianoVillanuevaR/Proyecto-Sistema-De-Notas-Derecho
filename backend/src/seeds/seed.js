@@ -5,72 +5,147 @@ import { User } from "../entities/user.entity.js";
 import { Grade } from "../entities/grade.entity.js";
 import { EvaluacionEntity } from "../entities/evaluacion.entity.js";
 
+/**
+ * Función principal para poblar la base de datos con datos de prueba
+ * Crea usuarios (profesores y alumnos), evaluaciones y notas
+ */
 async function run() {
   try {
     await AppDataSource.initialize();
-    console.log("Conectado a la base de datos para seed");
+    console.log('╔════════════════════════════════════════╗');
+    console.log('║  INICIANDO SEED DE BASE DE DATOS      ║');
+    console.log('╚════════════════════════════════════════╝\n');
 
     const userRepo = AppDataSource.getRepository(User);
     const gradeRepo = AppDataSource.getRepository(Grade);
     const evaluacionRepo = AppDataSource.getRepository(EvaluacionEntity);
 
-    // Asignaturas de Derecho
+    // Asignaturas del programa de Derecho
     const subjects = [
-      "Derecho Civil",
-      "Derecho Penal",
-      "Derecho Constitucional",
-      "Derecho Laboral",
-      "Derecho Administrativo",
+      'Derecho Civil',
+      'Derecho Penal',
+      'Derecho Constitucional',
+      'Derecho Laboral',
+      'Derecho Administrativo',
     ];
 
-    // Profesores (2) - correos basados en nombre terminados en @ubiobio.cl
+    // Profesores - Cuentas institucionales @ubiobio.cl
     const profesoresData = [
-      { name: 'juan.perez', email: `juan.perez@ubiobio.cl`, password: "Profesor1!", role: "profesor" },
-      { name: 'maria.gonzalez', email: `maria.gonzalez@ubiobio.cl`, password: "Profesor2!", role: "profesor" },
+      { 
+        name: 'Juan Pérez González', 
+        email: 'juan.perez@ubiobio.cl', 
+        password: 'Profesor1!', 
+        role: 'profesor' 
+      },
+      { 
+        name: 'María González López', 
+        email: 'maria.gonzalez@ubiobio.cl', 
+        password: 'Profesor2!', 
+        role: 'profesor' 
+      },
     ];
 
-    // Alumnos (5) con correos en @alumnos.ubiobio.cl
-    const alumnosData = Array.from({ length: 5 }).map((_, i) => ({
-      email: `alumno${i + 1}@alumnos.ubiobio.cl`,
-      password: `Alumno${i + 1}123`,
-      role: "estudiante",
-    }));
+    // Alumnos - Cuentas institucionales @alumnos.ubiobio.cl
+    const alumnosData = [
+      {
+        name: 'Carlos Andrés Ruiz Mora',
+        email: 'carlos.ruiz@alumnos.ubiobio.cl',
+        password: 'Alumno1!2024',
+        role: 'estudiante',
+      },
+      {
+        name: 'Ana María Silva Torres',
+        email: 'ana.silva@alumnos.ubiobio.cl',
+        password: 'Alumno2!2024',
+        role: 'estudiante',
+      },
+      {
+        name: 'Diego Fernando Castillo Muñoz',
+        email: 'diego.castillo@alumnos.ubiobio.cl',
+        password: 'Alumno3!2024',
+        role: 'estudiante',
+      },
+      {
+        name: 'Valentina Paz Reyes Soto',
+        email: 'valentina.reyes@alumnos.ubiobio.cl',
+        password: 'Alumno4!2024',
+        role: 'estudiante',
+      },
+      {
+        name: 'Sebastián Ignacio Flores Díaz',
+        email: 'sebastian.flores@alumnos.ubiobio.cl',
+        password: 'Alumno5!2024',
+        role: 'estudiante',
+      },
+    ];
 
-    // Crear o asegurar usuarios
-    async function ensureUser(u) {
-      const exists = await userRepo.findOne({ where: { email: u.email } });
-      if (exists) return exists;
-      const hashed = await bcrypt.hash(String(u.password), 10);
-      const created = userRepo.create({ email: u.email, password: hashed, role: u.role });
-      return await userRepo.save(created);
+    /**
+     * Crea o retorna un usuario existente
+     * @param {Object} userData - Datos del usuario (email, password, role, name)
+     * @returns {Promise<User>} Usuario creado o existente
+     */
+    async function ensureUser(userData) {
+      const exists = await userRepo.findOne({ where: { email: userData.email } });
+      if (exists) {
+        console.log('Usuario ya existe: ' + userData.email + ' (' + (userData.name || userData.email) + ')');
+        return exists;
+      }
+      
+      const hashedPassword = await bcrypt.hash(String(userData.password), 10);
+      const newUser = userRepo.create({ 
+        email: userData.email, 
+        password: hashedPassword, 
+        role: userData.role,
+        name: userData.name || userData.email.split('@')[0]
+      });
+      
+      return await userRepo.save(newUser);
     }
 
+    // Crear profesores
+    console.log('\n=== CREANDO PROFESORES ===');
     const profesores = [];
-    for (const p of profesoresData) {
-      const up = await ensureUser(p);
-      profesores.push(up);
-      console.log(`Profesor asegurado: ${up.email} (id=${up.id})`);
+    for (const profesorData of profesoresData) {
+      const profesor = await ensureUser(profesorData);
+      profesores.push(profesor);
+      console.log('✓ Profesor: ' + profesorData.name + ' | ' + profesor.email + ' | ID: ' + profesor.id);
     }
 
+    // Crear alumnos
+    console.log('\n=== CREANDO ALUMNOS ===');
     const alumnos = [];
-    for (const a of alumnosData) {
-      const ua = await ensureUser(a);
-      alumnos.push(ua);
-      console.log(`Alumno asegurado: ${ua.email} (id=${ua.id}) password=${a.password}`);
+    for (const alumnoData of alumnosData) {
+      const alumno = await ensureUser(alumnoData);
+      alumnos.push(alumno);
+      console.log('✓ Alumno: ' + alumnoData.name + ' | ' + alumno.email + ' | ID: ' + alumno.id + ' | Password: ' + alumnoData.password);
     }
 
-    // Generar notas para cada alumno en varias asignaturas
+    // Generar notas para cada alumno
+    console.log('\n=== CREANDO NOTAS ===');
+    let notasCreadas = 0;
+    
     for (const alumno of alumnos) {
-      // 3 notas por alumno
+      const alumnoData = alumnosData.find(a => a.email === alumno.email);
+      // 3 evaluaciones por alumno
       for (let j = 0; j < 3; j++) {
         const subject = subjects[(j + alumno.id) % subjects.length];
         const profesor = profesores[(j + alumno.id) % profesores.length];
-        const evaluation = `${subject} - Parcial ${j + 1}`;
-        // Score escala 1.0 - 7.0 con un decimal
-        const raw = Math.random() * (7 - 1) + 1; // 1.0 - 7.0
+        const evaluation = subject + ' - Parcial ' + (j + 1);
+        
+        // Calificación en escala chilena: 1.0 - 7.0
+        const minScore = 4.0; // Nota mínima razonable para datos de prueba
+        const maxScore = 7.0;
+        const raw = Math.random() * (maxScore - minScore) + minScore;
         const score = Math.round(raw * 10) / 10;
 
-        const existing = await gradeRepo.findOne({ where: { studentId: Number(alumno.id), professorId: Number(profesor.id), evaluation } });
+        const existing = await gradeRepo.findOne({ 
+          where: { 
+            studentId: Number(alumno.id), 
+            professorId: Number(profesor.id), 
+            evaluation 
+          } 
+        });
+        
         if (existing) continue;
 
         const nota = gradeRepo.create({
@@ -78,52 +153,58 @@ async function run() {
           professorId: Number(profesor.id),
           evaluation,
           score,
-          observation: null,
-          type: "escrita",
+          observation: score >= 6.0 ? 'Excelente desempeño' : score >= 5.0 ? 'Buen desempeño' : 'Aprobado',
+          type: 'escrita',
         });
+        
         await gradeRepo.save(nota);
-        console.log(`Nota creada: alumno=${alumno.id} profesor=${profesor.id} eval='${evaluation}' score=${score}`);
+        notasCreadas++;
+        console.log('✓ Nota: ' + alumnoData.name + ' | ' + evaluation + ' | Nota: ' + score + ' | Profesor: ' + profesor.email);
       }
     }
+    console.log('Total de notas creadas: ' + notasCreadas);
 
+    // Crear evaluaciones del sistema
+    console.log('\n=== CREANDO EVALUACIONES ===');
     const evaluacionesData = [
       {
-        tipoEv: "escrita",
-        nombreEv: "Parcial 5",
-        asignatura1: "Derecho Civil",
-        profesor: "juan.perez",
+        tipoEv: 'escrita',
+        nombreEv: 'Parcial 1',
+        asignatura1: 'Derecho Civil',
+        profesor: 'juan perez',
         ponderacion: 30,
       },
       {
-        tipoEv: "oral",
-        nombreEv: "Exposición",
-        asignatura1: "Derecho Penal",
-        profesor: "maria.gonzalez",
+        tipoEv: 'oral',
+        nombreEv: 'Exposición Oral',
+        asignatura1: 'Derecho Penal',
+        profesor: 'maria gonzalez',
         ponderacion: 20,
       },
       {
-        tipoEv: "escrita",
-        nombreEv: "Examen Final",
-        asignatura1: "Derecho Constitucional",
-        profesor: "juan.perez",
+        tipoEv: 'escrita',
+        nombreEv: 'Examen Final',
+        asignatura1: 'Derecho Constitucional',
+        profesor: 'juan perez',
         ponderacion: 40,
       },
       {
-        tipoEv: "escrita",
-        nombreEv: "Prueba Solemne",
-        asignatura1: "Derecho Laboral",
-        profesor: "maria.gonzalez",
+        tipoEv: 'escrita',
+        nombreEv: 'Prueba Solemne',
+        asignatura1: 'Derecho Laboral',
+        profesor: 'maria gonzalez',
         ponderacion: 35,
       },
       {
-        tipoEv: "oral",
-        nombreEv: "Defensa Tesis",
-        asignatura1: "Derecho Administrativo",
-        profesor: "juan.perez",
+        tipoEv: 'oral',
+        nombreEv: 'Defensa Oral',
+        asignatura1: 'Derecho Administrativo',
+        profesor: 'juan perez',
         ponderacion: 25,
       },
     ];
 
+    let evaluacionesCreadas = 0;
     for (const evalData of evaluacionesData) {
       const existing = await evaluacionRepo.findOne({ 
         where: { 
@@ -135,18 +216,28 @@ async function run() {
       if (!existing) {
         const evaluacion = evaluacionRepo.create(evalData);
         await evaluacionRepo.save(evaluacion);
-        console.log(`Evaluación creada: ${evalData.nombreEv} - ${evalData.asignatura1}`);
-      } else {
-        console.log(`Evaluación ya existe: ${evalData.nombreEv} - ${evalData.asignatura1}`);
+        evaluacionesCreadas++;
+        console.log('✓ Evaluación: ' + evalData.nombreEv + ' | ' + evalData.asignatura1 + ' | ' + evalData.ponderacion + '%');
       }
     }
+    console.log('Total de evaluaciones creadas: ' + evaluacionesCreadas);
 
-    console.log("Seed completado.");
+    console.log('\n=== SEED COMPLETADO EXITOSAMENTE ===');
+    console.log('Profesores: ' + profesores.length);
+    console.log('Alumnos: ' + alumnos.length);
+    console.log('Notas: ' + notasCreadas);
+    console.log('Evaluaciones: ' + evaluacionesCreadas);
+    
     await AppDataSource.destroy();
     process.exit(0);
   } catch (err) {
-    console.error("Error ejecutando seed:", err);
-    try { await AppDataSource.destroy(); } catch(e){}
+    console.error('\n❌ ERROR EJECUTANDO SEED:', err.message);
+    console.error(err);
+    try { 
+      await AppDataSource.destroy(); 
+    } catch(e) {
+      console.error('Error cerrando conexión:', e.message);
+    }
     process.exit(1);
   }
 }

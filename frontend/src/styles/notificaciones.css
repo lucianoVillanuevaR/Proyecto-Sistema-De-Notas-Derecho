@@ -161,6 +161,14 @@
   border-left-color: #2196f3;
 }
 
+.notification-item.grade-updated {
+  border-left-color: #ff5722;
+}
+
+.notification-item.grade-deleted {
+  border-left-color: #f44336;
+}
+
 .notification-item.evaluation {
   border-left-color: #9c27b0;
 }

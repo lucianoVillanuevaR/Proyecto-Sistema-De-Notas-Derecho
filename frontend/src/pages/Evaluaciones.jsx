@@ -124,13 +124,11 @@ const Evaluaciones = () => {
         if (response.data) {
           Swal.fire("¡Registrado!", "Tu asistencia ha sido registrada correctamente.", "success");
           
-          // Guardar en localStorage que ya marcó presente (con ID del usuario)
           const userKey = user?.id ? `presentesRegistrados_user_${user.id}` : 'presentesRegistrados';
           const presentesGuardados = JSON.parse(localStorage.getItem(userKey)) || {};
           presentesGuardados[evaluacionId] = true;
           localStorage.setItem(userKey, JSON.stringify(presentesGuardados));
           
-          // Marcar la evaluación como presente en el estado local
           setEvaluaciones(evaluaciones.map(e => 
             e.id === evaluacionId ? { ...e, yaPresente: true } : e
           ));
