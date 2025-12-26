@@ -10,7 +10,6 @@ const CreateEvaluacion = () => {
     const [formData, setFormData] = useState({
         nombreEv: '',
         asignatura1: '',
-        profesor: '',
         ponderacion: '',
         tipoEv: 'escrita'
     });
@@ -86,20 +85,6 @@ const CreateEvaluacion = () => {
                             value={formData.asignatura1}
                             onChange={handleChange}
                             placeholder="Ej: Derecho Civil"
-                            required
-                            maxLength={30}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="profesor">Profesor *</label>
-                        <input
-                            type="text"
-                            id="profesor"
-                            name="profesor"
-                            value={formData.profesor}
-                            onChange={handleChange}
-                            placeholder="Ej: Dr. García"
                             required
                             maxLength={30}
                         />

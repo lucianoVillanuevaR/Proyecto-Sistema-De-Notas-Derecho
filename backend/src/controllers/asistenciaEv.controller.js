@@ -3,11 +3,12 @@ import Asistencia from "../entities/asistenciaEv.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import { createvalidation } from "../validations/asistenciaEv.validation.js";
 import { crearNotificacion } from "../services/notification.service.js";
-import { User } from "../entities/user.entity.js";
+import Evaluacion from "../entities/evaluacion.entity.js";
 
 export async function marcarAsistencia(req, res) {
 	try {
 		const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+		const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
 		const estudianteId = req.user && req.user.id;
 
 		if (!estudianteId) {
@@ -19,6 +20,12 @@ export async function marcarAsistencia(req, res) {
 		}
 
 		const { evaluacionId } = req.body;
+		
+		const evaluacion = await evaluacionRepository.findOne({ where: { id: Number(evaluacionId) } });
+		if (!evaluacion) {
+			return res.status(404).json({ message: "Evaluación no encontrada" });
+		}
+		
 		const datosAsistencia = {
 			estudianteId: Number(estudianteId),
 			evaluacionId: Number(evaluacionId),
@@ -34,6 +41,9 @@ export async function marcarAsistencia(req, res) {
 		if (registro) {
 			registro.asistio = true;
 			registro.estado = registro.estado || "pendiente";
+			if (evaluacion.profesorId && !registro.calificadoPor) {
+				registro.calificadoPor = evaluacion.profesorId;
+			}
 			await asistenciaRepository.save(registro);
 			return res.status(200).json({ message: "Asistencia actualizada exitosamente", data: registro });
 		}
@@ -41,6 +51,7 @@ export async function marcarAsistencia(req, res) {
 		const nuevaAsistencia = asistenciaRepository.create({
 			...datosAsistencia,
 			estado: "pendiente",
+			calificadoPor: evaluacion.profesorId || null,
 		});
 		await asistenciaRepository.save(nuevaAsistencia);
 		
@@ -52,15 +63,12 @@ export async function marcarAsistencia(req, res) {
 				"Tu asistencia ha sido registrada correctamente"
 			);
 			
-			const usuarioRepository = AppDataSource.getRepository(User);
-			const profesores = await usuarioRepository.find({ where: { role: "profesor" } });
-			
-			for (const profesor of profesores) {
+			if (evaluacion.profesorId) {
 				await crearNotificacion(
-					profesor.id,
+					evaluacion.profesorId,
 					"estudiante_asistencia",
 					"Asistencia de Estudiante Registrada",
-					`Un estudiante ha marcado su asistencia en la evaluación ID: ${nuevaAsistencia.evaluacionId}`
+					"Un estudiante ha marcado su asistencia en la evaluación: " + evaluacion.nombreEv
 				);
 			}
 		} catch (notifError) {

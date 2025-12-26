@@ -21,16 +21,7 @@ const Evaluaciones = () => {
       setLoading(true);
       const data = await getEvaluaciones();
       
-      // Cargar el estado de "ya presente" del localStorage incluyendo el ID del usuario
-      const userKey = user?.id ? `presentesRegistrados_user_${user.id}` : 'presentesRegistrados';
-      const presentesGuardados = JSON.parse(localStorage.getItem(userKey)) || {};
-      
-      const evaluacionesConEstado = data.map(evaluacion => ({
-        ...evaluacion,
-        yaPresente: presentesGuardados[evaluacion.id] || false
-      }));
-      
-      setEvaluaciones(evaluacionesConEstado || []);
+      setEvaluaciones(data || []);
       setCurrentPage(1);
     } catch (error) {
       console.error("Error cargando evaluaciones:", error);
@@ -48,7 +39,6 @@ const Evaluaciones = () => {
       html: `
         <input id="nombre" class="swal2-input" placeholder="Nombre" value="${evaluacion.nombreEv || evaluacion.nombre || ''}">
         <input id="asignatura" class="swal2-input" placeholder="Asignatura" value="${evaluacion.asignatura1 || evaluacion.asignatura || ''}">
-        <input id="profesor" class="swal2-input" placeholder="Profesor" value="${evaluacion.profesor || ''}">
         <select id="tipo" class="swal2-input">
           <option value="oral" ${(evaluacion.tipoEv || evaluacion.tipo) === "oral" ? "selected" : ""}>Oral</option>
           <option value="escrita" ${(evaluacion.tipoEv || evaluacion.tipo) === "escrita" ? "selected" : ""}>Escrita</option>
@@ -63,7 +53,6 @@ const Evaluaciones = () => {
         return {
           nombreEv: document.getElementById("nombre").value,
           asignatura1: document.getElementById("asignatura").value,
-          profesor: document.getElementById("profesor").value,
           tipoEv: document.getElementById("tipo").value,
           ponderacion: parseInt(ponderacionValue) || 0,
         };
@@ -123,15 +112,7 @@ const Evaluaciones = () => {
 
         if (response.data) {
           Swal.fire("¡Registrado!", "Tu asistencia ha sido registrada correctamente.", "success");
-          
-          const userKey = user?.id ? `presentesRegistrados_user_${user.id}` : 'presentesRegistrados';
-          const presentesGuardados = JSON.parse(localStorage.getItem(userKey)) || {};
-          presentesGuardados[evaluacionId] = true;
-          localStorage.setItem(userKey, JSON.stringify(presentesGuardados));
-          
-          setEvaluaciones(evaluaciones.map(e => 
-            e.id === evaluacionId ? { ...e, yaPresente: true } : e
-          ));
+          cargarEvaluaciones();
         }
       }
     } catch (error) {
@@ -152,7 +133,6 @@ const Evaluaciones = () => {
       html: `
         <input id="nombre" class="swal2-input" placeholder="Nombre">
         <input id="asignatura" class="swal2-input" placeholder="Asignatura">
-        <input id="profesor" class="swal2-input" placeholder="Profesor">
         <select id="tipo" class="swal2-input">
           <option value="">Seleccione tipo</option>
           <option value="oral">Oral</option>
@@ -166,11 +146,10 @@ const Evaluaciones = () => {
       preConfirm: () => {
         const nombre = document.getElementById("nombre").value;
         const asignatura = document.getElementById("asignatura").value;
-        const profesor = document.getElementById("profesor").value;
         const tipo = document.getElementById("tipo").value;
         const ponderacion = document.getElementById("ponderacion").value;
 
-        if (!nombre || !asignatura || !profesor || !tipo || !ponderacion) {
+        if (!nombre || !asignatura || !tipo || !ponderacion) {
           Swal.showValidationMessage("Por favor completa todos los campos");
           return false;
         }
@@ -178,7 +157,6 @@ const Evaluaciones = () => {
         return {
           nombreEv: nombre,
           asignatura1: asignatura,
-          profesor,
           tipoEv: tipo,
           ponderacion: parseInt(ponderacion) || 0,
         };
@@ -230,7 +208,6 @@ const Evaluaciones = () => {
             <tr>
               <th>Nombre</th>
               <th>Asignatura</th>
-              <th>Profesor</th>
               <th>Tipo</th>
               <th>Ponderación (%)</th>
               <th>Acciones</th>
@@ -241,7 +218,6 @@ const Evaluaciones = () => {
               <tr key={evaluacion.id}>
                 <td>{evaluacion.nombreEv || evaluacion.nombre}</td>
                 <td>{evaluacion.asignatura1 || evaluacion.asignatura}</td>
-                <td>{evaluacion.profesor}</td>
                 <td>{evaluacion.tipoEv || evaluacion.tipo}</td>
                 <td>{evaluacion.ponderacion}{typeof evaluacion.ponderacion === 'number' ? '%' : ''}</td>
                 <td className="acciones">

@@ -4,15 +4,13 @@ export const useEditEvaluacion = (fetchEvaluaciones) => {
     const handleEditEvaluacion = async (evaluacionId, evaluacion) => {
         const nombreEv = prompt('Nuevo nombre de evaluación:', evaluacion.nombreEv);
         const asignatura1 = prompt('Nueva asignatura:', evaluacion.asignatura1);
-        const profesor = prompt('Nuevo profesor:', evaluacion.profesor);
         const ponderacion = prompt('Nueva ponderación (%):', evaluacion.ponderacion);
         const tipoEv = prompt('Tipo de evaluación (oral/escrita):', evaluacion.tipoEv);
 
-        if (nombreEv && asignatura1 && profesor && ponderacion && tipoEv) {
+        if (nombreEv && asignatura1 && ponderacion && tipoEv) {
             const evaluacionData = {
                 nombreEv,
                 asignatura1,
-                profesor,
                 ponderacion: parseInt(ponderacion),
                 tipoEv
             };

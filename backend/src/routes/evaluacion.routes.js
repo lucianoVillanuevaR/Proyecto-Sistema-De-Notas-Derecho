@@ -11,8 +11,8 @@ import {
 } from "../controllers/evaluacion.controller.js";
 
 const router = Router();
-router.get("/", getEvaluaciones);
-router.get("/:id", getEvaluacionById);
+router.get("/", authMiddleware, getEvaluaciones);
+router.get("/:id", authMiddleware, getEvaluacionById);
 
 router.post("/", authMiddleware, checkRole("profesor", "admin"), createEvaluacion);
 router.put("/:id", authMiddleware, checkRole("profesor", "admin"), updateEvaluacion);

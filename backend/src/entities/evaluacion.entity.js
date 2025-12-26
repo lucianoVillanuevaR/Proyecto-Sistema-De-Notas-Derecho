@@ -25,10 +25,9 @@ export const EvaluacionEntity = new EntitySchema({
             nullable: false,
             length: 30,
         },
-        profesor: {
-            type: "varchar",
-            nullable: false,
-            length: 30,
+        profesorId: {
+            type: "int",
+            nullable: true,
         },
         ponderacion: {
             type: "int",

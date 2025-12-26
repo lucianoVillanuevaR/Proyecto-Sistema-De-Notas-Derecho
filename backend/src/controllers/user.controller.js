@@ -15,7 +15,8 @@ export class NotasController {
       if (!actor || (actor.role !== "profesor" && actor.role !== "admin")) {
         return handleErrorClient(res, 403, "Acceso denegado: permisos insuficientes");
       }
-      const notas = await obtenerNotas();
+      const profesorId = actor.role === "profesor" ? actor.id : null;
+      const notas = await obtenerNotas(profesorId);
       handleSuccess(res, 200, "Notas obtenidas exitosamente", notas);
     } catch (error) {
       handleErrorServer(res, 500, "Error al obtener las notas", error.message);

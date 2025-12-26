@@ -24,17 +24,6 @@ export const createvalidation = joi.object({
       "string.max": "La asignatura debe tener como máximo 30 caracteres",
       "string.empty": "La asignatura es un campo obligatorio",
     }),
-  profesor: joi.string()
-    .min(3)
-    .max(30)    
-    .required()
-    .pattern(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/)
-    .messages({
-      "string.pattern.base": "El nombre del profesor solo puede contener letras y espacios",
-      "string.min": "El nombre del profesor debe tener al menos 3 caracteres",
-      "string.max": "El nombre del profesor debe tener como máximo 30 caracteres",
-      "string.empty": "El nombre del profesor es un campo obligatorio",
-    }),
   ponderacion: joi.number()
     .min(0)
     .max(100)
@@ -76,17 +65,6 @@ export const updatevalidation = joi.object({
       "string.min": "La asignatura debe tener al menos 3 caracteres",
       "string.max": "La asignatura debe tener como máximo 30 caracteres",
       "string.empty": "La asignatura es un campo obligatorio",
-    }),
-  profesor: joi.string()
-    .min(3)
-    .max(30)
-    .optional()
-    .pattern(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/)
-    .messages({
-      "string.pattern.base": "El nombre del profesor solo puede contener letras y espacios",
-      "string.min": "El nombre del profesor debe tener al menos 3 caracteres",
-      "string.max": "El nombre del profesor debe tener como máximo 30 caracteres",
-      "string.empty": "El nombre del profesor es un campo obligatorio",
     }),
   ponderacion: joi.number()
     .min(0)

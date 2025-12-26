@@ -384,8 +384,10 @@ export default function GradesManager() {
                   </tr>
                 </thead>
                 <tbody>
-                  {gradesForStudent(selectedStudent).map((g, idx) => (
-                    <tr key={g.id}>
+                  {gradesForStudent(selectedStudent).map((g, idx) => {
+                    const uniqueKey = `${g.source || 'unknown'}-${g.id}`;
+                    return (
+                    <tr key={uniqueKey}>
                       <td>{g.id}</td>
                       <td>{g.evaluation}</td>
                       <td>{g.type}</td>
@@ -408,7 +410,7 @@ export default function GradesManager() {
                         <button disabled={savingId === g.id} onClick={() => saveRow(g, idx)} className="btn-save-row">{savingId === g.id ? 'Guardando...' : 'Guardar'}</button>
                       </td>
                     </tr>
-                  ))}
+                  );})}
                 </tbody>
               </table>
             </div>

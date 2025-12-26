@@ -4,12 +4,31 @@ import { AppDataSource } from "../config/configDb.js";
 import { createvalidation, updatevalidation } from "../validations/evaluacion.validation.js";
 import { crearNotificacion } from "../services/notification.service.js";
 import { User } from "../entities/user.entity.js";
+import Asistencia from "../entities/asistenciaEv.entity.js";
 
 export async function getEvaluaciones(req, res){
     try {
     const evaluacionesRepository = AppDataSource.getRepository(Evaluacion);
 
-        const evaluaciones = await evaluacionesRepository.find();
+        const userId = req.user?.id;
+        const userRole = req.user?.role;
+        
+        let evaluaciones;
+        if (userRole === 'profesor' && userId) {
+            evaluaciones = await evaluacionesRepository.find({ where: { profesorId: userId } });
+        } else {
+            evaluaciones = await evaluacionesRepository.find();
+        }
+
+        if (userRole === 'estudiante' && userId) {
+            const asistenciaRepository = AppDataSource.getRepository(Asistencia);
+            for (let ev of evaluaciones) {
+                const asistencia = await asistenciaRepository.findOne({
+                    where: { evaluacionId: ev.id, estudianteId: userId }
+                });
+                ev.yaPresente = asistencia ? true : false;
+            }
+        }
 
         res.status(200).json(({message: "Evaluaciones obtenidas exitosamente",data: evaluaciones}));
     } catch (error) {
@@ -39,16 +58,18 @@ export async function getEvaluacionById(req, res){
 export async function createEvaluacion(req, res){
     try {
     const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
-        const { nombreEv, asignatura1, profesor, ponderacion, tipoEv } = req.body;
+        const { nombreEv, asignatura1, ponderacion, tipoEv } = req.body;
         const { error } = createvalidation.validate(req.body);
         if(error){
             return res.status(400).json({message: "Error al crear la evaluacion", error: error});
         }
 
+        const profesorId = req.user?.id;
+
         const nuevaEvaluacion = evaluacionRepository.create({
             nombreEv,
             asignatura1,
-            profesor,
+            profesorId: profesorId,
             ponderacion,
             tipoEv
         });
@@ -63,22 +84,12 @@ export async function createEvaluacion(req, res){
         try {
             const usuarioRepository = AppDataSource.getRepository(User);
             const estudiantes = await usuarioRepository.find({ where: { role: "estudiante" } });
-            const profesores = await usuarioRepository.find({ where: { role: "profesor" } });
             
             for (const estudiante of estudiantes) {
                 await crearNotificacion(
                     estudiante.id,
                     "evaluacion_creada",
                     "Nueva Evaluación",
-                    `Se ha creado una nueva evaluación: ${nuevaEvaluacion.nombreEv} en ${nuevaEvaluacion.asignatura1}`
-                );
-            }
-            
-            for (const profesor of profesores) {
-                await crearNotificacion(
-                    profesor.id,
-                    "evaluacion_creada",
-                    "Nueva Evaluación Creada",
                     `Se ha creado una nueva evaluación: ${nuevaEvaluacion.nombreEv} en ${nuevaEvaluacion.asignatura1}`
                 );
             }
@@ -99,7 +110,7 @@ export async function updateEvaluacion(req, res){
     try {
     const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
         const { id } = req.params;
-        const { nombreEv, asignatura1, profesor, ponderacion, tipoEv } = req.body;
+        const { nombreEv, asignatura1, ponderacion, tipoEv } = req.body;
 
         const evaluacion = await evaluacionRepository.findOne({where: { id }});
         if(!evaluacion){
@@ -119,7 +130,6 @@ export async function updateEvaluacion(req, res){
 
     evaluacion.nombreEv = nombreEv || evaluacion.nombreEv;
     evaluacion.asignatura1 = asignatura1 || evaluacion.asignatura1;
-    evaluacion.profesor = profesor || evaluacion.profesor;
     evaluacion.ponderacion = ponderacion || evaluacion.ponderacion;
     evaluacion.tipoEv = tipoEv || evaluacion.tipoEv;
 
@@ -127,20 +137,10 @@ export async function updateEvaluacion(req, res){
     try {
         const usuarioRepository = AppDataSource.getRepository(User);
         const estudiantes = await usuarioRepository.find({ where: { role: "estudiante" } });
-        const profesores = await usuarioRepository.find({ where: { role: "profesor" } });
 
         for (const estudiante of estudiantes) {
             await crearNotificacion(
                 estudiante.id,
-                "evaluacion_actualizada",
-                "Evaluación Actualizada",
-                `Se ha actualizado la evaluación: ${evaluacion.nombreEv}`
-            );
-        }
-        
-        for (const profesor of profesores) {
-            await crearNotificacion(
-                profesor.id,
                 "evaluacion_actualizada",
                 "Evaluación Actualizada",
                 `Se ha actualizado la evaluación: ${evaluacion.nombreEv}`

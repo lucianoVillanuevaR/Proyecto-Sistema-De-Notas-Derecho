@@ -17,6 +17,7 @@ function mapRawRow(r) {
     score: r.score !== null && r.score !== undefined ? Number(r.score) : null,
     observation: r.observation || null,
     created_at: r.created_at,
+    source: 'asistencia',
   };
 }
 
@@ -30,10 +31,11 @@ function mapGradeRow(r) {
     score: r.score !== null && r.score !== undefined ? Number(r.score) : null,
     observation: r.observation || null,
     created_at: r.created_at,
+    source: 'grade',
   };
 }
 
-export async function obtenerNotas() {
+export async function obtenerNotas(profesorId = null) {
   const gradeRepo = AppDataSource.getRepository(Grade);
   const gqb = gradeRepo.createQueryBuilder('g');
   gqb.select([
@@ -46,6 +48,9 @@ export async function obtenerNotas() {
     'g.observation AS observation',
     'g.created_at AS created_at',
   ]);
+  if (profesorId) {
+    gqb.where('g.professorId = :profesorId', { profesorId });
+  }
   gqb.orderBy('g.created_at', 'DESC');
   const gradeRows = await gqb.getRawMany();
 
@@ -62,6 +67,9 @@ export async function obtenerNotas() {
     "a.evaluacionId AS evaluacionId",
     "a.createdAt AS created_at",
   ]);
+  if (profesorId) {
+    qb.where('a.calificadoPor = :profesorId', { profesorId });
+  }
   qb.orderBy("a.createdAt", "DESC");
   const asistenciaRows = await qb.getRawMany();
 
