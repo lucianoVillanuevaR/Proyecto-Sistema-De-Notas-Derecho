@@ -132,11 +132,8 @@ async function run() {
         const profesor = profesores[(j + alumno.id) % profesores.length];
         const evaluation = subject + ' - Parcial ' + (j + 1);
         
-        // Calificación en escala chilena: 1.0 - 7.0
-        const minScore = 4.0; // Nota mínima razonable para datos de prueba
-        const maxScore = 7.0;
-        const raw = Math.random() * (maxScore - minScore) + minScore;
-        const score = Math.round(raw * 10) / 10;
+        // Calificación entre 10 y 70
+        const score = Math.floor(Math.random() * 61) + 10;
 
         const existing = await gradeRepo.findOne({ 
           where: { 
@@ -153,7 +150,7 @@ async function run() {
           professorId: Number(profesor.id),
           evaluation,
           score,
-          observation: score >= 6.0 ? 'Excelente desempeño' : score >= 5.0 ? 'Buen desempeño' : 'Aprobado',
+          observation: score >= 60 ? 'Excelente desempeño' : score >= 50 ? 'Buen desempeño' : 'Aprobado',
           type: 'escrita',
         });
         

@@ -329,7 +329,8 @@ export const reportController = {
           
       
           const notaValor = Number(nota.score);
-          doc.fillColor('#E74C3C').font('Helvetica-Bold')
+          const colorNota = notaValor <= 39 ? '#E74C3C' : '#0066CC';
+          doc.fillColor(colorNota).font('Helvetica-Bold')
              .text(notaValor, colX[2] + 5, currentY, { 
                width: colWidths[2] - 10,
                align: 'left'
