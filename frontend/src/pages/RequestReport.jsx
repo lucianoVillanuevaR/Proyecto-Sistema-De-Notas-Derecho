@@ -23,26 +23,34 @@ export default function RequestReport() {
     }
   }
 
-  // Función para calcular el promedio de las notas (validando rango 10-70)
-  function calcularPromedio(notas) {
-    if (!notas || notas.length === 0) return '0.00';
-    const notasValidas = notas.filter(nota => {
-      const score = parseFloat(nota.score);
-      return !isNaN(score) && score >= 10 && score <= 70;
-    });
-    if (notasValidas.length === 0) return '0.00';
-    const sum = notasValidas.reduce((acc, nota) => acc + parseFloat(nota.score), 0);
-    const promedio = sum / notasValidas.length;
-    // Asegurar que el promedio también esté en el rango válido
-    return Math.min(Math.max(promedio, 10), 70).toFixed(2);
+  function toFiniteNumber(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
   }
 
-  // Función para obtener color según la nota
+  function isValidScore10to70(score) {
+    return score !== null && score >= 10 && score <= 70;
+  }
+
+  // Promedio consistente con backend: solo considera notas válidas 10-70
+  function calcularPromedio(notas) {
+    if (!notas || notas.length === 0) return '0.00';
+    const scores = notas
+      .map((nota) => toFiniteNumber(nota.score))
+      .filter((score) => isValidScore10to70(score));
+    if (scores.length === 0) return '0.00';
+    const sum = scores.reduce((acc, score) => acc + score, 0);
+    return (sum / scores.length).toFixed(2);
+  }
+
+  // Colores requeridos:
+  // - rojo: bajo 39 (o 3,9)
+  // - azul: 40 a 70 (o 4,0 a 7,0)
   function getScoreClass(score) {
-    const nota = parseFloat(score);
-    if (nota >= 55) return 'excellent';  // 55-70
-    if (nota >= 40) return 'good';       // 40-54
-    return 'poor';                       // 10-39
+    const n = Number(score);
+    if (!Number.isFinite(n)) return 'poor';
+    const threshold = n <= 7 ? 4.0 : 40;
+    return n >= threshold ? 'good' : 'poor';
   }
 
   async function downloadPdf() {
@@ -141,7 +149,9 @@ export default function RequestReport() {
                   <div className="stat-card green">
                     <div className="stat-label">Promedio General</div>
                     <div className="stat-value">
-                      {result.data.notas ? calcularPromedio(result.data.notas) : '0.00'}
+                      {result.data?.promedioGeneral !== null && result.data?.promedioGeneral !== undefined
+                        ? Number(result.data.promedioGeneral).toFixed(2)
+                        : (result.data?.notas ? calcularPromedio(result.data.notas) : '0.00')}
                     </div>
                   </div>
                 </div>
