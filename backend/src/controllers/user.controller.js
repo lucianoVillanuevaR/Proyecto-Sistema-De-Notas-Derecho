@@ -3,6 +3,7 @@ import {
   obtenerNotaPorId,
   actualizarNota,
   eliminarNota,
+  crearNota,
 } from "../services/notas.services.js";
 import { crearEntradaHistorial } from "../services/history.service.js";
 import { crearNotificacion } from "../services/notification.service.js";
@@ -147,6 +148,65 @@ export class NotasController {
       handleSuccess(res, 200, "Nota eliminada exitosamente", { id });
     } catch (error) {
       handleErrorClient(res, 404, error.message);
+    }
+  }
+
+  async createNota(req, res) {
+    try {
+      const actor = req.user;
+      if (!actor || (actor.role !== "profesor" && actor.role !== "admin")) {
+        return handleErrorClient(res, 403, "Acceso denegado: permisos insuficientes");
+      }
+
+      const { studentId, evaluacionId, score, observation } = req.body;
+
+      // Validar campos requeridos
+      if (!studentId) {
+        return handleErrorClient(res, 400, "studentId es requerido");
+      }
+
+      // Validar rango de calificación
+      if (score !== undefined && score !== null) {
+        const scoreNum = Number(score);
+        if (isNaN(scoreNum) || scoreNum < 10 || scoreNum > 70) {
+          return handleErrorClient(res, 400, "La nota debe estar entre 10 y 70");
+        }
+      }
+
+      const nuevaNota = await crearNota({
+        studentId,
+        evaluacionId,
+        score,
+        observation,
+        professorId: actor.id,
+        asistio: true,
+      });
+
+      // Crear entrada en historial
+      try {
+        const details = JSON.stringify({
+          actor: { id: actor.id, email: actor.email },
+          action: 'crear_nota',
+          data: nuevaNota,
+        });
+        await crearEntradaHistorial(studentId, actor.id, "crear_nota", details);
+
+        // Notificar al estudiante
+        await crearNotificacion(
+          studentId,
+          "nota_creada",
+          "Nueva calificación",
+          `Se ha registrado una nueva calificación${evaluacionId ? ` para la evaluación #${evaluacionId}` : ""} con puntaje ${score}`,
+          { gradeId: nuevaNota.id, url: `/reports/student/${studentId}/report` }
+        );
+      } catch (logErr) {
+        console.error("Error en historial/notificaciones:", logErr.message || logErr);
+      }
+
+      handleSuccess(res, 201, "Nota creada exitosamente", nuevaNota);
+    } catch (error) {
+      console.error("Error creando nota:", error);
+      handleErrorServer(res, 500, "Error al crear la nota", error.message);
     }
   }
 }
