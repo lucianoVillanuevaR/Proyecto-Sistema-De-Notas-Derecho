@@ -9,6 +9,17 @@ export const User = new EntitySchema({
       type: "int",
       generated: "increment",
     },
+    nombre: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    rut: {
+      type: "varchar",
+      length: 10,
+      unique: true,
+      nullable: false,
+    },
     email: {
       type: "varchar",
       length: 255,

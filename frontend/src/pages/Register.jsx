@@ -11,7 +11,7 @@ const Register = () => {
         try {
             const response = await registerService(data);
             if (response && response.status === 201) {
-                navigate("/login");
+                navigate("/home");
             } else {
                 console.error("Error al registrar usuario", response);
             }

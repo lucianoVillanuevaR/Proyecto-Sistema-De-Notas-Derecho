@@ -6,7 +6,7 @@ import "@styles/home.css";
 
 const Home = () => {
   const user = JSON.parse(sessionStorage.getItem("usuario")) || {};
-  const userEmail = user?.email || user?.correo || "correo@ejemplo.com";
+  const userName = user?.nombre || user?.email || "Usuario";
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -214,7 +214,7 @@ const Home = () => {
         <img src={ubbLogo} alt="Universidad del Bío-Bío" className="ubb-logo" />
         <div className="welcome-section">
           <h1>Bienvenido al Sistema de Gestión de Notas</h1>
-          <p className="welcome-user">{userEmail}</p>
+          <p className="welcome-user">{userName}</p>
           <FaHome className="home-icon" />
         </div>
       </div>

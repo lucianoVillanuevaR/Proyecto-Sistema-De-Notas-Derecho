@@ -11,16 +11,16 @@ const ProfileCard = ({ user }) => {
         </div>
         <div className="profile-info">
           <p>
-            <strong>ID:</strong> {user.id}
+            <strong>Nombre:</strong> {user.nombre || 'N/A'}
+          </p>
+          <p>
+            <strong>RUT:</strong> {user.rut || 'N/A'}
           </p>
           <p>
             <strong>Correo:</strong> {user.email}
           </p>
           <p>
             <strong>Rol:</strong> {user.role}
-          </p>
-          <p>
-            <strong>Fecha de creación:</strong> {user.created_at ? new Date(user.created_at).toLocaleDateString('es-ES') : 'N/A'}
           </p>
         </div>
       </div>

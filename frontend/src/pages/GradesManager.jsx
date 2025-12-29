@@ -378,7 +378,7 @@ export default function GradesManager() {
                     <th>ID</th>
                     <th>Evaluación</th>
                     <th>Tipo</th>
-                    <th>Puntaje</th>
+                    <th>Nota</th>
                     <th>Observación</th>
                     <th>Acción</th>
                   </tr>

@@ -11,6 +11,8 @@ function mapRawRow(r) {
   return {
     id: r.id,
     studentId: r.studentId,
+    studentName: r.studentName || null,
+    studentEmail: r.studentEmail || null,
     professorId: r.professorId,
     evaluation,
     type: r.type || "escrita",
@@ -25,6 +27,8 @@ function mapGradeRow(r) {
   return {
     id: r.id,
     studentId: r.studentId,
+    studentName: r.studentName || null,
+    studentEmail: r.studentEmail || null,
     professorId: r.professorId,
     evaluation: r.evaluation,
     type: r.type || 'escrita',
@@ -38,6 +42,7 @@ function mapGradeRow(r) {
 export async function obtenerNotas(profesorId = null) {
   const gradeRepo = AppDataSource.getRepository(Grade);
   const gqb = gradeRepo.createQueryBuilder('g');
+  gqb.leftJoin('users', 'student', 'student.id = g.studentId');
   gqb.select([
     'g.id AS id',
     'g.studentId AS "studentId"',
@@ -47,6 +52,8 @@ export async function obtenerNotas(profesorId = null) {
     'g.score AS score',
     'g.observation AS observation',
     'g.created_at AS created_at',
+    'student.nombre AS "studentName"',
+    'student.email AS "studentEmail"',
   ]);
   if (profesorId) {
     gqb.where('g.professorId = :profesorId', { profesorId });
@@ -56,6 +63,7 @@ export async function obtenerNotas(profesorId = null) {
 
   const qb = asistenciaRepo().createQueryBuilder("a");
   qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
+  qb.leftJoin('users', 'student', 'student.id = a.estudianteId');
   qb.select([
     "a.id AS id",
     "a.estudianteId AS \"studentId\"",
@@ -66,6 +74,8 @@ export async function obtenerNotas(profesorId = null) {
     "a.comentarios AS observation",
     "a.evaluacionId AS evaluacionId",
     "a.createdAt AS created_at",
+    'student.nombre AS "studentName"',
+    'student.email AS "studentEmail"',
   ]);
   if (profesorId) {
     qb.where('a.calificadoPor = :profesorId', { profesorId });
@@ -116,9 +126,12 @@ export async function obtenerNotaPorId(id) {
 export async function obtenerNotasPorEstudiante(studentId) {
   const gradeRepo = AppDataSource.getRepository(Grade);
   const gqb = gradeRepo.createQueryBuilder('g');
+  gqb.leftJoin('users', 'student', 'student.id = g.studentId');
   gqb.select([
     'g.id AS id',
     'g.studentId AS "studentId"',
+    'student.nombre AS "studentName"',
+    'student.email AS "studentEmail"',
     'g.professorId AS "professorId"',
     'g.evaluation AS evaluation',
     'g.type AS type',
@@ -132,9 +145,12 @@ export async function obtenerNotasPorEstudiante(studentId) {
 
   const qb = asistenciaRepo().createQueryBuilder("a");
   qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
+  qb.leftJoin('users', 'student', 'student.id = a.estudianteId');
   qb.select([
     "a.id AS id",
     "a.estudianteId AS \"studentId\"",
+    'student.nombre AS "studentName"',
+    'student.email AS "studentEmail"',
     "a.calificadoPor AS \"professorId\"",
     "e.nombreEv AS evaluation",
     "e.tipoEv AS type",

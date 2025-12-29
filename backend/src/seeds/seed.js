@@ -29,16 +29,27 @@ async function run() {
       'Derecho Administrativo',
     ];
 
+    // Administrador
+    const adminData = {
+      nombre: 'Administrador del Sistema',
+      rut: '11111111-1',
+      email: 'admin@ubiobio.cl',
+      password: 'Admin123!',
+      role: 'admin'
+    };
+
     // Profesores - Cuentas institucionales @ubiobio.cl
     const profesoresData = [
       { 
-        name: 'Juan Pérez González', 
+        nombre: 'Juan Pérez González',
+        rut: '12345678-9',
         email: 'juan.perez@ubiobio.cl', 
         password: 'Profesor1!', 
         role: 'profesor' 
       },
       { 
-        name: 'María González López', 
+        nombre: 'María González López',
+        rut: '23456789-0',
         email: 'maria.gonzalez@ubiobio.cl', 
         password: 'Profesor2!', 
         role: 'profesor' 
@@ -48,31 +59,36 @@ async function run() {
     // Alumnos - Cuentas institucionales @alumnos.ubiobio.cl
     const alumnosData = [
       {
-        name: 'Carlos Andrés Ruiz Mora',
+        nombre: 'Carlos Andrés Ruiz Mora',
+        rut: '19876543-2',
         email: 'carlos.ruiz@alumnos.ubiobio.cl',
         password: 'Alumno1!2024',
         role: 'estudiante',
       },
       {
-        name: 'Ana María Silva Torres',
+        nombre: 'Ana María Silva Torres',
+        rut: '20123456-7',
         email: 'ana.silva@alumnos.ubiobio.cl',
         password: 'Alumno2!2024',
         role: 'estudiante',
       },
       {
-        name: 'Diego Fernando Castillo Muñoz',
+        nombre: 'Diego Fernando Castillo Muñoz',
+        rut: '19654321-8',
         email: 'diego.castillo@alumnos.ubiobio.cl',
         password: 'Alumno3!2024',
         role: 'estudiante',
       },
       {
-        name: 'Valentina Paz Reyes Soto',
+        nombre: 'Valentina Paz Reyes Soto',
+        rut: '20567890-1',
         email: 'valentina.reyes@alumnos.ubiobio.cl',
         password: 'Alumno4!2024',
         role: 'estudiante',
       },
       {
-        name: 'Sebastián Ignacio Flores Díaz',
+        nombre: 'Sebastián Ignacio Flores Díaz',
+        rut: '19234567-3',
         email: 'sebastian.flores@alumnos.ubiobio.cl',
         password: 'Alumno5!2024',
         role: 'estudiante',
@@ -81,26 +97,32 @@ async function run() {
 
     /**
      * Crea o retorna un usuario existente
-     * @param {Object} userData - Datos del usuario (email, password, role, name)
+     * @param {Object} userData - Datos del usuario (nombre, rut, email, password, role)
      * @returns {Promise<User>} Usuario creado o existente
      */
     async function ensureUser(userData) {
       const exists = await userRepo.findOne({ where: { email: userData.email } });
       if (exists) {
-        console.log('Usuario ya existe: ' + userData.email + ' (' + (userData.name || userData.email) + ')');
+        console.log('Usuario ya existe: ' + userData.email + ' (' + (userData.nombre || userData.email) + ')');
         return exists;
       }
       
       const hashedPassword = await bcrypt.hash(String(userData.password), 10);
       const newUser = userRepo.create({ 
+        nombre: userData.nombre,
+        rut: userData.rut,
         email: userData.email, 
         password: hashedPassword, 
-        role: userData.role,
-        name: userData.name || userData.email.split('@')[0]
+        role: userData.role
       });
       
       return await userRepo.save(newUser);
     }
+
+    // Crear administrador
+    console.log('\n=== CREANDO ADMINISTRADOR ===');
+    const admin = await ensureUser(adminData);
+    console.log('✓ Admin: ' + adminData.nombre + ' | ' + admin.email + ' | ID: ' + admin.id);
 
     // Crear profesores
     console.log('\n=== CREANDO PROFESORES ===');
@@ -108,7 +130,7 @@ async function run() {
     for (const profesorData of profesoresData) {
       const profesor = await ensureUser(profesorData);
       profesores.push(profesor);
-      console.log('✓ Profesor: ' + profesorData.name + ' | ' + profesor.email + ' | ID: ' + profesor.id);
+      console.log('✓ Profesor: ' + profesorData.nombre + ' | ' + profesor.email + ' | ID: ' + profesor.id);
     }
 
     // Crear alumnos
@@ -117,7 +139,7 @@ async function run() {
     for (const alumnoData of alumnosData) {
       const alumno = await ensureUser(alumnoData);
       alumnos.push(alumno);
-      console.log('✓ Alumno: ' + alumnoData.name + ' | ' + alumno.email + ' | ID: ' + alumno.id + ' | Password: ' + alumnoData.password);
+      console.log('✓ Alumno: ' + alumnoData.nombre + ' | ' + alumno.email + ' | ID: ' + alumno.id + ' | Password: ' + alumnoData.password);
     }
 
     // Generar notas para cada alumno
@@ -156,7 +178,7 @@ async function run() {
         
         await gradeRepo.save(nota);
         notasCreadas++;
-        console.log('✓ Nota: ' + alumnoData.name + ' | ' + evaluation + ' | Nota: ' + score + ' | Profesor: ' + profesor.email);
+        console.log('✓ Nota: ' + alumnoData.nombre + ' | ' + evaluation + ' | Nota: ' + score + ' | Profesor: ' + profesor.email);
       }
     }
     console.log('Total de notas creadas: ' + notasCreadas);

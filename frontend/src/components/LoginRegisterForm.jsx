@@ -38,6 +38,49 @@ const LoginRegisterForm = ({ mode = "login", onSubmit, loginError}) => {
       )}
 
       <form onSubmit={handleSubmit(onFormSubmit)}>
+        {mode === "register" && (
+          <>
+            <div className="form-group">
+              <label>Nombre:</label>
+              <input
+                type="text"
+                {...register("nombre", {
+                  required: "El nombre es obligatorio",
+                  minLength: {
+                    value: 3,
+                    message: "El nombre debe tener al menos 3 caracteres",
+                  },
+                  maxLength: {
+                    value: 255,
+                    message: "El nombre debe tener como máximo 255 caracteres",
+                  },
+                })}
+              />
+              {errors.nombre && (
+                <span className="form-error-container">{errors.nombre.message}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>RUT:</label>
+              <input
+                type="text"
+                placeholder="12345678-9"
+                {...register("rut", {
+                  required: "El RUT es obligatorio",
+                  pattern: {
+                    value: /^[0-9]{7,8}-[0-9kK]{1}$/,
+                    message: "El RUT debe tener el formato 12345678-9",
+                  },
+                })}
+              />
+              {errors.rut && (
+                <span className="form-error-container">{errors.rut.message}</span>
+              )}
+            </div>
+          </>
+        )}
+
         <div className="form-group">
           <label>Correo:</label>
           <input
@@ -109,14 +152,6 @@ const LoginRegisterForm = ({ mode = "login", onSubmit, loginError}) => {
           {mode === "login" ? "Entrar" : "Registrarse"}
         </button>
       </form>
-
-      {mode === "register" && (
-        <div style={{ marginTop: "1rem" }}>
-          <p>
-            ¿Ya tienes cuenta? <a href="/login">Inicia sesión</a>
-          </p>
-        </div>
-      )}
     </div>
   );
 };

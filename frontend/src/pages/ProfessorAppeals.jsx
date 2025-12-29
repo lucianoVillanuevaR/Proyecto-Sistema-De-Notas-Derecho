@@ -146,8 +146,8 @@ export default function ProfessorAppeals() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th className="col-professor">Alumno ID</th>
-                  <th className="col-grade">Calificación ID</th>
+                  <th className="col-professor">Alumno</th>
+                  <th className="col-grade">Evaluación</th>
                   <th>Estado</th>
                   <th className="col-motivo">Motivo del estudiante</th>
                   <th className="col-comment">Comentario del profesor</th>
@@ -159,8 +159,8 @@ export default function ProfessorAppeals() {
                 {appealsPaginadas.map((a) => (
                   <tr key={a.id}>
                     <td>{a.id}</td>
-                    <td className="col-professor">{a.studentId || a.student?.id || '-'}</td>
-                    <td className="col-grade">{a.gradeId || a.grade?.id || '-'}</td>
+                    <td className="col-professor">{a.studentName || a.student?.nombre || a.studentId || '-'}</td>
+                    <td className="col-grade">{a.gradeEvaluation || a.grade?.evaluation || a.gradeId || '-'}</td>
                     <td>
                       <span className={`status-badge ${
                         a.status === 'pendiente' ? 'status-pendiente' :

@@ -1,6 +1,17 @@
 import Joi from 'joi';
 const safeString = Joi.string().trim().min(1).max(100);
 const crearUsuarioSchema = Joi.object({
+  nombre: Joi.string().trim().min(3).max(255).required().messages({
+    'any.required': 'El nombre es obligatorio',
+    'string.min': 'El nombre debe tener al menos 3 caracteres',
+    'string.max': 'El nombre no puede superar los 255 caracteres',
+    'string.empty': 'El nombre no puede estar vacío'
+  }),
+  rut: Joi.string().trim().pattern(/^[0-9]{7,8}-[0-9kK]{1}$/).required().messages({
+    'any.required': 'El RUT es obligatorio',
+    'string.pattern.base': 'El RUT debe tener el formato 12345678-9',
+    'string.empty': 'El RUT no puede estar vacío'
+  }),
   email: Joi.string().trim().lowercase().email({ tlds: { allow: false } })
     .required()
     .messages({
@@ -13,8 +24,8 @@ const crearUsuarioSchema = Joi.object({
     'string.min': 'La contraseña debe tener al menos 5 caracteres',
     'string.empty': 'La contraseña no puede estar vacia'
   }),
-  role: Joi.string().valid('estudiante', 'profesor', 'administrador').optional().messages({
-    'any.only': 'El role debe ser "estudiante", "profesor" o "administrador"',
+  role: Joi.string().valid('estudiante', 'profesor', 'admin').optional().messages({
+    'any.only': 'El role debe ser "estudiante", "profesor" o "admin"',
     'string.base': 'El role debe ser una cadena'
   })
 }).options({ abortEarly: false, allowUnknown: false });

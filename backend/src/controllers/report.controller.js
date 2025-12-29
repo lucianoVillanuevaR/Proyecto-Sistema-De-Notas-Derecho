@@ -25,6 +25,10 @@ export const reportController = {
         return handleErrorClient(res, 403, "Acceso denegado: role no permitido");
       }
       const notas = await obtenerNotasPorEstudiante(sid);
+      const userRepo = AppDataSource.getRepository(User);
+      const student = await userRepo.findOne({ where: { id: sid } });
+      const studentName = notas[0]?.studentName || student?.nombre || null;
+      const studentEmail = notas[0]?.studentEmail || student?.email || null;
 
       const promediosPorEvaluacion = {};
       let sumaTotal = 0;
@@ -69,6 +73,8 @@ export const reportController = {
 
       return handleSuccess(res, 200, "Informe obtenido exitosamente", {
         studentId: sid,
+        studentName,
+        studentEmail,
         notas,
         promediosPorEvaluacion: promedios,
         promedioGeneral,
@@ -194,7 +200,8 @@ export const reportController = {
   
       const userRepo = AppDataSource.getRepository(User);
       const student = await userRepo.findOne({ where: { id: sid } });
-      const studentEmail = student ? student.email : 'N/A';
+      const studentName = notas[0]?.studentName || student?.nombre || `#${sid}`;
+      const studentEmail = notas[0]?.studentEmail || student?.email || 'N/A';
       const doc = new PDFDocument({ 
         margin: 60,
         size: 'A4',
@@ -257,9 +264,9 @@ export const reportController = {
       const infoStartY = doc.y;
       
       doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000')
-         .text('Estudiante:', leftMargin, infoStartY);
+        .text('Estudiante:', leftMargin, infoStartY);
       doc.font('Helvetica')
-         .text(`#${sid}`, leftMargin + 80, infoStartY);
+        .text(studentName, leftMargin + 80, infoStartY);
       
       doc.font('Helvetica-Bold')
          .text('Email:', leftMargin, infoStartY + 15);
@@ -267,9 +274,9 @@ export const reportController = {
          .text(studentEmail, leftMargin + 80, infoStartY + 15);
       
       doc.font('Helvetica-Bold')
-         .text('ID:', leftMargin, infoStartY + 30);
+        .text('ID:', leftMargin, infoStartY + 30);
       doc.font('Helvetica')
-         .text(String(sid), leftMargin + 80, infoStartY + 30);
+        .text(String(sid), leftMargin + 80, infoStartY + 30);
       
 
       const ahora = new Date();

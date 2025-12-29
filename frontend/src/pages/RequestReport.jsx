@@ -135,8 +135,8 @@ export default function RequestReport() {
                 
                 <div className="stats-grid">
                   <div className="stat-card blue">
-                    <div className="stat-label">ID Estudiante</div>
-                    <div className="stat-value">#{result.data.studentId || 'N/A'}</div>
+                    <div className="stat-label">Nombre Estudiante</div>
+                    <div className="stat-value">{result.data.studentName || `#${result.data.studentId || 'N/A'}`}</div>
                   </div>
                   
                   <div className="stat-card purple">

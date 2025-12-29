@@ -21,8 +21,8 @@ export async function registrarUsuario(req, res) {
   try {
     const data = req.body;
 
-    if (!data.email || !data.password) {
-      return handleErrorClient(res, 400, "Email y contraseña son requeridos");
+    if (!data.nombre || !data.rut || !data.email || !data.password) {
+      return handleErrorClient(res, 400, "Nombre, RUT, email y contraseña son requeridos");
     }
 
     const newUser = await crearUsuario(data);
@@ -30,7 +30,7 @@ export async function registrarUsuario(req, res) {
     handleSuccess(res, 201, "Usuario registrado exitosamente", newUser);
   } catch (error) {
     if (error.code === "23505") {
-      handleErrorClient(res, 409, "El email ya está registrado");
+      handleErrorClient(res, 409, "El email o RUT ya está registrado");
     } else {
       handleErrorServer(res, 500, "Error interno del servidor", error.message);
     }

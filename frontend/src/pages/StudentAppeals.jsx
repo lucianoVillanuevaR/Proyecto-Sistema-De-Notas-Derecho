@@ -55,7 +55,7 @@ export default function StudentAppeals() {
                 n => `
                   <option
                     value="${n.id}"
-                    data-profesor="${n.professorId ?? 'N/A'}"
+                    data-profesor="${n.professorName ?? n.professorId ?? 'N/A'}"
                     data-evaluation="${n.evaluation ?? 'Sin nombre'}"
                     data-score="${n.score ?? 'N/A'}"
                   >
@@ -179,8 +179,8 @@ export default function StudentAppeals() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th className="col-professor">Profesor ID</th>
-                  <th className="col-grade">Calificación ID</th>
+                  <th className="col-professor">Profesor</th>
+                  <th className="col-grade">Evaluación</th>
                   <th>Estado</th>
                   <th className="col-motivo">Motivo del estudiante</th>
                   <th className="col-comment">Comentario del profesor</th>
@@ -191,8 +191,8 @@ export default function StudentAppeals() {
                 {appealsPaginadas.map((a) => (
                   <tr key={a.id}>
                     <td>{a.id}</td>
-                    <td className="col-professor">{a.professorId || a.professor?.id || '-'}</td>
-                    <td className="col-grade">{a.gradeId || a.grade?.id || '-'}</td>
+                    <td className="col-professor">{a.professorName || a.professor?.nombre || a.professorId || '-'}</td>
+                    <td className="col-grade">{a.gradeEvaluation || a.grade?.evaluation || a.gradeId || '-'}</td>
                     <td>
                       <span className={`status-badge ${
                         a.status === 'pendiente' ? 'status-pendiente' :

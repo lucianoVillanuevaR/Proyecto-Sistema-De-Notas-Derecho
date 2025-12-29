@@ -1,10 +1,11 @@
 import axios from './root.service.js';
 import cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
 
 export async function registerService(datauser) {
     try {
         const response = await axios.post("/auth/register", {
+            nombre: datauser.nombre,
+            rut: datauser.rut,
             email: datauser.email,
             password: datauser.password,
             role: datauser.role || 'estudiante'
@@ -30,6 +31,7 @@ export async function loginService(datauser) {
             const { user, token } = data.data;
             const userData = {
                 id: user.id,
+                nombre: user.nombre,
                 username: user.username,
                 email: user.email,
                 rut: user.rut,
