@@ -12,6 +12,61 @@ const Evaluaciones = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  const asignaturas = [
+    "Derecho Romano",
+    "Introducción al Derecho",
+    "Institucional I",
+    "Microeconomía",
+    "Formación Integral Oferta Institucional",
+    "Formación Integral Actividades Extra Programáticas",
+    "Derecho y Sociedad",
+    "Derecho Internacional Público y de los Derechos Humanos",
+    "Habilidades Jurídicas Básicas",
+    "Macroeconomía",
+    "Inglés Comunicacional I",
+    "Persona y Teoría del Acto Jurídico",
+    "Administración y Contabilidad",
+    "Bases y Órganos Constitucionales",
+    "Derecho Procesal Orgánico",
+    "Inglés Comunicacional II",
+    "Derechos Reales y Obligaciones",
+    "Taller de Integración Jurídica",
+    "Derechos y Garantías Constitucionales",
+    "Normas Comunes a Todo Procedimiento y Prueba",
+    "Teoría General del Derecho Laboral y Contrato Individual de Trabajo",
+    "Inglés Comunicacional III",
+    "Efectos de las Obligaciones y Responsabilidad Civil",
+    "Teoría del Delito y Derecho Penal Parte General",
+    "Actos y Procedimiento Administrativo",
+    "Procedimiento Ordinario y Recursos Procesales",
+    "Derecho Laboral Colectivo y Procedimiento Laboral",
+    "Inglés Comunicacional IV",
+    "Contratos",
+    "Derecho Penal Parte Especial",
+    "Contratación Administrativa y Función Pública",
+    "Procedimiento Ejecutivo y Especiales Contratación Administrativa y Función Pública",
+    "Práctica Jurídica",
+    "Derecho de Familia",
+    "Estructura de la Obligación Tributaria",
+    "Acto de Comercio y Derecho Societario",
+    "Derecho Procesal Penal",
+    "Informática Jurídica",
+    "Negociación",
+    "Derecho Sucesorio",
+    "Parte especial: IVA y Renta",
+    "Sociedad Anónima y Títulos de Crédito",
+    "Curso de Profundización I",
+    "Derecho Informático",
+    "Litigación",
+    "Derecho Internacional Privado",
+    "Curso de Profundización II",
+    "Clínica Jurídica",
+    "Litigación Especializada",
+    "Seminario de Licenciatura",
+    "Curso de Profundización III",
+    "Curso de Profundización IV"
+  ];
+
   useEffect(() => {
     cargarEvaluaciones();
   }, []);
@@ -34,11 +89,18 @@ const Evaluaciones = () => {
   const handleEditar = (id) => {
     const evaluacion = evaluaciones.find((e) => e.id === id);
     
+    const asignaturasOptions = asignaturas.map(asig => 
+      `<option value="${asig}" ${(evaluacion.asignatura1 || evaluacion.asignatura) === asig ? "selected" : ""}>${asig}</option>`
+    ).join('');
+    
     Swal.fire({
       title: "Editar Evaluación",
       html: `
         <input id="nombre" class="swal2-input" placeholder="Nombre" value="${evaluacion.nombreEv || evaluacion.nombre || ''}">
-        <input id="asignatura" class="swal2-input" placeholder="Asignatura" value="${evaluacion.asignatura1 || evaluacion.asignatura || ''}">
+        <select id="asignatura" class="swal2-input">
+          <option value="">Seleccione asignatura</option>
+          ${asignaturasOptions}
+        </select>
         <select id="tipo" class="swal2-input">
           <option value="oral" ${(evaluacion.tipoEv || evaluacion.tipo) === "oral" ? "selected" : ""}>Oral</option>
           <option value="escrita" ${(evaluacion.tipoEv || evaluacion.tipo) === "escrita" ? "selected" : ""}>Escrita</option>
@@ -128,11 +190,18 @@ const Evaluaciones = () => {
   };
 
   const handleCrearNueva = () => {
+    const asignaturasOptions = asignaturas.map(asig => 
+      `<option value="${asig}">${asig}</option>`
+    ).join('');
+    
     Swal.fire({
       title: "Crear Nueva Evaluación",
       html: `
         <input id="nombre" class="swal2-input" placeholder="Nombre">
-        <input id="asignatura" class="swal2-input" placeholder="Asignatura">
+        <select id="asignatura" class="swal2-input">
+          <option value="">Seleccione asignatura</option>
+          ${asignaturasOptions}
+        </select>
         <select id="tipo" class="swal2-input">
           <option value="">Seleccione tipo</option>
           <option value="oral">Oral</option>

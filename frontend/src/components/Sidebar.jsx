@@ -24,7 +24,7 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <h2>Sistema de Gestión de Evaluaciones</h2>
+      <h2>Sistema de Gestión de Evaluaciones de Derecho</h2>
       <nav>
         <ul>
           <li>

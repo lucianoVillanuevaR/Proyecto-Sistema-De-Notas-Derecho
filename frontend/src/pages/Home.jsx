@@ -213,7 +213,7 @@ const Home = () => {
       <div className="home-header">
         <img src={ubbLogo} alt="Universidad del Bío-Bío" className="ubb-logo" />
         <div className="welcome-section">
-          <h1>Bienvenido al Sistema de Gestión de Notas</h1>
+          <h1>Bienvenido al Sistema de Gestión de Evaluaciones de Derecho</h1>
           <p className="welcome-user">{userName}</p>
           <FaHome className="home-icon" />
         </div>

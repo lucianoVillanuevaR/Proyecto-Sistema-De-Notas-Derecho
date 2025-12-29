@@ -26,6 +26,12 @@ const Register = () => {
       </div>
       <div className="login-register-container">
         <LoginRegisterForm mode="register" onSubmit={registerSubmit} />
+        <button 
+          className="btn-volver-home"
+          onClick={() => navigate("/home")}
+        >
+          Volver al Inicio
+        </button>
       </div>
     </main>
     )

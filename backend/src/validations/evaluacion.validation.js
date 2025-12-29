@@ -1,6 +1,61 @@
 "use strict";
 import joi from "joi";
 
+const ASIGNATURAS_VALIDAS = [
+  "Derecho Romano",
+  "Introducción al Derecho",
+  "Institucional I",
+  "Microeconomía",
+  "Formación Integral Oferta Institucional",
+  "Formación Integral Actividades Extra Programáticas",
+  "Derecho y Sociedad",
+  "Derecho Internacional Público y de los Derechos Humanos",
+  "Habilidades Jurídicas Básicas",
+  "Macroeconomía",
+  "Inglés Comunicacional I",
+  "Persona y Teoría del Acto Jurídico",
+  "Administración y Contabilidad",
+  "Bases y Órganos Constitucionales",
+  "Derecho Procesal Orgánico",
+  "Inglés Comunicacional II",
+  "Derechos Reales y Obligaciones",
+  "Taller de Integración Jurídica",
+  "Derechos y Garantías Constitucionales",
+  "Normas Comunes a Todo Procedimiento y Prueba",
+  "Teoría General del Derecho Laboral y Contrato Individual de Trabajo",
+  "Inglés Comunicacional III",
+  "Efectos de las Obligaciones y Responsabilidad Civil",
+  "Teoría del Delito y Derecho Penal Parte General",
+  "Actos y Procedimiento Administrativo",
+  "Procedimiento Ordinario y Recursos Procesales",
+  "Derecho Laboral Colectivo y Procedimiento Laboral",
+  "Inglés Comunicacional IV",
+  "Contratos",
+  "Derecho Penal Parte Especial",
+  "Contratación Administrativa y Función Pública",
+  "Procedimiento Ejecutivo y Especiales Contratación Administrativa y Función Pública",
+  "Práctica Jurídica",
+  "Derecho de Familia",
+  "Estructura de la Obligación Tributaria",
+  "Acto de Comercio y Derecho Societario",
+  "Derecho Procesal Penal",
+  "Informática Jurídica",
+  "Negociación",
+  "Derecho Sucesorio",
+  "Parte especial: IVA y Renta",
+  "Sociedad Anónima y Títulos de Crédito",
+  "Curso de Profundización I",
+  "Derecho Informático",
+  "Litigación",
+  "Derecho Internacional Privado",
+  "Curso de Profundización II",
+  "Clínica Jurídica",
+  "Litigación Especializada",
+  "Seminario de Licenciatura",
+  "Curso de Profundización III",
+  "Curso de Profundización IV"
+];
+
 export const createvalidation = joi.object({
   nombreEv: joi.string()
     .min(3)
@@ -14,14 +69,10 @@ export const createvalidation = joi.object({
       "string.empty": "El nombre de la evaluación es un campo obligatorio",
     }),
   asignatura1: joi.string()
-    .min(3)
-    .max(30)
+    .valid(...ASIGNATURAS_VALIDAS)
     .required()
-    .pattern(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/)
     .messages({
-      "string.pattern.base": "La asignatura solo puede contener letras y espacios",
-      "string.min": "La asignatura debe tener al menos 3 caracteres",
-      "string.max": "La asignatura debe tener como máximo 30 caracteres",
+      "any.only": "La asignatura seleccionada no es válida",
       "string.empty": "La asignatura es un campo obligatorio",
     }),
   ponderacion: joi.number()
@@ -56,14 +107,10 @@ export const updatevalidation = joi.object({
       "string.empty": "El nombre de la evaluación es un campo obligatorio",
     }),
   asignatura1: joi.string()
-    .min(3)
-    .max(30)
+    .valid(...ASIGNATURAS_VALIDAS)
     .optional()
-    .pattern(/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/)
     .messages({
-      "string.pattern.base": "La asignatura solo puede contener letras y espacios",
-      "string.min": "La asignatura debe tener al menos 3 caracteres",
-      "string.max": "La asignatura debe tener como máximo 30 caracteres",
+      "any.only": "La asignatura seleccionada no es válida",
       "string.empty": "La asignatura es un campo obligatorio",
     }),
   ponderacion: joi.number()

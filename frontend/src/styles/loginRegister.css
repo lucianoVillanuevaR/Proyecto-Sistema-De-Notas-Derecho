@@ -25,3 +25,23 @@
   width: 100%;
   max-width: 520px;
 }
+
+.btn-volver-home {
+  width: 55vh;
+  padding: 10px;
+  margin-top: 15px;
+  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(127, 140, 141, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-volver-home:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(127, 140, 141, 0.5);
+  background: linear-gradient(135deg, #7f8c8d 0%, #636e72 100%);
+}

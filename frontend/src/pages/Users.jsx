@@ -15,45 +15,54 @@ const Users = () => {
   }, []);
 
   return (
-    <div className="users-page">
-      <h2>Lista de Usuarios</h2>
-      <table className="users-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Rol</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Array.isArray(users) && users.length > 0 ? (
-            users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.username}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td>
-                  <button className="edit" onClick={() => {
-                    if (confirm(`¿Deseas editar el usuario "${user.username}"?`)) {
-                      handleEditUser(user.id, user);
-                    }
-                  }}>Editar</button>
-                  <button className="delete" onClick={() => {
-                    if (confirm(`⚠️ ¿Estás seguro de eliminar al usuario "${user.username}"?\n\nEsta acción no se puede deshacer.`)) {
-                      handleDeleteUser(user.id);
-                    }
-                  }}>Eliminar</button>
-                </td>
-              </tr>
-            ))
+    <div className="users-container">
+      <div className="users-wrapper">
+        <div className="users-header">
+          <h1>Lista de Usuarios</h1>
+        </div>
+
+        <div className="users-table">
+          {!users || users.length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <p>No hay usuarios disponibles</p>
+            </div>
           ) : (
-            <tr>
-              <td colSpan="4">No hay usuarios disponibles</td>
-            </tr>
+            <table>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>RUT</th>
+                  <th>Correo</th>
+                  <th>Rol</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.nombre || '-'}</td>
+                    <td>{user.rut || '-'}</td>
+                    <td>{user.email}</td>
+                    <td>{user.role}</td>
+                    <td className="acciones">
+                      <button className="btn-editar" onClick={() => {
+                        if (confirm(`¿Deseas editar el usuario "${user.nombre}"?`)) {
+                          handleEditUser(user.id, user);
+                        }
+                      }}>Editar</button>
+                      <button className="btn-eliminar" onClick={() => {
+                        if (confirm(`⚠️ ¿Estás seguro de eliminar al usuario "${user.nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                          handleDeleteUser(user.id);
+                        }
+                      }}>Eliminar</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
-        </tbody>
-      </table>
+        </div>
+      </div>
     </div>
   );
 };

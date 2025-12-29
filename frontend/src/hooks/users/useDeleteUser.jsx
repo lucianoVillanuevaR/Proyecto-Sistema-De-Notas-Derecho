@@ -1,50 +1,28 @@
 import Swal from "sweetalert2";
 import { deleteUser } from "@services/user.service";
 
-async function confirmDeleteUser() {
-  const result = await Swal.fire({
-    title: "¿Estás seguro?",
-    text: "No podrás deshacer esta acción",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-  });
-  return result.isConfirmed;
-}
-
-async function confirmAlert() {
-  await Swal.fire({
-    title: "Usuario eliminado",
-    text: "El usuario ha sido eliminado correctamente",
-    icon: "success",
-    confirmButtonText: "Aceptar",
-  });
-}
-
-async function confirmError() {
-  await Swal.fire({
-    title: "Error",
-    text: "No se pudo eliminar el usuario",
-    icon: "error",
-    confirmButtonText: "Aceptar",
-  });
-}
-
-export const useDeleteUser = (fetchUsers) => {
+const useDeleteUser = (fetchUsers) => {
   const handleDeleteUser = async (userId) => {
-    try {
-      const isConfirmed = await confirmDeleteUser();
-      if (isConfirmed) {
-        const response = await deleteUser(userId);
-        if (response) {
-          confirmAlert();
-          await fetchUsers();
-        }
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esta acción",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteUser(userId);
+        await fetchUsers();
+        Swal.fire("¡Eliminado!", "El usuario ha sido eliminado.", "success");
+      } catch (error) {
+        console.error("Error eliminando usuario:", error);
+        Swal.fire("Error", "No se pudo eliminar el usuario", "error");
       }
-    } catch (error) {
-      console.error("Error al eliminar usuario:", error);
-      confirmError();
     }
   };
 

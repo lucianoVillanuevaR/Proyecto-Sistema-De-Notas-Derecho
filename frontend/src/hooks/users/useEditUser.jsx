@@ -1,81 +1,47 @@
-import { editUser } from "../../services/user.service";
+import { editUser } from "@services/user.service";
 import Swal from "sweetalert2";
 
-async function editUserInfo(user) {
-  const { value: formValues } = await Swal.fire({
-    title: "Editar Usuario",
-    html: `
-    <div>
-      <label for="swal2-input1">Nombre de usuario</label>  
-      <input id="swal2-input1" class="swal2-input" placeholder="Nombre de usuario" value = "${user.username}">
-    </div>
-    <div>
-      <label for="swal2-input2">Correo electrónico</label>
-      <input id="swal2-input2" class="swal2-input" placeholder="Correo electrónico" value = "${user.email}">
-    </div>
-        `,
-    focusConfirm: false,
-    showCancelButton: true,
-    confirmButtonText: "Editar",
-    preConfirm: () => {
-      const username = document.getElementById("swal2-input1").value;
-      const email = document.getElementById("swal2-input2").value;
-
-      if (!username || !email) {
-        Swal.showValidationMessage("Por favor, completa todos los campos");
-        return false;
-      }
-
-      if (username.length < 3 || username.length > 30) {
-        Swal.showValidationMessage(
-          "El nombre de usuario debe tener entre 3 y 30 caracteres"
-        );
-        return false;
-      }
-
-      if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        Swal.showValidationMessage(
-          "El nombre de usuario solo puede contener letras, números y guiones bajos"
-        );
-        return false;
-      }
-
-      if (!email || email.length < 15 || email.length > 50) {
-        Swal.showValidationMessage(
-          "El correo electrónico debe tener entre 15 y 50 caracteres"
-        );
-        return false;
-      }
-
-      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-        Swal.showValidationMessage(
-          "Por favor, ingresa un correo electrónico válido"
-        );
-        return false;
-      }
-      return { username, email };
-    },
-  });
-  if (formValues) {
-    return {
-      username: formValues.username,
-      email: formValues.email,
-    };
-  }
-}
-
-export const useEditUser = (fetchUsers) => {
+const useEditUser = (fetchUsers) => {
   const handleEditUser = async (userId, user) => {
-    try {
-      const formValues = await editUserInfo(user);
-      if (!formValues) return;
+    const result = await Swal.fire({
+      title: "Editar Usuario",
+      html: `
+        <input id="nombre" class="swal2-input" placeholder="Nombre" value="${user.nombre || ''}">
+        <input id="rut" class="swal2-input" placeholder="RUT (ej: 12345678-9)" value="${user.rut || ''}">
+        <input id="email" class="swal2-input" placeholder="Email" value="${user.email || ''}">
+        <select id="role" class="swal2-input">
+          <option value="estudiante" ${user.role === "estudiante" ? "selected" : ""}>Estudiante</option>
+          <option value="profesor" ${user.role === "profesor" ? "selected" : ""}>Profesor</option>
+          <option value="admin" ${user.role === "admin" ? "selected" : ""}>Admin</option>
+        </select>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      preConfirm: () => {
+        const nombre = document.getElementById("nombre").value;
+        const rut = document.getElementById("rut").value;
+        const email = document.getElementById("email").value;
+        const role = document.getElementById("role").value;
 
-      const response = await editUser(userId, formValues);
-      if (response) {
+        if (!nombre || !rut || !email) {
+          Swal.showValidationMessage("Por favor completa todos los campos");
+          return false;
+        }
+
+        return { nombre, rut, email, role };
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await editUser(userId, result.value);
         await fetchUsers();
+        Swal.fire("¡Guardado!", "El usuario ha sido actualizado.", "success");
+      } catch (error) {
+        console.error("Error editando usuario:", error);
+        Swal.fire("Error", "No se pudo actualizar el usuario", "error");
       }
-    } catch (error) {
-      console.error("Error al editar usuario:", error);
     }
   };
 

@@ -61,7 +61,7 @@ export async function createEvaluacion(req, res){
         const { nombreEv, asignatura1, ponderacion, tipoEv } = req.body;
         const { error } = createvalidation.validate(req.body);
         if(error){
-            return res.status(400).json({message: "Error al crear la evaluacion", error: error});
+            return res.status(400).json({message: "Error al crear la evaluacion", error: error.details[0].message});
         }
 
         const profesorId = req.user?.id;
@@ -118,7 +118,7 @@ export async function updateEvaluacion(req, res){
         }
         const { error } = updatevalidation.validate(req.body);
         if(error){
-            return res.status(400).json({message: "Error al actualizar la evaluacion", error: error});
+            return res.status(400).json({message: "Error al actualizar la evaluacion", error: error.details[0].message});
         }
 
         const nuevoNombre = nombreEv || evaluacion.nombreEv;
