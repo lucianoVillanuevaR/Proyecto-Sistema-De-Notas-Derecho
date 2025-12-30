@@ -66,6 +66,13 @@ export async function createEvaluacion(req, res){
 
         const profesorId = req.user?.id;
 
+        const evaluacionesAsignatura = await evaluacionRepository.find({ where: { asignatura1 } });
+        const existeDuplicado = evaluacionesAsignatura.some(ev => ev.nombreEv.toLowerCase() === nombreEv.toLowerCase());
+        
+        if (existeDuplicado) {
+            return res.status(400).json({ message: "Ya existe una evaluación con ese nombre en la misma asignatura." });
+        }
+        
         const nuevaEvaluacion = evaluacionRepository.create({
             nombreEv,
             asignatura1,
@@ -73,11 +80,6 @@ export async function createEvaluacion(req, res){
             ponderacion,
             tipoEv
         });
-        
-        const existeMismaAsignatura = await evaluacionRepository.findOne({where: { nombreEv, asignatura1 }});
-        if (existeMismaAsignatura) {
-            return res.status(400).json({ message: "Ya existe una evaluación con ese nombre en la misma asignatura." });
-        }
 
         await evaluacionRepository.save(nuevaEvaluacion);
         
@@ -123,8 +125,13 @@ export async function updateEvaluacion(req, res){
 
         const nuevoNombre = nombreEv || evaluacion.nombreEv;
         const nuevaAsignatura = asignatura1 || evaluacion.asignatura1;
-        const conflicto = await evaluacionRepository.findOne({ where: { nombreEv: nuevoNombre, asignatura1: nuevaAsignatura } });
-        if (conflicto && conflicto.id !== evaluacion.id) {
+        
+        const evaluacionesAsignatura = await evaluacionRepository.find({ where: { asignatura1: nuevaAsignatura } });
+        const existeDuplicado = evaluacionesAsignatura.some(ev => 
+            ev.nombreEv.toLowerCase() === nuevoNombre.toLowerCase() && ev.id !== evaluacion.id
+        );
+        
+        if (existeDuplicado) {
             return res.status(400).json({ message: "Ya existe otra evaluación con ese nombre en la misma asignatura." });
         }
 
