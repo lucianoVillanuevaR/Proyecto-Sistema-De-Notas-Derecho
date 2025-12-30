@@ -101,7 +101,6 @@ export async function obtenerNotaPorId(id) {
     return mapGradeRow(g);
   }
 
-  // Luego intentar en 'asistencias_evaluaciones'
   const qb = asistenciaRepo().createQueryBuilder("a");
   qb.leftJoin(Evaluacion, "e", "e.id = a.evaluacionId");
   qb.select([
@@ -192,7 +191,6 @@ export async function crearNota(data) {
 }
 
 export async function actualizarNota(id, changes) {
-  // Intentar actualizar en 'asistencias_evaluaciones' primero
   const aRepo = asistenciaRepo();
   const registroA = await aRepo.findOne({ where: { id: Number(id) } });
   if (registroA) {

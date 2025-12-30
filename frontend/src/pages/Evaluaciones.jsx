@@ -126,6 +126,7 @@ const Evaluaciones = () => {
           await cargarEvaluaciones();
           Swal.fire("¡Guardado!", "La evaluación ha sido actualizada.", "success");
         } catch (error) {
+          console.error("Error al actualizar la evaluación:", error);
           Swal.fire("Error", "No se pudo actualizar la evaluación", "error");
         }
       }
@@ -149,6 +150,7 @@ const Evaluaciones = () => {
           await cargarEvaluaciones();
           Swal.fire("¡Eliminado!", "La evaluación ha sido eliminada.", "success");
         } catch (error) {
+          console.error("Error al eliminar la evaluación:", error);
           Swal.fire("Error", "No se pudo eliminar la evaluación", "error");
         }
       }

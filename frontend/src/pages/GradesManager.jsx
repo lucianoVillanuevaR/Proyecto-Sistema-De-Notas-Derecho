@@ -35,7 +35,6 @@ export default function GradesManager() {
       const payload = res?.data ?? res;
       const all = Array.isArray(payload) ? payload : (payload?.data ?? []);
       setGrades(all);
-      // Construir lista única de estudiantes
       const map = new Map();
       all.forEach(g => {
         const id = g.studentId ?? g.student_id ?? g.student?.id ?? (g.studentEmail ? g.studentEmail : null);
@@ -52,14 +51,13 @@ export default function GradesManager() {
     }
   }
 
-  function filtered() {
-    if (!q) return grades;
-    const term = q.toLowerCase();
-    return grades.filter(g => String(g.studentId).includes(term) || (g.evaluation || '').toLowerCase().includes(term) || (g.observation || '').toLowerCase().includes(term));
-  }
-
   function gradesForStudent(studentId) {
-    return grades.filter(g => String(g.studentId) === String(studentId) || String(g.student_id) === String(studentId) || (g.student && String(g.student.id) === String(studentId)));
+    const target = String(studentId);
+    return grades.filter(g => {
+      const id = g.studentId ?? g.student_id ?? g.student?.id;
+      const email = g.studentEmail ?? g.student?.email;
+      return (id && String(id) === target) || (email && String(email) === target);
+    });
   }
 
   async function saveAllForStudent(studentId) {
@@ -67,11 +65,9 @@ export default function GradesManager() {
     const toSave = list.filter(g => editable[g.id]);
     if (toSave.length === 0) return alert('No hay cambios para guardar.');
     
-    // Confirmación de seguridad
     const confirmMsg = `¿Guardar ${toSave.length} cambio(s) para el estudiante #${studentId}?\n\nEsta acción actualizará las calificaciones definitivamente.`;
     if (!confirm(confirmMsg)) return;
-    
-    // Validar todas las notas antes de guardar
+
     for (const g of toSave) {
       const row = editable[g.id] ?? {};
       if (row.score !== undefined) {
@@ -103,8 +99,7 @@ export default function GradesManager() {
     }
   }
 
-  async function saveRow(g, idx) {
-    // Confirmación de seguridad
+  async function saveRow(g) {
     if (!confirm(`¿Guardar cambios en la evaluación "${g.evaluation}"?`)) {
       return;
     }
@@ -113,8 +108,7 @@ export default function GradesManager() {
       setSavingId(g.id);
       const row = editable[g.id] ?? {};
       const changes = {};
-      
-      // Validar la nota antes de guardar
+
       if (row.score !== undefined) {
         const score = Number(row.score);
         if (isNaN(score) || score < 10 || score > 70) {
@@ -126,7 +120,6 @@ export default function GradesManager() {
       }
       
       if (row.observation !== undefined) changes.observation = row.observation;
-      // Si existe source, enviarlo para que el backend sepa qué tabla actualizar
       if (g.source) changes.source = g.source;
 
       await updateGrade(g.id, changes);
@@ -165,7 +158,6 @@ export default function GradesManager() {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       const logoBase64 = canvas.toDataURL('image/png');
-      
       generatePDFWithLogo(studentData, studentGrades, logoBase64);
     };
   }
@@ -384,7 +376,7 @@ export default function GradesManager() {
                   </tr>
                 </thead>
                 <tbody>
-                  {gradesForStudent(selectedStudent).map((g, idx) => {
+                  {gradesForStudent(selectedStudent).map(g => {
                     const uniqueKey = `${g.source || 'unknown'}-${g.id}`;
                     return (
                     <tr key={uniqueKey}>
@@ -407,7 +399,7 @@ export default function GradesManager() {
                         <input type="text" defaultValue={g.observation ?? ''} className="input-observation" onChange={e => setEditable(prev => ({ ...prev, [g.id]: { ...(prev[g.id]||{}), observation: e.target.value } }))} />
                       </td>
                       <td>
-                        <button disabled={savingId === g.id} onClick={() => saveRow(g, idx)} className="btn-save-row">{savingId === g.id ? 'Guardando...' : 'Guardar'}</button>
+                        <button disabled={savingId === g.id} onClick={() => saveRow(g)} className="btn-save-row">{savingId === g.id ? 'Guardando...' : 'Guardar'}</button>
                       </td>
                     </tr>
                   );})}

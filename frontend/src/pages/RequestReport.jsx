@@ -17,6 +17,7 @@ export default function RequestReport() {
       const res = await solicitarMiInforme();
       setResult(res);
     } catch (e) {
+      console.error('Error al solicitar informe:', e);
       setError({ message: 'Error al solicitar informe' });
     } finally {
       setLoading(false);
@@ -65,6 +66,7 @@ export default function RequestReport() {
           const txt = await resp.data.text();
           throw new Error('Respuesta inesperada del servidor. No es un PDF. ' + txt.substring(0, 200));
         } catch (e2) {
+          console.error('Respuesta no PDF al descargar informe:', e2);
           throw new Error('Respuesta inesperada del servidor. No es un PDF.');
         }
       }
@@ -84,6 +86,7 @@ export default function RequestReport() {
       a.remove();
       window.URL.revokeObjectURL(url);
     } catch (e) {
+      console.error('Error al descargar PDF:', e);
       setError({ message: e.message || 'Error al descargar PDF' });
     }
   }

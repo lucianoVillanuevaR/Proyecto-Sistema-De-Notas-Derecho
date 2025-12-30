@@ -20,13 +20,13 @@ export default function Notificaciones() {
       const res = await getMyNotifications();
       if (res.data && Array.isArray(res.data)) {
         setNotifications(res.data);
-        // Actualizar contador global
         const unread = res.data.filter(n => !n.read).length;
         updateGlobalUnreadCount(unread);
       } else {
         setNotifications([]);
       }
     } catch (err) {
+      console.error('Error al cargar notificaciones:', err);
       setError('Error al cargar notificaciones');
       setNotifications([]);
     } finally {
@@ -41,12 +41,12 @@ export default function Notificaciones() {
         const updated = prevNotifs.map(notif =>
           notif.id === id ? { ...notif, read: true } : notif
         );
-        // Actualizar contador global
         const unread = updated.filter(n => !n.read).length;
         updateGlobalUnreadCount(unread);
         return updated;
       });
     } catch (err) {
+      console.error('Error al marcar como leída:', err);
       setError('Error al marcar como leída');
     }
   }

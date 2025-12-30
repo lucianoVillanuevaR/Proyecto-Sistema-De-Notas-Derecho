@@ -9,7 +9,6 @@ const Login = () => {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState("");
 
-  // Función que maneja el envío del formulario de inicio de sesión
   const loginSubmit = async (data) => {
     try {
       const response = await loginService(data);

@@ -172,12 +172,10 @@ const Home = () => {
     const firstDay = firstDayOfMonth(currentDate);
     const days = [];
 
-    // Empty cells for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
       days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
     }
 
-    // Days of the month
     for (let day = 1; day <= totalDays; day++) {
       const isSelected = 
         day === selectedDate.getDate() &&
