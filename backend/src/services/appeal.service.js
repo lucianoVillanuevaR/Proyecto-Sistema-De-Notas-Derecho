@@ -27,6 +27,7 @@ async function enrichAppeals(list) {
     return list.map(a => ({
         ...a,
         gradeEvaluation: gradeMap.get(a.gradeId)?.evaluation ?? null,
+        score: gradeMap.get(a.gradeId)?.score ?? null,
         professorName: professorMap.get(a.professorId) ?? a.professorId,
         studentName: studentMap.get(a.studentId) ?? a.studentId,
     }));

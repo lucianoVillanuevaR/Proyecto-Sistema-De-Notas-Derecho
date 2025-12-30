@@ -16,7 +16,6 @@ const Home = () => {
   const [meetingsMap, setMeetingsMap] = useState({});
 
   useEffect(() => {
-    // Cargar apelaciones y mapear por fecha (YYYY-MM-DD)
     const loadMeetings = async () => {
       try {
         const data = await getAppeals();
@@ -24,17 +23,16 @@ const Home = () => {
         const map = {};
         data.forEach(ap => {
           if (!ap.meetingDate) return;
-          // Ignorar citas en apelaciones rechazadas
           if (ap.status === 'rechazada') return;
           const d = new Date(ap.meetingDate);
           if (isNaN(d.getTime())) return;
-          const key = d.toISOString().slice(0,10); // YYYY-MM-DD
+          const key = d.toISOString().slice(0,10);
           if (!map[key]) map[key] = [];
-          // Intentar extraer información de estudiante y nota de forma robusta
           const studentId = ap.studentId || ap.student?.id || ap.student?.studentId || '';
-          const studentName = ap.student?.name || ap.student?.nombre || '';
+          const studentName = ap.studentName || ap.student?.name || ap.student?.nombre || '';
           const gradeId = ap.gradeId || ap.grade?.id || ap.gradeId || '';
-          const gradeLabel = ap.grade?.evaluation || ap.grade?.name || (ap.grade?.score ? `Nota ${ap.grade.score}` : '') || '';
+          const gradeLabel = ap.gradeEvaluation || ap.grade?.evaluation || ap.grade?.name || '';
+          const gradeScore = ap.score || ap.grade?.score || '';
 
           map[key].push({
             id: ap.id,
@@ -44,7 +42,8 @@ const Home = () => {
             studentId,
             studentName,
             gradeId,
-            gradeLabel
+            gradeLabel,
+            gradeScore
           });
         });
         setMeetingsMap(map);
@@ -285,8 +284,9 @@ const Home = () => {
                       <li key={m.id} className="meeting-item">
                         <div className="meeting-top"><span className="meeting-time-label">Hora:</span> <span className="meeting-value">{m.time}</span></div>
                         <div className="meeting-bottom">
-                          <div>Alumno ID: <span className="meeting-value">{m.studentId || 'N/A'}</span> {m.studentName ? <span className="muted">({m.studentName})</span> : null}</div>
-                          <div>Calificación ID: <span className="meeting-value">{m.gradeId || 'N/A'}</span> {m.gradeLabel ? <span className="muted">({m.gradeLabel})</span> : null}</div>
+                          <div>Alumno: <span className="meeting-value">{m.studentName || m.studentId || 'N/A'}</span></div>
+                          <div>Evaluación: <span className="meeting-value">{m.gradeLabel || m.gradeId || 'N/A'}</span></div>
+                          {m.gradeScore && <div>Calificación: <span className="meeting-value">{m.gradeScore}</span></div>}
                           <div>Motivo: {m.reason || 'Sin motivo'}</div>
                         </div>
                       </li>

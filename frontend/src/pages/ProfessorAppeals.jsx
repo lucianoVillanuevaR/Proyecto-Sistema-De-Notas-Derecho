@@ -33,9 +33,10 @@ export default function ProfessorAppeals() {
     Swal.fire({
       title: `Resolver apelación #${appeal.id}`,
       html: `
-        <div style="margin-bottom:8px;color:#374151;font-size:0.95rem;">
-          <div><strong>Alumno ID:</strong> ${appeal.studentId || appeal.student?.id || '-'}</div>
-          <div><strong>Calificación ID:</strong> ${appeal.gradeId || appeal.grade?.id || '-'}</div>
+        <div style="margin-bottom:12px;color:#374151;font-size:0.95rem;padding:10px;background-color:#f3f4f6;border-radius:4px;">
+          <div style="margin-bottom:6px;"><strong>Alumno:</strong> ${appeal.studentName || appeal.student?.nombre || appeal.studentId || '-'}</div>
+          <div style="margin-bottom:6px;"><strong>Evaluación:</strong> ${appeal.gradeEvaluation || appeal.grade?.evaluation || '-'}</div>
+          <div><strong>Calificación:</strong> ${appeal.score || appeal.grade?.score || '-'}</div>
         </div>
 
         <p><strong>Motivo:</strong></p>
