@@ -31,10 +31,10 @@ async function run() {
 
     // Administrador
     const adminData = {
-      nombre: 'Administrador del Sistema',
-      rut: '11111111-1',
-      email: 'admin@ubiobio.cl',
-      password: 'Admin123!',
+      nombre: 'Jefe de carrera',
+      rut: '12382243-1',
+      email: 'jefecarrera@ubiobio.cl',
+      password: 'Jefe123!',
       role: 'admin'
     };
 
