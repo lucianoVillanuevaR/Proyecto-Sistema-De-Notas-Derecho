@@ -36,3 +36,11 @@ export async function registrarUsuario(req, res) {
     }
   }
 }
+
+export async function cerrarSesion(req, res) {
+  try {
+    handleSuccess(res, 200, "Sesión cerrada exitosamente");
+  } catch (error) {
+    handleErrorServer(res, 500, "Error al cerrar sesión", error.message);
+  }
+}

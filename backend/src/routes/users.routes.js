@@ -1,24 +1,14 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { checkRole } from "../middleware/role.middleware.js";
-import { UserController } from "../controllers/user.controller.js";
+import { obtenerTodosLosUsuarios, actualizarUsuario, eliminarUsuario } from "../controllers/user.controller.js";
 
 const router = Router();
-const userController = new UserController();
 
-// Obtener todos los usuarios
-router.get("/", authMiddleware, checkRole("admin", "administrador"), (req, res) =>
-  userController.obtenerTodosLosUsuarios(req, res)
-);
+router.get("/", authMiddleware, checkRole("admin", "administrador"), obtenerTodosLosUsuarios);
 
-// Actualizar usuario
-router.put("/:id", authMiddleware, checkRole("admin", "administrador"), (req, res) =>
-  userController.actualizarUsuario(req, res)
-);
+router.put("/:id", authMiddleware, checkRole("admin", "administrador"), actualizarUsuario);
 
-// Eliminar usuario
-router.delete("/:id", authMiddleware, checkRole("admin", "administrador"), (req, res) =>
-  userController.eliminarUsuario(req, res)
-);
+router.delete("/:id", authMiddleware, checkRole("admin", "administrador"), eliminarUsuario);
 
 export default router;

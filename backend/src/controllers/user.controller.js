@@ -213,75 +213,73 @@ export class NotasController {
   }
 }
 
-export class UserController {
-  async obtenerTodosLosUsuarios(req, res) {
-    try {
-      const userRepository = AppDataSource.getRepository(User);
-      const users = await userRepository.find({
-        select: ["id", "nombre", "email", "rut", "role"],
-      });
+export async function obtenerTodosLosUsuarios(req, res) {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const users = await userRepository.find({
+      select: ["id", "nombre", "email", "rut", "role"],
+    });
 
-      handleSuccess(res, 200, "Usuarios obtenidos exitosamente", users);
-    } catch (error) {
-      console.error("Error en UserController:", error);
-      handleErrorServer(res, 500, "Error al obtener usuarios", error.message);
-    }
+    handleSuccess(res, 200, "Usuarios obtenidos exitosamente", users);
+  } catch (error) {
+    console.error("Error en UserController:", error);
+    handleErrorServer(res, 500, "Error al obtener usuarios", error.message);
   }
+}
 
-  async actualizarUsuario(req, res) {
-    try {
-      const userRepository = AppDataSource.getRepository(User);
-      const { id } = req.params;
-      const { nombre, rut, email, role } = req.body;
+export async function actualizarUsuario(req, res) {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const { id } = req.params;
+    const { nombre, rut, email, role } = req.body;
 
-      const usuario = await userRepository.findOne({ where: { id } });
-      if (!usuario) {
-        return handleErrorClient(res, 404, "Usuario no encontrado");
+    const usuario = await userRepository.findOne({ where: { id } });
+    if (!usuario) {
+      return handleErrorClient(res, 404, "Usuario no encontrado");
+    }
+
+    if (email && email !== usuario.email) {
+      const emailExiste = await userRepository.findOne({ where: { email } });
+      if (emailExiste && emailExiste.id !== usuario.id) {
+        return handleErrorClient(res, 400, "Ya existe otro usuario con ese email");
       }
-
-      if (email && email !== usuario.email) {
-        const emailExiste = await userRepository.findOne({ where: { email } });
-        if (emailExiste && emailExiste.id !== usuario.id) {
-          return handleErrorClient(res, 400, "Ya existe otro usuario con ese email");
-        }
+    }
+  
+    if (rut && rut !== usuario.rut) {
+      const rutExiste = await userRepository.findOne({ where: { rut } });
+      if (rutExiste && rutExiste.id !== usuario.id) {
+        return handleErrorClient(res, 400, "Ya existe otro usuario con ese RUT");
       }
+    }
+
+    usuario.nombre = nombre || usuario.nombre;
+    usuario.rut = rut || usuario.rut;
+    usuario.email = email || usuario.email;
+    usuario.role = role || usuario.role;
+
+    await userRepository.save(usuario);
+
+    handleSuccess(res, 200, "Usuario actualizado exitosamente", usuario);
+  } catch (error) {
+    console.error("Error al actualizar el usuario:", error);
+    handleErrorServer(res, 500, "Error al actualizar el usuario", error.message);
+  }
+}
+
+export async function eliminarUsuario(req, res) {
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const { id } = req.params;
     
-      if (rut && rut !== usuario.rut) {
-        const rutExiste = await userRepository.findOne({ where: { rut } });
-        if (rutExiste && rutExiste.id !== usuario.id) {
-          return handleErrorClient(res, 400, "Ya existe otro usuario con ese RUT");
-        }
-      }
-
-      usuario.nombre = nombre || usuario.nombre;
-      usuario.rut = rut || usuario.rut;
-      usuario.email = email || usuario.email;
-      usuario.role = role || usuario.role;
-
-      await userRepository.save(usuario);
-
-      handleSuccess(res, 200, "Usuario actualizado exitosamente", usuario);
-    } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
-      handleErrorServer(res, 500, "Error al actualizar el usuario", error.message);
+    const usuario = await userRepository.findOne({ where: { id } });
+    if (!usuario) {
+      return handleErrorClient(res, 404, "Usuario no encontrado");
     }
-  }
 
-  async eliminarUsuario(req, res) {
-    try {
-      const userRepository = AppDataSource.getRepository(User);
-      const { id } = req.params;
-      
-      const usuario = await userRepository.findOne({ where: { id } });
-      if (!usuario) {
-        return handleErrorClient(res, 404, "Usuario no encontrado");
-      }
-
-      await userRepository.remove(usuario);
-      handleSuccess(res, 200, "Usuario eliminado exitosamente");
-    } catch (error) {
-      console.error("Error al eliminar el usuario:", error);
-      handleErrorServer(res, 500, "Error al eliminar el usuario", error.message);
-    }
+    await userRepository.remove(usuario);
+    handleSuccess(res, 200, "Usuario eliminado exitosamente");
+  } catch (error) {
+    console.error("Error al eliminar el usuario:", error);
+    handleErrorServer(res, 500, "Error al eliminar el usuario", error.message);
   }
 }
