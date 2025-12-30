@@ -279,6 +279,7 @@ const Evaluaciones = () => {
             <tr>
               <th>Nombre</th>
               <th>Asignatura</th>
+              {user?.role === 'admin' && <th>Profesor</th>}
               <th>Tipo</th>
               <th>Ponderación (%)</th>
               <th>Acciones</th>
@@ -289,6 +290,9 @@ const Evaluaciones = () => {
               <tr key={evaluacion.id}>
                 <td>{evaluacion.nombreEv || evaluacion.nombre}</td>
                 <td>{evaluacion.asignatura1 || evaluacion.asignatura}</td>
+                {user?.role === 'admin' && (
+                  <td>{evaluacion.profesorNombre || 'Sin asignar'}</td>
+                )}
                 <td>{evaluacion.tipoEv || evaluacion.tipo}</td>
                 <td>{evaluacion.ponderacion}{typeof evaluacion.ponderacion === 'number' ? '%' : ''}</td>
                 <td className="acciones">

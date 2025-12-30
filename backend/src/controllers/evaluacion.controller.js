@@ -9,6 +9,7 @@ import Asistencia from "../entities/asistenciaEv.entity.js";
 export async function getEvaluaciones(req, res){
     try {
     const evaluacionesRepository = AppDataSource.getRepository(Evaluacion);
+        const usuarioRepository = AppDataSource.getRepository(User);
 
         const userId = req.user?.id;
         const userRole = req.user?.role;
@@ -18,6 +19,18 @@ export async function getEvaluaciones(req, res){
             evaluaciones = await evaluacionesRepository.find({ where: { profesorId: userId } });
         } else {
             evaluaciones = await evaluacionesRepository.find();
+        }
+
+        for (let ev of evaluaciones) {
+            if (ev.profesorId) {
+                const profesor = await usuarioRepository.findOne({
+                    where: { id: ev.profesorId }
+                });
+                if (profesor) {
+                    ev.profesorNombre = profesor.nombre;
+                    ev.profesorEmail = profesor.email;
+                }
+            }
         }
 
         if (userRole === 'estudiante' && userId) {
