@@ -61,7 +61,7 @@ const Sidebar = () => {
               <span>Reportes</span>
             </NavLink>
           </li>
-          {(isProfesor || userRole === "estudiante" || userRole === "student") && (
+          {(isAdmin || isProfesor || userRole === "estudiante" || userRole === "student") && (
             <li>
               <NavLink to="/apelaciones">
                 <FaFileAlt className="icon"/>
