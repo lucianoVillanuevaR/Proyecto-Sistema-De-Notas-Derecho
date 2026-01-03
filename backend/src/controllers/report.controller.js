@@ -225,13 +225,6 @@ export const reportController = {
       
       doc.moveDown(1);
       
-      doc.fontSize(20).font('Helvetica-Bold')
-         .fillColor('#000000')
-         .text('Universidad del Bío-Bío', { 
-           align: 'center',
-           width: pageWidth - leftMargin - rightMargin
-         });
-      
       doc.moveDown(0.7);
       
       doc.fontSize(16).font('Helvetica-Bold')
