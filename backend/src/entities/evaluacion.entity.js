@@ -23,7 +23,7 @@ export const EvaluacionEntity = new EntitySchema({
         asignatura1: {
             type: "varchar",
             nullable: false,
-            length: 30,
+            length: 70,
         },
         profesorId: {
             type: "int",
